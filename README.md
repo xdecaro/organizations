@@ -8,8 +8,10 @@ Joomla component for organization master data in the xdecaro ecosystem.
 - Package: `pkg_xdecaroorganizations`
 - PHP namespace: `xdecaro\Component\Organizations`
 - Database tables: `#__xdecaroorganizations_*`
-- Current prerelease line: `0.2.0`
+- Current prerelease line: `0.3.0`
 
-Version 0.2.0 is a fresh prerelease identity baseline. It does not claim an in-place Joomla upgrade from the experimental 0.1.0 `decaroorganizations` identity.
+The vendor namespace is intentionally lowercase: `xdecaro`.
+
+Version 0.2.0 established the new Joomla/DB identity. Version 0.3.0 keeps that identity and normalizes the PHP vendor namespace to lowercase `xdecaro` before 1.0.0.
 
 Organizations owns organization records and organizational structure. It integrates with Core by xdecaro for shared infrastructure and public cross-product references, without moving organization-domain logic into Core.
