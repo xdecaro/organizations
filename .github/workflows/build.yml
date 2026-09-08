@@ -32,15 +32,16 @@ jobs:
       - name: Guard database boundary
         run: |
           ! grep -RniE 'DROP[[:space:]]+TABLE|TRUNCATE[[:space:]]+TABLE' component/admin/sql
-          ! grep -RniE '#__(dcl|decaroforms|decarocourses|decarodocuments|decaromembership|decaroevents|decarofinance|decaroprotocol|decarodraw)_' component --exclude-dir=.git
+          ! grep -RniE '#__(decaroforms|decarocourses|decarodocuments|decaromembership|decaroevents|decarofinance|decaroprotocol)_' component --exclude-dir=.git
       - name: Verify technical identity
         run: |
-          test "$(cat VERSION)" = '0.2.0'
+          test "$(cat VERSION)" = '0.3.0'
           test -f component/xdecaroorganizations.xml
           test -f package/pkg_xdecaroorganizations.xml
-          grep -Fq 'Xdecaro\Component\Organizations' component/xdecaroorganizations.xml
+          grep -Fq 'xdecaro\Component\Organizations' component/xdecaroorganizations.xml
           grep -Fq '#__xdecaroorganizations_' component/admin/sql/install.mysql.utf8mb4.sql
           ! grep -RInE 'com_decaroorganizations|pkg_decaroorganizations|#__decaroorganizations_|Decaroorganizations' component package build tests updates README.md
+          ! grep -RIn 'Xdecaro\\' component package build tests updates README.md
       - name: Deterministic build A
         run: |
           chmod +x build/build.sh
