@@ -1,10 +1,10 @@
 <?php
-namespace Xdecaro\Component\Decaroorganizations\Administrator\Service;
+namespace Xdecaro\Component\Organizations\Administrator\Service;
 defined('_JEXEC') or die;
 use Joomla\CMS\WebAsset\WebAssetManager;
 final class CoreIntegrationService
 {
-    public const COMPONENT = 'com_decaroorganizations';
+    public const COMPONENT = 'com_xdecaroorganizations';
     public const MINIMUM_CORE = '1.1.0';
     public function getVersion(): string { return class_exists(\Xdecaro\Core\Version::class) ? trim((string) \Xdecaro\Core\Version::VERSION) : ''; }
     public function isReferenceApiAvailable(): bool { return class_exists(\Xdecaro\Core\Integration\EntityReference::class) && class_exists(\Xdecaro\Core\Integration\RelationReference::class); }
