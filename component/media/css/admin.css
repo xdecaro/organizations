@@ -1,0 +1,4 @@
+.decaroorganizations-dashboard { max-width: 1100px; }
+.decaroorganizations-diagnostics { display:grid; grid-template-columns:minmax(10rem,14rem) 1fr; gap:.5rem 1rem; margin:1rem 0 0; }
+.decaroorganizations-diagnostics dt { font-weight:600; }
+@media (max-width:640px) { .decaroorganizations-diagnostics { grid-template-columns:1fr; } }

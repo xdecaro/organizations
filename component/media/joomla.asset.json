@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "com_decaroorganizations",
+  "version": "0.1.0",
+  "assets": [{"name":"com_decaroorganizations.admin","type":"style","uri":"com_decaroorganizations/css/admin.css"}]
+}
