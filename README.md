@@ -6,7 +6,7 @@ Joomla component for organization master data in the xdecaro ecosystem.
 
 - Component: `com_xdecaroorganizations`
 - Package: `pkg_xdecaroorganizations`
-- PHP namespace: `Xdecaro\Component\Organizations`
+- PHP namespace: `xdecaro\Component\Organizations`
 - Database tables: `#__xdecaroorganizations_*`
 - Current prerelease line: `0.2.0`
 

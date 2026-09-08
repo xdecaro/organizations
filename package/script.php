@@ -15,7 +15,7 @@ final class PkgOrganizationsInstallerScript
     }
     private function getInstalledCoreVersion(): string
     {
-        if (class_exists(\Xdecaro\Core\Version::class)) return trim((string) \Xdecaro\Core\Version::VERSION);
+        if (class_exists(\xdecaro\Core\Version::class)) return trim((string) \xdecaro\Core\Version::VERSION);
         try { $db=Factory::getContainer()->get(DatabaseInterface::class); $query=$db->getQuery(true)->select($db->quoteName('manifest_cache'))->from($db->quoteName('#__extensions'))->where($db->quoteName('type').' = '.$db->quote('package'))->where($db->quoteName('element').' = '.$db->quote('pkg_xdecarocore')); $cache=(string)$db->setQuery($query,0,1)->loadResult(); $manifest=json_decode($cache,true); return is_array($manifest)?trim((string)($manifest['version']??'')):''; } catch (\Throwable) { return ''; }
     }
 }
