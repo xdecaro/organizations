@@ -2,7 +2,7 @@
 defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
-final class PkgDecaroorganizationsInstallerScript
+final class PkgOrganizationsInstallerScript
 {
     private const MINIMUM_CORE='1.1.0';
     public function preflight($type,$parent): bool
