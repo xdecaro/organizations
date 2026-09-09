@@ -1,22 +1,4 @@
 <?php
 namespace xdecaro\Component\Organizations\Administrator\Service;
-defined('_JEXEC') or die;
-use Joomla\CMS\WebAsset\WebAssetManager;
-final class CoreIntegrationService
-{
-    public const COMPONENT = 'com_xdecaroorganizations';
-    public const MINIMUM_CORE = '1.1.0';
-    public function getVersion(): string { return class_exists(\xdecaro\Core\Version::class) ? trim((string) \xdecaro\Core\Version::VERSION) : ''; }
-    public function isReferenceApiAvailable(): bool { return class_exists(\xdecaro\Core\Integration\EntityReference::class) && class_exists(\xdecaro\Core\Integration\RelationReference::class); }
-    public function enableUi(WebAssetManager $webAssets): bool
-    {
-        $version = $this->getVersion();
-        if ($version === '' || version_compare($version, self::MINIMUM_CORE, '<') || !class_exists(\xdecaro\Core\Asset\AssetService::class)) { return false; }
-        try { return (new \xdecaro\Core\Asset\AssetService())->useComponents($webAssets); } catch (\Throwable) { return false; }
-    }
-    public function createEntityReference(int|string $id): object
-    {
-        if (!$this->isReferenceApiAvailable()) { throw new \RuntimeException('Core by xdecaro reference API is unavailable.'); }
-        return new \xdecaro\Core\Integration\EntityReference(self::COMPONENT, 'organization', $id);
-    }
-}
+defined('_JEXEC') or die;use Joomla\CMS\WebAsset\WebAssetManager;use xdecaro\Core\Integration\Capability;use xdecaro\Core\Integration\CapabilityRegistry;use xdecaro\Core\Integration\EntityReference;
+final class CoreIntegrationService{public const COMPONENT='com_xdecaroorganizations';public const MINIMUM_CORE='1.4.0';public function getVersion():string{return class_exists(\xdecaro\Core\Version::class)?trim((string)\xdecaro\Core\Version::VERSION):'';}public function enableUi(WebAssetManager $w):bool{$v=$this->getVersion();if($v===''||version_compare($v,self::MINIMUM_CORE,'<')||!class_exists(\xdecaro\Core\Asset\AssetService::class))return false;try{return (new \xdecaro\Core\Asset\AssetService())->useComponents($w);}catch(\Throwable){return false;}}public function createEntityReference(int|string $id):EntityReference{if(!class_exists(EntityReference::class))throw new \RuntimeException('Core reference API unavailable.');return new EntityReference(self::COMPONENT,'organization',$id);}public function registerCapabilities(CapabilityRegistry $r):void{$r->registerMany([new Capability(self::COMPONENT,'organizations.provider','1.0.0'),new Capability(self::COMPONENT,'organizations.query','1.0.0'),new Capability(self::COMPONENT,'organizations.hierarchy','1.0.0'),new Capability(self::COMPONENT,'organizations.duplicates','1.0.0')]);}}
