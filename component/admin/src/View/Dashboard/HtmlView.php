@@ -1,24 +1,3 @@
 <?php
 namespace xdecaro\Component\Organizations\Administrator\View\Dashboard;
-defined('_JEXEC') or die;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
-use Joomla\CMS\Toolbar\ToolbarHelper;
-use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService;
-final class HtmlView extends BaseHtmlView
-{
-    public bool $coreUiActive = false;
-    public string $coreVersion = '';
-    public function display($tpl = null): void
-    {
-        $app = Factory::getApplication();
-        if (!$app->getIdentity()->authorise('core.manage', 'com_xdecaroorganizations')) { throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403); }
-        ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS'), 'grid-2');
-        $wa = $app->getDocument()->getWebAssetManager();
-        $wa->getRegistry()->addExtensionRegistryFile('com_xdecaroorganizations');
-        try { $core = Factory::getContainer()->get(CoreIntegrationService::class); $this->coreVersion = $core->getVersion(); $this->coreUiActive = $core->enableUi($wa); } catch (\Throwable) { $this->coreUiActive = false; }
-        $wa->useStyle('com_xdecaroorganizations.admin');
-        parent::display($tpl);
-    }
-}
+defined('_JEXEC') or die;use Joomla\CMS\Factory;use Joomla\CMS\Language\Text;use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;use Joomla\CMS\Toolbar\ToolbarHelper;use Joomla\Database\DatabaseInterface;use xdecaro\Component\Organizations\Administrator\Extension\OrganizationsComponent;final class HtmlView extends BaseHtmlView{public int $total=0;public function display($tpl=null):void{$app=Factory::getApplication();if(!$app->getIdentity()->authorise('core.manage','com_xdecaroorganizations'))throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'),403);$db=Factory::getContainer()->get(DatabaseInterface::class);$q=$db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__xdecaroorganizations_organizations'))->where($db->quoteName('state').' >= 0');$this->total=(int)$db->setQuery($q)->loadResult();$c=$app->bootComponent('com_xdecaroorganizations');if($c instanceof OrganizationsComponent)$c->getCoreIntegrationService()->enableUi($this->document->getWebAssetManager());$this->document->getWebAssetManager()->useStyle('com_xdecaroorganizations.admin');ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_DASHBOARD'),'building');parent::display($tpl);}}
