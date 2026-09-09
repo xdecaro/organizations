@@ -1,5 +1,4 @@
 <?php
 namespace xdecaro\Component\Organizations\Administrator\Extension;
-defined('_JEXEC') or die;
-use Joomla\CMS\Extension\MVCComponent;
-final class OrganizationsComponent extends MVCComponent {}
+defined('_JEXEC') or die;use Joomla\CMS\Extension\MVCComponent;use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService;use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
+final class OrganizationsComponent extends MVCComponent{private ?CoreIntegrationService $core=null;private ?OrganizationProviderService $provider=null;private ?DuplicateService $duplicates=null;public function setCoreIntegrationService(CoreIntegrationService $s):void{$this->core=$s;}public function getCoreIntegrationService():CoreIntegrationService{return $this->core??=new CoreIntegrationService();}public function setOrganizationProviderService(OrganizationProviderService $s):void{$this->provider=$s;}public function getOrganizationProviderService():OrganizationProviderService{if(!$this->provider)throw new \RuntimeException('Organizations provider not initialized.');return $this->provider;}public function setDuplicateService(DuplicateService $s):void{$this->duplicates=$s;}public function getDuplicateService():DuplicateService{if(!$this->duplicates)throw new \RuntimeException('Duplicate service not initialized.');return $this->duplicates;}}
