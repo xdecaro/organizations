@@ -1,6 +1,2 @@
 <?php
-declare(strict_types=1);
-$service=file_get_contents(__DIR__.'/../component/admin/src/Service/CoreIntegrationService.php');
-if ($service===false) exit(1);
-foreach (['xdecaro\\Core\\Integration\\EntityReference','xdecaro\\Core\\Integration\\RelationReference','xdecaro\\Core\\Asset\\AssetService','com_xdecaroorganizations'] as $needle) { if (!str_contains($service,$needle)) { fwrite(STDERR,"Missing Core integration marker: $needle\n"); exit(1); } }
-echo "Core integration smoke: OK\n";
+$core=file_get_contents(__DIR__.'/../component/admin/src/Service/CoreIntegrationService.php');foreach(["MINIMUM_CORE='1.4.0'",'organizations.provider','organizations.query','organizations.hierarchy','organizations.duplicates','CapabilityRegistry','EntityReference'] as $m){if(!str_contains($core,$m)){fwrite(STDERR,"Missing $m\n");exit(1);}}$provider=file_get_contents(__DIR__.'/../component/admin/src/Service/OrganizationProviderService.php');if(str_contains($provider,'#__decaro')&&!str_contains($provider,'#__xdecaroorganizations_'))exit(1);echo "Organizations integration smoke OK\n";
