@@ -14,14 +14,14 @@ jobs:
         with: {php-version: '8.3', coverage: none}
       - name: Build stable release
         run: |
-          set -euo pipefail; V="$(cat VERSION)"; test "$V" = '1.0.5'; find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; chmod +x build/build.sh; build/build.sh; cp dist/SHA256SUMS.txt /tmp/sums; build/build.sh; diff -u /tmp/sums dist/SHA256SUMS.txt
+          set -euo pipefail; V="$(cat VERSION)"; test "$V" = '1.0.6'; find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; chmod +x build/build.sh; build/build.sh; cp dist/SHA256SUMS.txt /tmp/sums; build/build.sh; diff -u /tmp/sums dist/SHA256SUMS.txt
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
       - name: Publish release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: |
-          V="$(cat VERSION)"; gh release create "v${V}" dist/com_xdecaroorganizations_${V}.zip dist/pkg_xdecaroorganizations_${V}.zip dist/SHA256SUMS.txt --title "Organizations by xdecaro ${V}" --notes "Organizations 1.0.5: fixes the Information page so the Organizations version is read dynamically from Joomla's installed extension manifest instead of remaining hard-coded at 1.0.0."
+          V="$(cat VERSION)"; gh release create "v${V}" dist/com_xdecaroorganizations_${V}.zip dist/pkg_xdecaroorganizations_${V}.zip dist/SHA256SUMS.txt --title "Organizations by xdecaro ${V}" --notes "Organizations 1.0.6: fixes Pubblica, Sospendi and Cestinato state actions by mapping Joomla's published field to Organizations state, and keeps bulk-action redirects on com_xdecaroorganizations."
       - name: Publish update metadata and checksum
         run: |
           V="$(cat VERSION)"; SHA="$(sha256sum "dist/pkg_xdecaroorganizations_${V}.zip"|awk '{print $1}')"; python3 - "$V" "$SHA" <<'PY'
