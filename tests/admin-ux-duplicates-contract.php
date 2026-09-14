@@ -24,9 +24,21 @@ foreach (['N_ITEMS_PUBLISHED', 'N_ITEMS_UNPUBLISHED', 'N_ITEMS_TRASHED', 'N_ITEM
     }
 }
 
-if (!str_contains($layout, 'xdecaro-search-row') || !str_contains($layout, 'col-12')) {
-    fwrite(STDERR, "Organizations search must use a full-width search row.\n");
+if (!str_contains($layout, 'xdecaro-filter-toolbar')) {
+    fwrite(STDERR, "Organizations filters must use one unified toolbar row.\n");
     exit(1);
+}
+
+if (str_contains($layout, 'xdecaro-search-row')) {
+    fwrite(STDERR, "Organizations search must not use a separate desktop row.\n");
+    exit(1);
+}
+
+foreach (['col-12 col-lg-5', 'col-12 col-sm-6 col-lg-3', 'col-12 col-sm-3 col-lg-2'] as $classSet) {
+    if (!str_contains($layout, $classSet)) {
+        fwrite(STDERR, "Organizations unified filter toolbar is missing responsive layout {$classSet}.\n");
+        exit(1);
+    }
 }
 
 echo "Organizations admin UX and duplicates contract OK\n";

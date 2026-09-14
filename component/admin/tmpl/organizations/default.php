@@ -9,13 +9,11 @@ HTMLHelper::_('behavior.multiselect');
 ?>
 <form action="<?php echo Route::_('index.php?option=com_xdecaroorganizations&view=organizations'); ?>" method="post" name="adminForm" id="adminForm">
     <div class="xdecaro-scope">
-        <div class="row g-2 mb-2 xdecaro-search-row">
-            <div class="col-12">
+        <div class="row g-2 mb-3 xdecaro-filter-toolbar">
+            <div class="col-12 col-lg-5">
                 <input type="search" name="filter_search" class="form-control w-100" value="<?php echo $this->escape((string) $this->state->get('filter.search')); ?>" placeholder="<?php echo Text::_('JSEARCH_FILTER'); ?>">
             </div>
-        </div>
-        <div class="row g-2 mb-3">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <select name="filter_type" class="form-select" onchange="this.form.submit()">
                     <option value=""><?php echo Text::_('COM_XDECAROORGANIZATIONS_ALL_TYPES'); ?></option>
                     <?php foreach (['organization', 'association', 'club', 'federation', 'company', 'public_body', 'school', 'sponsor', 'supplier'] as $type) : ?>
@@ -23,7 +21,7 @@ HTMLHelper::_('behavior.multiselect');
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-sm-3 col-lg-2">
                 <select name="filter_state" class="form-select" onchange="this.form.submit()">
                     <option value=""><?php echo Text::_('JOPTION_SELECT_PUBLISHED'); ?></option>
                     <option value="1" <?php echo (string) $this->state->get('filter.state') === '1' ? 'selected' : ''; ?>><?php echo Text::_('JPUBLISHED'); ?></option>
@@ -31,7 +29,7 @@ HTMLHelper::_('behavior.multiselect');
                     <option value="-2" <?php echo (string) $this->state->get('filter.state') === '-2' ? 'selected' : ''; ?>><?php echo Text::_('JTRASHED'); ?></option>
                 </select>
             </div>
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-sm-3 col-lg-2">
                 <button class="btn btn-primary w-100" type="submit"><?php echo Text::_('JSEARCH_FILTER_SUBMIT'); ?></button>
             </div>
         </div>
