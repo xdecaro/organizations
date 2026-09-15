@@ -1,20 +1,45 @@
 <?php
+
+define('_JEXEC', 1);
+
 $root = dirname(__DIR__);
 $model = file_get_contents($root . '/component/admin/src/Model/OrganizationModel.php');
+$form = file_get_contents($root . '/component/admin/forms/organization.xml');
+$fieldPath = $root . '/component/admin/src/Field/OrganizationParentField.php';
+$field = is_file($fieldPath) ? file_get_contents($fieldPath) : '';
 
-$hasCurrentIdLookup = str_contains($model, "getInt('id')") || str_contains($model, 'getInt("id")');
-$hasDynamicParentQuery = str_contains($model, "setFieldAttribute('parent_id'") || str_contains($model, 'setFieldAttribute("parent_id"');
-$excludesCurrentId = str_contains($model, 'id <>') || str_contains($model, "' <> '") || str_contains($model, '" <> "');
-$hasDescendantTraversal = str_contains($model, 'descendant') || str_contains($model, 'Descendant');
-$excludesDescendantIds = str_contains($model, 'NOT IN') || str_contains($model, 'notIn');
+require_once $root . '/component/admin/src/Service/OrganizationHierarchy.php';
 
-if (!$hasCurrentIdLookup || !$hasDynamicParentQuery || !$excludesCurrentId) {
-    fwrite(STDERR, "Editing an organization must remove the current record from the parent organization choices.\n");
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationHierarchy;
+
+$items = [
+    (object) ['id' => 1, 'parent_id' => 0, 'name' => 'ENS'],
+    (object) ['id' => 2, 'parent_id' => 1, 'name' => 'Consiglio Regionale ENS Lazio'],
+    (object) ['id' => 3, 'parent_id' => 2, 'name' => 'Sezione Provinciale ENS Roma'],
+    (object) ['id' => 4, 'parent_id' => 1, 'name' => 'Consiglio Regionale ENS Campania'],
+];
+
+$descendantIds = method_exists(OrganizationHierarchy::class, 'descendantIds')
+    ? OrganizationHierarchy::descendantIds($items, 2)
+    : [];
+sort($descendantIds);
+
+$usesHierarchicalParentField = str_contains($form, 'name="parent_id" type="OrganizationParent"');
+$fieldUsesHierarchy = str_contains($field, 'OrganizationHierarchy::order')
+    && str_contains($field, 'OrganizationHierarchy::descendantIds')
+    && str_contains($field, 'hierarchy_depth')
+    && str_contains($field, '↳')
+    && str_contains($field, '\\u{00A0}');
+$excludesCurrentRecord = str_contains($field, '$currentId')
+    && str_contains($field, '$item->id');
+
+if (!$usesHierarchicalParentField || !$fieldUsesHierarchy || !$excludesCurrentRecord) {
+    fwrite(STDERR, "Parent organization choices must use a dedicated hierarchical field with progressive labels.\n");
     exit(1);
 }
 
-if (!$hasDescendantTraversal || !$excludesDescendantIds) {
-    fwrite(STDERR, "Editing an organization must also remove all descendants from the parent organization choices.\n");
+if ($descendantIds !== [3]) {
+    fwrite(STDERR, "Parent organization choices must exclude all descendants of the record being edited.\n");
     exit(1);
 }
 
@@ -23,4 +48,4 @@ if (!str_contains($model, 'validParent')) {
     exit(1);
 }
 
-echo "Organizations parent self/descendant option contract OK\n";
+echo "Organizations hierarchical parent option contract OK\n";

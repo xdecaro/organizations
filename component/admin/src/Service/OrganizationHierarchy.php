@@ -7,6 +7,53 @@ defined('_JEXEC') or die;
 final class OrganizationHierarchy
 {
     /**
+     * Returns all descendant ids for a record in the supplied organization set.
+     *
+     * @param array<int, object> $items
+     * @return array<int, int>
+     */
+    public static function descendantIds(array $items, int $id): array
+    {
+        if ($id < 1 || $items === []) {
+            return [];
+        }
+
+        $childrenByParent = [];
+        foreach ($items as $item) {
+            $parentId = (int) ($item->parent_id ?? 0);
+            $childId = (int) ($item->id ?? 0);
+
+            if ($childId > 0) {
+                $childrenByParent[$parentId][] = $childId;
+            }
+        }
+
+        $seen = [$id => true];
+        $frontier = [$id];
+        $descendants = [];
+
+        for ($depth = 0; $depth < 100 && $frontier !== []; $depth++) {
+            $next = [];
+
+            foreach ($frontier as $parentId) {
+                foreach ($childrenByParent[$parentId] ?? [] as $childId) {
+                    if (isset($seen[$childId])) {
+                        continue;
+                    }
+
+                    $seen[$childId] = true;
+                    $descendants[] = $childId;
+                    $next[] = $childId;
+                }
+            }
+
+            $frontier = $next;
+        }
+
+        return $descendants;
+    }
+
+    /**
      * Orders a filtered organization result set as a tree and annotates each
      * object with hierarchy_depth. Parents that are not part of the filtered
      * result are treated as roots so searches and filters remain readable.

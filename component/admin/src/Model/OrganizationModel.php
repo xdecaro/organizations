@@ -31,31 +31,6 @@ final class OrganizationModel extends AdminModel
         }
 
         $app = Factory::getApplication();
-        $currentId = 0;
-
-        if (is_array($data)) {
-            $currentId = (int) ($data['id'] ?? 0);
-        } elseif (is_object($data)) {
-            $currentId = (int) ($data->id ?? 0);
-        }
-
-        if ($currentId < 1) {
-            $currentId = $app->getInput()->getInt('id');
-        }
-
-        if ($currentId > 0) {
-            $descendantIds = $this->getDescendantIds($currentId);
-            $parentQuery = 'SELECT id AS value, name AS text FROM #__xdecaroorganizations_organizations'
-                . ' WHERE state >= 0 AND id <> ' . $currentId;
-
-            if ($descendantIds !== []) {
-                $parentQuery .= ' AND id NOT IN (' . implode(',', $descendantIds) . ')';
-            }
-
-            $parentQuery .= ' ORDER BY name';
-            $form->setFieldAttribute('parent_id', 'query', $parentQuery);
-        }
-
         $user = $app->getIdentity();
 
         if (
@@ -118,42 +93,6 @@ final class OrganizationModel extends AdminModel
     protected function canEditState($record): bool
     {
         return Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecaroorganizations');
-    }
-
-    private function getDescendantIds(int $id): array
-    {
-        if ($id < 1) {
-            return [];
-        }
-
-        $db = $this->getDatabase();
-        $seen = [$id => true];
-        $frontier = [$id];
-        $descendants = [];
-
-        for ($depth = 0; $depth < 100 && $frontier !== []; $depth++) {
-            $query = $db->getQuery(true)
-                ->select($db->quoteName('id'))
-                ->from($db->quoteName('#__xdecaroorganizations_organizations'))
-                ->where($db->quoteName('parent_id') . ' IN (' . implode(',', array_map('intval', $frontier)) . ')');
-
-            $children = array_map('intval', (array) $db->setQuery($query)->loadColumn());
-            $next = [];
-
-            foreach ($children as $childId) {
-                if ($childId < 1 || isset($seen[$childId])) {
-                    continue;
-                }
-
-                $seen[$childId] = true;
-                $descendants[] = $childId;
-                $next[] = $childId;
-            }
-
-            $frontier = $next;
-        }
-
-        return $descendants;
     }
 
     private function validParent(int $id, int $parent): bool
