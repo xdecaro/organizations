@@ -13,9 +13,9 @@ $organizationHeading = $organizationName !== ''
     : Text::_('COM_XDECAROORGANIZATIONS_ORGANIZATION_NEW');
 ?>
 <form action="<?php echo Route::_('index.php?option=com_xdecaroorganizations&layout=edit&id=' . (int) ($this->item->id ?? 0)); ?>" method="post" name="adminForm" id="organization-form" class="form-validate">
-    <div class="xdecaro-scope">
-        <div class="mb-3">
-            <h2 class="h3 mb-0"><?php echo $organizationHeading; ?></h2>
+    <div class="xdecaro-scope xdecaro-organizations-organization-edit">
+        <div class="xdecaro-organization-heading">
+            <h2><?php echo $organizationHeading; ?></h2>
         </div>
         <?php
         echo HTMLHelper::_('uitab.startTabSet', 'organizationTabs', ['active' => 'identity']);
