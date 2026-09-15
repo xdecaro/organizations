@@ -38,6 +38,26 @@ if (!is_array($asset) || ($asset['version'] ?? '') !== $version) {
     exit(1);
 }
 
+$assetsByName = [];
+foreach (($asset['assets'] ?? []) as $item) {
+    if (is_array($item) && isset($item['name'])) {
+        $assetsByName[(string) $item['name']] = $item;
+    }
+}
+
+$adminStyleUri = (string) ($assetsByName['com_xdecaroorganizations.admin']['uri'] ?? '');
+$editScriptUri = (string) ($assetsByName['com_xdecaroorganizations.organization-edit']['uri'] ?? '');
+
+if ($adminStyleUri !== 'com_xdecaroorganizations/admin.css') {
+    fwrite(STDERR, "Organizations admin style URI must omit the css subdirectory because Joomla adds it for style assets.\n");
+    exit(1);
+}
+
+if ($editScriptUri !== 'com_xdecaroorganizations/organization-edit.js') {
+    fwrite(STDERR, "Organizations edit script URI must omit the js subdirectory because Joomla adds it for script assets.\n");
+    exit(1);
+}
+
 if (!str_contains($build, 'joomla.asset.json')
     || !str_contains($build, '$data["version"] = $version;')
     || !str_contains($build, '"$WORK/component/media/joomla.asset.json" "$VERSION"')) {
