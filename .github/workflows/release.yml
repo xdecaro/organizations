@@ -14,14 +14,14 @@ jobs:
         with: {php-version: '8.3', coverage: none}
       - name: Build stable release
         run: |
-          set -euo pipefail; V="$(cat VERSION)"; test "$V" = '1.0.9'; find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; chmod +x build/build.sh; build/build.sh; cp dist/SHA256SUMS.txt /tmp/sums; build/build.sh; diff -u /tmp/sums dist/SHA256SUMS.txt
+          set -euo pipefail; V="$(cat VERSION)"; test "$V" = '1.0.10'; find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php; chmod +x build/build.sh; build/build.sh; cp dist/SHA256SUMS.txt /tmp/sums; build/build.sh; diff -u /tmp/sums dist/SHA256SUMS.txt
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
       - name: Publish release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: |
-          V="$(cat VERSION)"; gh release create "v${V}" dist/com_xdecaroorganizations_${V}.zip dist/pkg_xdecaroorganizations_${V}.zip dist/SHA256SUMS.txt --title "Organizations by xdecaro ${V}" --notes "Organizations 1.0.9: removes the permanent Delete action from the Organizations toolbar while keeping recoverable trashing through Cestinato."
+          V="$(cat VERSION)"; gh release create "v${V}" dist/com_xdecaroorganizations_${V}.zip dist/pkg_xdecaroorganizations_${V}.zip dist/SHA256SUMS.txt --title "Organizations by xdecaro ${V}" --notes "Organizations 1.0.10: hides the organization currently being edited from the Organizzazione superiore choices while retaining backend cycle validation."
       - name: Publish update metadata and checksum
         run: |
           V="$(cat VERSION)"; SHA="$(sha256sum "dist/pkg_xdecaroorganizations_${V}.zip"|awk '{print $1}')"; python3 - "$V" "$SHA" <<'PY'
