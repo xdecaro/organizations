@@ -1,0 +1,2 @@
+-- Organizations 1.0.18: release marker for Joomla schema version tracking.
+-- No database schema changes are required for this release.
