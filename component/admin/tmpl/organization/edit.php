@@ -1,1 +1,36 @@
-<?php defined('_JEXEC') or die;use Joomla\CMS\HTML\HTMLHelper;use Joomla\CMS\Language\Text;use Joomla\CMS\Router\Route;HTMLHelper::_('behavior.formvalidator');?><form action="<?php echo Route::_('index.php?option=com_xdecaroorganizations&layout=edit&id='.(int)($this->item->id??0));?>" method="post" name="adminForm" id="organization-form" class="form-validate"><div class="xdecaro-scope"><?php echo HTMLHelper::_('uitab.startTabSet','organizationTabs',['active'=>'identity']);echo HTMLHelper::_('uitab.addTab','organizationTabs','identity',Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_IDENTITY'));echo $this->form->renderFieldset('identity');echo HTMLHelper::_('uitab.endTab');echo HTMLHelper::_('uitab.addTab','organizationTabs','contacts',Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS'));echo $this->form->renderFieldset('contacts');echo HTMLHelper::_('uitab.endTab');echo HTMLHelper::_('uitab.addTab','organizationTabs','publishing',Text::_('JGLOBAL_FIELDSET_PUBLISHING'));echo $this->form->renderFieldset('publishing');echo HTMLHelper::_('uitab.endTab');echo HTMLHelper::_('uitab.endTabSet');?></div><input type="hidden" name="task" value=""><?php echo HTMLHelper::_('form.token');?></form>
+<?php
+defined('_JEXEC') or die;
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
+HTMLHelper::_('behavior.formvalidator');
+
+$organizationName = trim((string) ($this->item->name ?? ''));
+$organizationHeading = $organizationName !== ''
+    ? $this->escape($organizationName)
+    : Text::_('COM_XDECAROORGANIZATIONS_ORGANIZATION_NEW');
+?>
+<form action="<?php echo Route::_('index.php?option=com_xdecaroorganizations&layout=edit&id=' . (int) ($this->item->id ?? 0)); ?>" method="post" name="adminForm" id="organization-form" class="form-validate">
+    <div class="xdecaro-scope">
+        <div class="mb-3">
+            <h2 class="h4 mb-0"><?php echo $organizationHeading; ?></h2>
+        </div>
+        <?php
+        echo HTMLHelper::_('uitab.startTabSet', 'organizationTabs', ['active' => 'identity']);
+        echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'identity', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_IDENTITY'));
+        echo $this->form->renderFieldset('identity');
+        echo HTMLHelper::_('uitab.endTab');
+        echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'contacts', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS'));
+        echo $this->form->renderFieldset('contacts');
+        echo HTMLHelper::_('uitab.endTab');
+        echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING'));
+        echo $this->form->renderFieldset('publishing');
+        echo HTMLHelper::_('uitab.endTab');
+        echo HTMLHelper::_('uitab.endTabSet');
+        ?>
+    </div>
+    <input type="hidden" name="task" value="">
+    <?php echo HTMLHelper::_('form.token'); ?>
+</form>
