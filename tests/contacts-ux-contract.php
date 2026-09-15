@@ -4,6 +4,8 @@ $form = file_get_contents($root . '/component/admin/forms/organization.xml');
 $template = file_get_contents($root . '/component/admin/tmpl/organization/edit.php');
 $css = file_get_contents($root . '/component/media/css/admin.css');
 $assets = file_get_contents($root . '/component/media/joomla.asset.json');
+$view = file_get_contents($root . '/component/admin/src/View/Organization/HtmlView.php');
+$manifest = file_get_contents($root . '/component/xdecaroorganizations.xml');
 $jsPath = $root . '/component/media/js/organization-edit.js';
 $js = is_file($jsPath) ? file_get_contents($jsPath) : '';
 
@@ -23,6 +25,8 @@ $countryClass = is_file($root . '/component/admin/src/Field/CountryField.php');
 $countryMetadata = is_file($root . '/component/admin/src/Service/CountryMetadata.php');
 
 $autoLanguage = str_contains($assets, 'com_xdecaroorganizations.organization-edit')
+    && str_contains($view, "useScript('com_xdecaroorganizations.organization-edit')")
+    && str_contains($manifest, '<folder>js</folder>')
     && str_contains($js, "country.value === 'IT'")
     && str_contains($js, "language.value = 'it-IT'")
     && str_contains($js, "addEventListener('change'");
