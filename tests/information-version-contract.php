@@ -1,6 +1,7 @@
 <?php
 
-$path = __DIR__ . '/../component/admin/src/Model/InformationModel.php';
+$root = dirname(__DIR__);
+$path = $root . '/component/admin/src/Model/InformationModel.php';
 $source = file_get_contents($path);
 
 if ($source === false) {
@@ -24,6 +25,23 @@ foreach ($checks as $needle => $message) {
 
 if (preg_match("/'component_version'\\s*=>\\s*'\\d+\\.\\d+\\.\\d+'/", $source)) {
     fwrite(STDERR, "InformationModel must not hard-code the Organizations version.\n");
+    exit(1);
+}
+
+$version = trim((string) file_get_contents($root . '/VERSION'));
+$assetSource = (string) file_get_contents($root . '/component/media/joomla.asset.json');
+$asset = json_decode($assetSource, true);
+$build = (string) file_get_contents($root . '/build/build.sh');
+
+if (!is_array($asset) || ($asset['version'] ?? '') !== $version) {
+    fwrite(STDERR, "joomla.asset.json version must match VERSION so Joomla/browser asset cache changes with each release.\n");
+    exit(1);
+}
+
+if (!str_contains($build, 'joomla.asset.json')
+    || !str_contains($build, '$data["version"] = $version;')
+    || !str_contains($build, '"$WORK/component/media/joomla.asset.json" "$VERSION"')) {
+    fwrite(STDERR, "Build must synchronize joomla.asset.json version from VERSION before packaging.\n");
     exit(1);
 }
 
