@@ -16,7 +16,7 @@ jobs:
         run: find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l
       - name: Validate source
         run: |
-          test "$(cat VERSION)" = '1.0.9'; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php
+          test "$(cat VERSION)" = '1.0.9'; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
           for p in pathlib.Path('.').rglob('*.xml'): ET.parse(p)
