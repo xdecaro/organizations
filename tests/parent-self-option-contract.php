@@ -29,9 +29,9 @@ $fieldUsesHierarchy = str_contains($field, 'OrganizationHierarchy::order')
     && str_contains($field, 'OrganizationHierarchy::descendantIds')
     && str_contains($field, 'hierarchy_depth')
     && str_contains($field, '↳')
-    && str_contains($field, "\u{00A0}");
+    && str_contains($field, '\\u{00A0}');
 $excludesCurrentRecord = str_contains($field, '$currentId')
-    && (str_contains($field, '$item->id') || str_contains($field, '$item->id'));
+    && str_contains($field, '$item->id');
 
 if (!$usesHierarchicalParentField || !$fieldUsesHierarchy || !$excludesCurrentRecord) {
     fwrite(STDERR, "Parent organization choices must use a dedicated hierarchical field with progressive labels.\n");
