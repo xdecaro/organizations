@@ -8,7 +8,7 @@ $version = $argv[2];
 $data = json_decode(file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
 $data["version"] = $version;
 file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL);
-' "$WORK/component/joomla.asset.json" "$VERSION"
+' "$WORK/component/media/joomla.asset.json" "$VERSION"
 find "$WORK" -type f -exec touch -t 198001010000 {} +
 (cd "$WORK/component" && find . -type f -print0|sort -z|xargs -0 zip -X -q "$DIST/com_xdecaroorganizations_${VERSION}.zip")
 cp "$ROOT/package/pkg_xdecaroorganizations.xml" "$WORK/package/pkg_xdecaroorganizations.xml"; cp "$ROOT/package/script.php" "$WORK/package/script.php"; cp "$DIST/com_xdecaroorganizations_${VERSION}.zip" "$WORK/package/com_xdecaroorganizations.zip"; find "$WORK/package" -type f -exec touch -t 198001010000 {} +
