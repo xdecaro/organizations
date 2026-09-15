@@ -16,7 +16,7 @@ jobs:
         run: find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l
       - name: Validate source
         run: |
-          test -n "$(cat VERSION)"; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php; php tests/edit-name-heading-contract.php
+          test -n "$(cat VERSION)"; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php; php tests/edit-name-heading-contract.php; php tests/contacts-ux-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
           for p in pathlib.Path('.').rglob('*.xml'): ET.parse(p)
@@ -24,7 +24,7 @@ jobs:
           grep -Fq 'charset="utf8"' component/xdecaroorganizations.xml
           grep -Fq 'final class pkg_xdecaroorganizationsInstallerScript' package/script.php
           ! grep -RniE 'DROP[[:space:]]+TABLE|TRUNCATE[[:space:]]+TABLE' component/admin/sql
-          ! grep -RniE '#__(xdecaropeople|decarocourses|decarodocuments|decaromembership|xdecarocompetitions)_' component
+          ! grep -RniE '#__(xdecaropeople|decarocourses|decarodocuments|xdecaromembership|xdecarocompetitions)_' component
       - name: Deterministic build
         run: chmod +x build/build.sh && build/build.sh && cp dist/SHA256SUMS.txt /tmp/sums && build/build.sh && diff -u /tmp/sums dist/SHA256SUMS.txt && for z in dist/*.zip; do unzip -t "$z" >/dev/null; done
   joomla-runtime:

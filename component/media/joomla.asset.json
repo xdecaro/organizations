@@ -1,1 +1,20 @@
-{"$schema":"https://developer.joomla.org/schemas/json-schema/web_assets.json","name":"com_xdecaroorganizations","version":"1.0.0","assets":[{"name":"com_xdecaroorganizations.admin","type":"style","uri":"com_xdecaroorganizations/css/admin.css"}]}
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "com_xdecaroorganizations",
+  "version": "1.0.0",
+  "assets": [
+    {
+      "name": "com_xdecaroorganizations.admin",
+      "type": "style",
+      "uri": "com_xdecaroorganizations/css/admin.css"
+    },
+    {
+      "name": "com_xdecaroorganizations.organization-edit",
+      "type": "script",
+      "uri": "com_xdecaroorganizations/js/organization-edit.js",
+      "attributes": {
+        "defer": true
+      }
+    }
+  ]
+}
