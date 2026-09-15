@@ -40,12 +40,14 @@ $modelUsesHierarchy = str_contains($model, 'OrganizationHierarchy::order')
 
 $templateShowsHierarchy = str_contains($template, 'hierarchy_depth')
     && str_contains($template, 'xdecaro-organization-tree-name')
-    && str_contains($template, '--xdecaro-org-depth')
+    && str_contains($template, '--xdecaro-org-indent-desktop')
+    && str_contains($template, '--xdecaro-org-indent-mobile')
     && str_contains($template, '↳');
 
 $cssIndentsByDepth = str_contains($css, '.xdecaro-organization-tree-name')
-    && str_contains($css, 'var(--xdecaro-org-depth')
-    && str_contains($css, 'padding-inline-start');
+    && str_contains($css, 'var(--xdecaro-org-indent-desktop')
+    && str_contains($css, 'var(--xdecaro-org-indent-mobile')
+    && !str_contains($css, 'calc(var(--xdecaro-org-depth');
 
 $behaviorOk = $names === $expectedNames
     && $depths === $expectedDepths
@@ -55,7 +57,7 @@ $behaviorOk = $names === $expectedNames
     && (int) $orphan[0]->hierarchy_depth === 0;
 
 if (!$behaviorOk || !$modelUsesHierarchy || !$templateShowsHierarchy || !$cssIndentsByDepth) {
-    fwrite(STDERR, "Organizations list must order records as a parent/child tree, preserve cyclic/orphan records safely, paginate after tree ordering, and visibly indent each name by hierarchy depth.\n");
+    fwrite(STDERR, "Organizations list must order records as a parent/child tree, preserve cyclic/orphan records safely, paginate after tree ordering, and visibly indent each hierarchy level with browser-safe progressive spacing.\n");
     exit(1);
 }
 

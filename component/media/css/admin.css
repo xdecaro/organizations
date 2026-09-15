@@ -38,7 +38,7 @@
   align-items: center;
   gap: .4rem;
   min-height: 1.75rem;
-  padding-inline-start: calc(var(--xdecaro-org-depth, 0) * 1.5rem);
+  padding-inline-start: var(--xdecaro-org-indent-desktop, 0rem);
 }
 
 .xdecaro-organization-tree-branch {
@@ -61,6 +61,6 @@
   }
 
   .xdecaro-organization-tree-name {
-    padding-inline-start: calc(var(--xdecaro-org-depth, 0) * 1rem);
+    padding-inline-start: var(--xdecaro-org-indent-mobile, 0rem);
   }
 }
