@@ -50,7 +50,7 @@ HTMLHelper::_('behavior.multiselect');
                         <tr>
                             <td><?php echo HTMLHelper::_('grid.id', $i, (int) $item->id); ?></td>
                             <td><a href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $item->id); ?>"><?php echo $this->escape($item->name); ?></a></td>
-                            <td><?php echo $this->escape($item->type); ?></td>
+                            <td><?php echo Text::_('COM_XDECAROORGANIZATIONS_TYPE_' . strtoupper((string) $item->type)); ?></td>
                             <td><?php echo $this->escape((string) $item->parent_name); ?></td>
                             <td><?php echo (int) $item->state === 1 ? Text::_('JPUBLISHED') : ((int) $item->state === -2 ? Text::_('JTRASHED') : Text::_('JUNPUBLISHED')); ?></td>
                         </tr>

@@ -41,4 +41,9 @@ foreach (['col-12 col-lg-5', 'col-12 col-sm-6 col-lg-3', 'col-12 col-sm-3 col-lg
     }
 }
 
-echo "Organizations admin UX and duplicates contract OK\n";
+if (!str_contains($layout, 'COM_XDECAROORGANIZATIONS_TYPE_') || !str_contains($layout, 'strtoupper') || str_contains($layout, '$this->escape($item->type)')) {
+    fwrite(STDERR, "Organizations list must render translated type labels instead of raw stored values.\n");
+    exit(1);
+}
+
+echo "Organizations admin UX, translated type labels and duplicates contract OK\n";
