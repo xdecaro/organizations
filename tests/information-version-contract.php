@@ -38,7 +38,9 @@ if (!is_array($asset) || ($asset['version'] ?? '') !== $version) {
     exit(1);
 }
 
-if (!str_contains($build, 'joomla.asset.json') || !str_contains($build, 'data["version"] = version')) {
+if (!str_contains($build, 'joomla.asset.json')
+    || !str_contains($build, '$data["version"] = $version;')
+    || !str_contains($build, '"$WORK/component/joomla.asset.json" "$VERSION"')) {
     fwrite(STDERR, "Build must synchronize joomla.asset.json version from VERSION before packaging.\n");
     exit(1);
 }
