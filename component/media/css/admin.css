@@ -1,1 +1,48 @@
-.xdecaro-scope .card{background:var(--body-bg,#fff);color:var(--body-color,inherit);border-color:var(--border-color,rgba(127,127,127,.25));border-radius:.65rem}.xdecaro-scope .table{--table-bg:transparent}.xdecaro-scope a:focus-visible,.xdecaro-scope button:focus-visible,.xdecaro-scope input:focus-visible,.xdecaro-scope select:focus-visible{outline:2px solid currentColor;outline-offset:2px}@media(max-width:767.98px){.xdecaro-scope .table{font-size:.9rem}}
+.xdecaro-scope .card {
+  background: var(--body-bg, #fff);
+  color: var(--body-color, inherit);
+  border-color: var(--border-color, rgba(127, 127, 127, .25));
+  border-radius: .65rem;
+}
+
+.xdecaro-scope .table {
+  --table-bg: transparent;
+}
+
+.xdecaro-scope a:focus-visible,
+.xdecaro-scope button:focus-visible,
+.xdecaro-scope input:focus-visible,
+.xdecaro-scope select:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-heading {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: .65rem 1rem;
+  border-bottom: 1px solid var(--border-color, rgba(127, 127, 127, .25));
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-heading h2 {
+  margin: 0;
+  color: inherit;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+@media (max-width: 767.98px) {
+  .xdecaro-scope .table {
+    font-size: .9rem;
+  }
+
+  .xdecaro-organizations-organization-edit .xdecaro-organization-heading {
+    padding-inline: .75rem;
+  }
+
+  .xdecaro-organizations-organization-edit .xdecaro-organization-heading h2 {
+    font-size: 1.15rem;
+  }
+}
