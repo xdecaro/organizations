@@ -7,6 +7,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\ParameterType;
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationHierarchy;
 
 final class OrganizationsModel extends ListModel
 {
@@ -28,82 +29,12 @@ final class OrganizationsModel extends ListModel
     {
         $db = $this->getDatabase();
         $db->setQuery($this->getListQuery());
-        $items = $db->loadObjectList() ?: [];
-        $items = $this->orderHierarchy($items);
+        $items = OrganizationHierarchy::order($db->loadObjectList() ?: []);
 
         $start = max(0, (int) $this->getState('list.start', 0));
         $limit = (int) $this->getState('list.limit', 0);
 
         return $limit > 0 ? array_slice($items, $start, $limit) : $items;
-    }
-
-    private function orderHierarchy(array $items): array
-    {
-        if ($items === []) {
-            return [];
-        }
-
-        $byId = [];
-        $childrenByParent = [];
-
-        foreach ($items as $item) {
-            $id = (int) $item->id;
-            $parentId = (int) $item->parent_id;
-            $byId[$id] = $item;
-            $childrenByParent[$parentId][] = $item;
-        }
-
-        $sortByName = static function (object $left, object $right): int {
-            $nameCompare = strnatcasecmp((string) $left->name, (string) $right->name);
-
-            return $nameCompare !== 0 ? $nameCompare : ((int) $left->id <=> (int) $right->id);
-        };
-
-        foreach ($childrenByParent as &$children) {
-            usort($children, $sortByName);
-        }
-        unset($children);
-
-        $roots = [];
-        foreach ($items as $item) {
-            $parentId = (int) $item->parent_id;
-            if ($parentId === 0 || !isset($byId[$parentId])) {
-                $roots[] = $item;
-            }
-        }
-        usort($roots, $sortByName);
-
-        $ordered = [];
-        $seen = [];
-        $append = function (object $item, int $depth) use (&$append, &$ordered, &$seen, $childrenByParent): void {
-            $id = (int) $item->id;
-            if (isset($seen[$id])) {
-                return;
-            }
-
-            $seen[$id] = true;
-            $item->hierarchy_depth = min(max($depth, 0), 100);
-            $ordered[] = $item;
-
-            foreach ($childrenByParent[$id] ?? [] as $child) {
-                $append($child, $depth + 1);
-            }
-        };
-
-        foreach ($roots as $root) {
-            $append($root, 0);
-        }
-
-        // Corrupt/cyclic legacy data must never make records disappear from the list.
-        $remaining = $items;
-        usort($remaining, $sortByName);
-        foreach ($remaining as $item) {
-            if (!isset($seen[(int) $item->id])) {
-                $append($item, 0);
-            }
-        }
-
-        return $ordered;
     }
 
     protected function getListQuery(): DatabaseQuery
