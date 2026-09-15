@@ -1,17 +1,17 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "com_xdecaroorganizations",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "assets": [
     {
       "name": "com_xdecaroorganizations.admin",
       "type": "style",
-      "uri": "com_xdecaroorganizations/css/admin.css"
+      "uri": "com_xdecaroorganizations/admin.css"
     },
     {
       "name": "com_xdecaroorganizations.organization-edit",
       "type": "script",
-      "uri": "com_xdecaroorganizations/js/organization-edit.js",
+      "uri": "com_xdecaroorganizations/organization-edit.js",
       "attributes": {
         "defer": true
       }
