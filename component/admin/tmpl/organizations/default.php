@@ -51,7 +51,7 @@ HTMLHelper::_('behavior.multiselect');
                         <tr>
                             <td><?php echo HTMLHelper::_('grid.id', $i, (int) $item->id); ?></td>
                             <td>
-                                <div class="xdecaro-organization-tree-name" style="--xdecaro-org-indent-desktop: <?php echo $depth * 2; ?>rem; --xdecaro-org-indent-mobile: <?php echo $depth * 1.25; ?>rem;">
+                                <div class="xdecaro-organization-tree-name" style="--xdecaro-org-indent-desktop: <?php echo $depth * 1.5; ?>rem; --xdecaro-org-indent-mobile: <?php echo $depth * 1; ?>rem;">
                                     <?php if ($depth > 0) : ?>
                                         <span class="xdecaro-organization-tree-branch" aria-hidden="true">↳</span>
                                     <?php endif; ?>
