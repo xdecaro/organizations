@@ -1,4 +1,72 @@
 <?php
+
 namespace xdecaro\Component\Organizations\Administrator\Extension;
-defined('_JEXEC') or die;use Joomla\CMS\Extension\MVCComponent;use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService;use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
-final class OrganizationsComponent extends MVCComponent{private ?CoreIntegrationService $core=null;private ?OrganizationProviderService $provider=null;private ?DuplicateService $duplicates=null;public function setCoreIntegrationService(CoreIntegrationService $s):void{$this->core=$s;}public function getCoreIntegrationService():CoreIntegrationService{return $this->core??=new CoreIntegrationService();}public function setOrganizationProviderService(OrganizationProviderService $s):void{$this->provider=$s;}public function getOrganizationProviderService():OrganizationProviderService{if(!$this->provider)throw new \RuntimeException('Organizations provider not initialized.');return $this->provider;}public function setDuplicateService(DuplicateService $s):void{$this->duplicates=$s;}public function getDuplicateService():DuplicateService{if(!$this->duplicates)throw new \RuntimeException('Duplicate service not initialized.');return $this->duplicates;}}
+
+defined('_JEXEC') or die;
+
+use Joomla\CMS\Extension\MVCComponent;
+use RuntimeException;
+use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService;
+use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
+use xdecaro\Component\Organizations\Administrator\Service\PeopleIntegrationService;
+
+final class OrganizationsComponent extends MVCComponent
+{
+    private ?CoreIntegrationService $core = null;
+    private ?OrganizationProviderService $provider = null;
+    private ?DuplicateService $duplicates = null;
+    private ?PeopleIntegrationService $people = null;
+
+    public function setCoreIntegrationService(CoreIntegrationService $service): void
+    {
+        $this->core = $service;
+    }
+
+    public function getCoreIntegrationService(): CoreIntegrationService
+    {
+        return $this->core ??= new CoreIntegrationService();
+    }
+
+    public function setOrganizationProviderService(OrganizationProviderService $service): void
+    {
+        $this->provider = $service;
+    }
+
+    public function getOrganizationProviderService(): OrganizationProviderService
+    {
+        if (!$this->provider) {
+            throw new RuntimeException('Organizations provider not initialized.');
+        }
+
+        return $this->provider;
+    }
+
+    public function setDuplicateService(DuplicateService $service): void
+    {
+        $this->duplicates = $service;
+    }
+
+    public function getDuplicateService(): DuplicateService
+    {
+        if (!$this->duplicates) {
+            throw new RuntimeException('Duplicate service not initialized.');
+        }
+
+        return $this->duplicates;
+    }
+
+    public function setPeopleIntegrationService(PeopleIntegrationService $service): void
+    {
+        $this->people = $service;
+    }
+
+    public function getPeopleIntegrationService(): PeopleIntegrationService
+    {
+        if (!$this->people) {
+            throw new RuntimeException('People integration service not initialized.');
+        }
+
+        return $this->people;
+    }
+}
