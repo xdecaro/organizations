@@ -1,0 +1,1 @@
+-- Organizations 1.0.26: keep Members tab active after appointment actions; no database schema changes.
