@@ -101,6 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return json.data || {};
   };
 
+  const reloadMembersTab = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('activeTab', 'members');
+    window.location.assign(url.toString());
+  };
+
   const parseAppointment = (button) => {
     try {
       return JSON.parse(button.dataset.appointment || '{}');
@@ -266,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         planned_ends_on: plannedEndsOn?.value || '',
         notes: notes?.value || '',
       });
-      window.location.reload();
+      reloadMembersTab();
     } catch (error) {
       window.alert(error.message || String(error));
     }
@@ -293,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ended_on: endedOn?.value || '',
         end_note: endNote?.value || '',
       });
-      window.location.reload();
+      reloadMembersTab();
     } catch (error) {
       window.alert(error.message || String(error));
     }
@@ -307,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         await post(endpoints.delete, { id: button.dataset.appointmentId || '0' });
-        window.location.reload();
+        reloadMembersTab();
       } catch (error) {
         window.alert(error.message || String(error));
       }
