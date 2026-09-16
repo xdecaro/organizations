@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <updates>
   <update>
-    <name>Organizations by xdecaro</name>
+    <name>Organizations</name>
     <description>Reusable organization master data for Joomla.</description>
     <element>pkg_xdecaroorganizations</element>
     <type>package</type>
