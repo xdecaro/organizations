@@ -65,6 +65,13 @@ foreach (['getPeopleIntegrationService', 'OrganizationAppointments', 'peopleAvai
     }
 }
 
+foreach (['Log::add(', "enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error')", '$items === false'] as $needle) {
+    if (!str_contains($view, $needle)) {
+        fwrite(STDERR, "Appointment loading failures must be logged and surfaced: {$needle}.\n");
+        exit(1);
+    }
+}
+
 foreach (["task=appointment.searchPeople", "task=appointment.save", "task=appointment.end", 'data-duration-years', 'window.location.reload()', 'setUTCFullYear'] as $needle) {
     if (!str_contains($js, $needle)) {
         fwrite(STDERR, "Organization edit JS is missing members behavior: {$needle}.\n");
