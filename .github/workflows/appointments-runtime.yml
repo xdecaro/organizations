@@ -1,0 +1,190 @@
+name: Organizations appointments runtime
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: joomla
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: 'mysqli, zip, simplexml'
+          coverage: none
+      - name: Build current Organizations
+        run: chmod +x build/build.sh && build/build.sh
+      - name: Download verified runtime stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 'https://github.com/joomla/joomla-cms/releases/download/6.1.3/Joomla_6.1.3-Stable-Full_Package.zip' -o /tmp/joomla.zip
+          echo 'a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1  /tmp/joomla.zip' | sha256sum --check --strict
+          curl -fL --retry 3 'https://github.com/xdecaro/core/releases/download/v2.0.1/pkg_xdecarocore_2.0.1.zip' -o /tmp/core.zip
+          echo 'cec892dafeea4a0499ad1851ab0f9d0b111495c2248e0147076ad4bb648f64a9  /tmp/core.zip' | sha256sum --check --strict
+          curl -fL --retry 3 'https://github.com/xdecaro/people/releases/download/v1.2.17/pkg_xdecaropeople_1.2.17.zip' -o /tmp/people.zip
+          echo 'eb0219a31dffa83ef90d4700920f6ec1016cbfb79eeddb735be7eeeb4731db0e  /tmp/people.zip' | sha256sum --check --strict
+          mkdir joomla
+          unzip -q /tmp/joomla.zip -d joomla
+      - name: Install integration stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '\r\n' < "$GITHUB_WORKSPACE/VERSION")"
+          cd joomla
+          php installation/joomla.php install \
+            --site-name='Organizations Appointments CI' \
+            --admin-user='Integration Admin' \
+            --admin-username=admin \
+            --admin-password="OrganizationsAppointments-${GITHUB_RUN_ID}!" \
+            --admin-email=admin@example.invalid \
+            --db-type=mysqli \
+            --db-host=127.0.0.1 \
+            --db-user=root \
+            --db-pass='' \
+            --db-name=joomla \
+            --db-prefix=org_ \
+            --db-encryption=0 \
+            --no-interaction
+          php cli/joomla.php extension:install --path=/tmp/core.zip -vvv
+          php cli/joomla.php extension:install --path=/tmp/people.zip -vvv
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecaroorganizations_${VERSION}.zip" -vvv
+      - name: Save and reload appointment through Organizations models
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd joomla
+          cat > appointments-runtime-probe.php <<'PHP'
+          <?php
+          $_SERVER['HTTP_HOST'] = 'localhost';
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+
+          $container = \Joomla\CMS\Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get('JApplicationAdministrator');
+          \Joomla\CMS\Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+          $db = $container->get(\Joomla\Database\DatabaseInterface::class);
+
+          $query = $db->getQuery(true)
+              ->select($db->quoteName('id'))
+              ->from($db->quoteName('#__users'))
+              ->where($db->quoteName('username') . ' = ' . $db->quote('admin'));
+          $adminId = (int) $db->setQuery($query, 0, 1)->loadResult();
+          $userFactory = $container->get(\Joomla\CMS\User\UserFactoryInterface::class);
+          $app->loadIdentity($userFactory->loadUserById($adminId));
+
+          $organization = (object) [
+              'uuid' => '11111111-2222-4333-8444-555555555555',
+              'name' => 'Runtime Organization',
+              'type' => 'organization',
+              'state' => 1,
+              'access' => 1,
+              'created' => \Joomla\CMS\Factory::getDate()->toSql(),
+              'created_by' => $adminId,
+          ];
+          $db->insertObject('#__xdecaroorganizations_organizations', $organization, 'id');
+          $organizationId = (int) $organization->id;
+
+          $personUuid = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+          $person = (object) [
+              'uuid' => $personUuid,
+              'display_name' => 'Runtime Person',
+              'first_name' => 'Runtime',
+              'last_name' => 'Person',
+              'person_status' => 'active',
+              'source_component' => 'com_xdecaropeople',
+              'state' => 1,
+              'access' => 1,
+              'created' => \Joomla\CMS\Factory::getDate()->toSql(),
+              'created_by' => $adminId,
+          ];
+          $db->insertObject('#__xdecaropeople_people', $person, 'id');
+
+          $component = $app->bootComponent('com_xdecaroorganizations');
+          $appointmentModel = $component->getMVCFactory()->createModel(
+              'OrganizationAppointment',
+              'Administrator',
+              ['ignore_request' => true]
+          );
+          if (!$appointmentModel) {
+              fwrite(STDERR, "Unable to create OrganizationAppointment model.\n");
+              exit(1);
+          }
+
+          $appointmentId = $appointmentModel->saveAppointment([
+              'organization_id' => $organizationId,
+              'person_uuid' => $personUuid,
+              'role_code' => 'councillor',
+              'starts_on' => '2026-09-16',
+              'duration_years' => 1,
+              'planned_ends_on' => '2027-09-16',
+              'notes' => 'Runtime appointment',
+          ]);
+          if ($appointmentId < 1) {
+              fwrite(STDERR, "saveAppointment() did not return an id.\n");
+              exit(1);
+          }
+
+          $query = $db->getQuery(true)
+              ->select('*')
+              ->from($db->quoteName('#__xdecaroorganizations_appointments'))
+              ->where($db->quoteName('id') . ' = ' . (int) $appointmentId);
+          $saved = $db->setQuery($query, 0, 1)->loadAssoc();
+          if (!$saved) {
+              fwrite(STDERR, "Appointment was not persisted.\n");
+              exit(1);
+          }
+          if (($saved['person_name_snapshot'] ?? '') !== 'Runtime Person') {
+              fwrite(STDERR, "Appointment person snapshot is incorrect.\n");
+              exit(1);
+          }
+
+          $listModel = $component->getMVCFactory()->createModel(
+              'OrganizationAppointments',
+              'Administrator',
+              ['ignore_request' => true]
+          );
+          if (!$listModel) {
+              fwrite(STDERR, "Unable to create OrganizationAppointments model.\n");
+              exit(1);
+          }
+          $listModel->setOrganizationId($organizationId);
+          $items = $listModel->getItems();
+          if (count($items) !== 1) {
+              fwrite(STDERR, "Saved appointment was not returned by the Members list model.\n");
+              exit(1);
+          }
+          if ((int) $items[0]->id !== $appointmentId || ($items[0]->person_name_snapshot ?? '') !== 'Runtime Person') {
+              fwrite(STDERR, "Members list returned the wrong appointment.\n");
+              exit(1);
+          }
+
+          echo "Organizations appointment save/reload runtime OK\n";
+          PHP
+          php appointments-runtime-probe.php
