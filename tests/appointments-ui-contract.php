@@ -10,6 +10,8 @@ $js = (string) file_get_contents($root . '/component/media/js/organization-edit.
 $css = (string) file_get_contents($root . '/component/media/css/admin.css');
 $languageIt = (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.ini');
 $languageEn = (string) file_get_contents($root . '/component/admin/language/en-GB/com_xdecaroorganizations.ini');
+$languageItSys = (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.sys.ini');
+$languageEnSys = (string) file_get_contents($root . '/component/admin/language/en-GB/com_xdecaroorganizations.sys.ini');
 
 if (!preg_match('/<fieldset name="identity".*?<\/fieldset>/s', $form, $identity)
     || str_contains($identity[0], 'name="uuid"')) {
@@ -84,7 +86,7 @@ foreach ([
     }
 }
 
-foreach ([$languageIt, $languageEn] as $language) {
+foreach ([$languageIt, $languageEn, $languageItSys, $languageEnSys] as $language) {
     if (!str_contains($language, 'COM_XDECAROORGANIZATIONS="Organizations"')
         || str_contains($language, 'Organizations by xdecaro')) {
         fwrite(STDERR, "Administrator menu title must be Organizations without 'by xdecaro'.\n");
