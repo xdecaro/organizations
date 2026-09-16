@@ -25,18 +25,17 @@ final class PeopleIntegrationService
         }
 
         $limit = max(1, min(50, $limit));
-        $filters = ['search' => trim($search)];
 
         try {
             return array_values((array) $provider->searchPeople(
-                $filters,
+                ['search' => trim($search)],
                 $limit,
                 true
             ));
         } catch (Throwable) {
             try {
                 return array_values((array) $provider->searchPeople(
-                    $filters,
+                    ['search' => trim($search)],
                     $limit,
                     false
                 ));
