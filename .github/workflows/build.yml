@@ -16,7 +16,7 @@ jobs:
         run: find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l
       - name: Validate source
         run: |
-          test -n "$(cat VERSION)"; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php; php tests/edit-name-heading-contract.php; php tests/contacts-ux-contract.php; php tests/hierarchy-list-contract.php
+          test -n "$(cat VERSION)"; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php; php tests/edit-name-heading-contract.php; php tests/contacts-ux-contract.php; php tests/hierarchy-list-contract.php; php tests/appointments-schema-contract.php; php tests/appointments-domain.php; php tests/appointments-people-contract.php; php tests/appointments-backend-contract.php; php tests/appointments-ui-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
           for p in pathlib.Path('.').rglob('*.xml'): ET.parse(p)
@@ -30,7 +30,7 @@ jobs:
   joomla-runtime:
     runs-on: ubuntu-latest
     needs: validate
-    strategy: {fail-fast: false, matrix: {joomla: ['5.4.8','6.1.3']}}
+    strategy: {fail-fast: false, matrix: {joomla: ['6.1.3']}}
     services:
       mysql:
         image: mysql:8.0
@@ -46,7 +46,9 @@ jobs:
       - name: Download verified dependencies
         shell: bash
         run: |
-          set -euo pipefail; J='${{ matrix.joomla }}'; if [ "$J" = '5.4.8' ]; then JSHA='8d3585939bca8e6b1d5f3e97dda2cc557c61e610daf488c871e1f62a97be9bd0'; else JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1'; fi
+          set -euo pipefail
+          J='${{ matrix.joomla }}'
+          JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1'
           curl -fL --retry 3 "https://github.com/joomla/joomla-cms/releases/download/${J}/Joomla_${J}-Stable-Full_Package.zip" -o /tmp/joomla.zip; echo "${JSHA}  /tmp/joomla.zip"|sha256sum --check --strict
           curl -fL --retry 3 'https://github.com/xdecaro/core/releases/download/v1.4.0/pkg_xdecarocore_1.4.0.zip' -o /tmp/core.zip; echo '4248f7e3de514c2ae2402ffc8ba12845647dca1ebac963da370650e88ac45def  /tmp/core.zip'|sha256sum --check --strict
           mkdir joomla; unzip -q /tmp/joomla.zip -d joomla
@@ -63,5 +65,6 @@ jobs:
           MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_extensions WHERE type='package' AND element='pkg_xdecaroorganizations';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments';")" = 1
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM org_schemas s JOIN org_extensions e ON e.extension_id=s.extension_id WHERE e.element='com_xdecaroorganizations' LIMIT 1;")"
           test "$schema" = "$V"
