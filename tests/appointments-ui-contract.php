@@ -7,6 +7,9 @@ $membersPath = $root . '/component/admin/tmpl/organization/edit_members.php';
 $members = is_file($membersPath) ? (string) file_get_contents($membersPath) : '';
 $view = (string) file_get_contents($root . '/component/admin/src/View/Organization/HtmlView.php');
 $js = (string) file_get_contents($root . '/component/media/js/organization-edit.js');
+$css = (string) file_get_contents($root . '/component/media/css/admin.css');
+$languageIt = (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.ini');
+$languageEn = (string) file_get_contents($root . '/component/admin/language/en-GB/com_xdecaroorganizations.ini');
 
 if (!preg_match('/<fieldset name="identity".*?<\/fieldset>/s', $form, $identity)
     || str_contains($identity[0], 'name="uuid"')) {
@@ -63,6 +66,28 @@ foreach (['getPeopleIntegrationService', 'OrganizationAppointments', 'peopleAvai
 foreach (["task=appointment.searchPeople", "task=appointment.save", "task=appointment.end", 'data-duration-years', 'window.location.reload()', 'setUTCFullYear'] as $needle) {
     if (!str_contains($js, $needle)) {
         fwrite(STDERR, "Organization edit JS is missing members behavior: {$needle}.\n");
+        exit(1);
+    }
+}
+
+foreach ([
+    '#appointment-edit-modal .modal-dialog',
+    '#appointment-end-modal .modal-dialog',
+    'max-width: 720px;',
+    'align-items: center;',
+    '#appointment-edit-modal .modal-body',
+    'overflow-x: hidden;',
+] as $needle) {
+    if (!str_contains($css, $needle)) {
+        fwrite(STDERR, "Appointment modal CSS is missing {$needle}.\n");
+        exit(1);
+    }
+}
+
+foreach ([$languageIt, $languageEn] as $language) {
+    if (!str_contains($language, 'COM_XDECAROORGANIZATIONS="Organizations"')
+        || str_contains($language, 'Organizations by xdecaro')) {
+        fwrite(STDERR, "Administrator menu title must be Organizations without 'by xdecaro'.\n");
         exit(1);
     }
 }

@@ -1,0 +1,1 @@
+-- Organizations 1.0.22: UI-only release; no database schema changes.
