@@ -1,4 +1,5 @@
 <?php
+
 defined('_JEXEC') or die;
 
 use Joomla\CMS\HTML\HTMLHelper;
@@ -19,15 +20,27 @@ $organizationHeading = $organizationName !== ''
         </div>
         <?php
         echo HTMLHelper::_('uitab.startTabSet', 'organizationTabs', ['active' => 'identity']);
+
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'identity', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_IDENTITY'));
         echo $this->form->renderFieldset('identity');
         echo HTMLHelper::_('uitab.endTab');
+
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'contacts', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS'));
         echo $this->form->renderFieldset('contacts');
         echo HTMLHelper::_('uitab.endTab');
+
+        echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'members', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_MEMBERS'));
+        echo $this->loadTemplate('members');
+        echo HTMLHelper::_('uitab.endTab');
+
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'publishing', Text::_('JGLOBAL_FIELDSET_PUBLISHING'));
         echo $this->form->renderFieldset('publishing');
         echo HTMLHelper::_('uitab.endTab');
+
+        echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'system', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_SYSTEM'));
+        echo $this->form->renderFieldset('system');
+        echo HTMLHelper::_('uitab.endTab');
+
         echo HTMLHelper::_('uitab.endTabSet');
         ?>
     </div>
