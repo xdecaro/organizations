@@ -1,7 +1,7 @@
 # Organizations — Membri, cariche e mandati
 
 Data: 2026-09-16
-Stato: design approvato in chat, in attesa di revisione della specifica scritta
+Stato: specifica approvata
 
 ## Obiettivo
 
