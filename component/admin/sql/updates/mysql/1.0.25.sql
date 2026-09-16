@@ -1,0 +1,1 @@
+-- Organizations 1.0.25: add single active-appointment deletion; no database schema changes.
