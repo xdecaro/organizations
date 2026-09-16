@@ -21,7 +21,7 @@ jobs:
       - name: Publish release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: |
-          V="$(cat VERSION)"; gh release create "v${V}" dist/com_xdecaroorganizations_${V}.zip dist/pkg_xdecaroorganizations_${V}.zip dist/SHA256SUMS.txt --title "Organizations ${V}" --notes "Organizations ${V}: fixes the Members appointment workflow by initializing the Joomla MVC factory correctly. Appointments can now be saved and reloaded through the People integration; loading failures are logged and surfaced instead of appearing as an empty Members list. Joomla 6.1.x only."
+          V="$(cat VERSION)"; gh release create "v${V}" dist/com_xdecaroorganizations_${V}.zip dist/pkg_xdecaroorganizations_${V}.zip dist/SHA256SUMS.txt --title "Organizations ${V}" --notes "Organizations ${V}: adds permanent deletion of a single active appointment from Members with explicit confirmation, ACL/CSRF checks, and server-side protection that prevents deleting historical appointments. Deleting one appointment does not affect other appointments for the same person. Joomla 6.1.x only."
       - name: Publish update metadata and checksum
         run: |
           V="$(cat VERSION)"; SHA="$(sha256sum "dist/pkg_xdecaroorganizations_${V}.zip"|awk '{print $1}')"; python3 - "$V" "$SHA" <<'PY'
