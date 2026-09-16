@@ -1,0 +1,1 @@
+-- Organizations 1.0.23: administrator menu label fix; no database schema changes.
