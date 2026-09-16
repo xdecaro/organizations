@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Throwable;
@@ -81,12 +82,25 @@ final class HtmlView extends BaseHtmlView
                 ['ignore_request' => true]
             );
 
-            if ($model instanceof OrganizationAppointmentsModel) {
-                $model->setOrganizationId($organizationId);
-                $this->appointments = $model->getItems();
+            if (!$model instanceof OrganizationAppointmentsModel) {
+                throw new \RuntimeException('Unable to create OrganizationAppointments model.');
             }
-        } catch (Throwable) {
+
+            $model->setOrganizationId($organizationId);
+            $items = $model->getItems();
+            if ($items === false) {
+                throw new \RuntimeException((string) ($model->getError() ?: 'Unable to load organization appointments.'));
+            }
+
+            $this->appointments = $items;
+        } catch (Throwable $exception) {
             $this->appointments = [];
+            Log::add(
+                'Organizations appointments load failed: ' . $exception->getMessage(),
+                Log::ERROR,
+                'com_xdecaroorganizations'
+            );
+            Factory::getApplication()->enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
         }
     }
 }

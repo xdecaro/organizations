@@ -1,0 +1,1 @@
+-- Organizations 1.0.24: fix appointment MVC bootstrap and loading diagnostics; no database schema changes.
