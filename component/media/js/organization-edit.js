@@ -175,6 +175,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const formatBirthDate = (value) => {
+    const raw = String(value || '').trim();
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : raw;
+  };
+
+  const formatPersonBirthDetails = (person) => {
+    const birthDate = formatBirthDate(person.birth_date);
+    const birthPlace = String(person.birth_place || '').trim();
+    return [birthDate, birthPlace].filter(Boolean).join(' · ');
+  };
+
   const resetEdit = () => {
     if (idField) idField.value = '0';
     if (personUuid) personUuid.value = '';
@@ -243,8 +255,21 @@ document.addEventListener('DOMContentLoaded', () => {
           const option = document.createElement('button');
           option.type = 'button';
           option.className = 'list-group-item list-group-item-action';
-          option.textContent = person.name;
           option.dataset.personUuid = person.uuid;
+
+          const name = document.createElement('span');
+          name.className = 'd-block fw-semibold';
+          name.textContent = person.name;
+          option.appendChild(name);
+
+          const birthDetails = formatPersonBirthDetails(person);
+          if (birthDetails) {
+            const details = document.createElement('span');
+            details.className = 'd-block small text-body-secondary mt-1';
+            details.textContent = birthDetails;
+            option.appendChild(details);
+          }
+
           option.addEventListener('click', () => {
             if (personUuid) personUuid.value = person.uuid;
             if (personSearch) personSearch.value = person.name;
