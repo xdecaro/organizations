@@ -2,6 +2,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
@@ -12,6 +13,9 @@ $organizationName = trim((string) ($this->item->name ?? ''));
 $organizationHeading = $organizationName !== ''
     ? $this->escape($organizationName)
     : Text::_('COM_XDECAROORGANIZATIONS_ORGANIZATION_NEW');
+$allowedTabs = ['identity', 'contacts', 'members', 'publishing', 'system'];
+$requestedTab = Factory::getApplication()->getInput()->getCmd('activeTab', 'identity');
+$activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'identity';
 ?>
 <form action="<?php echo Route::_('index.php?option=com_xdecaroorganizations&layout=edit&id=' . (int) ($this->item->id ?? 0)); ?>" method="post" name="adminForm" id="organization-form" class="form-validate">
     <div class="xdecaro-scope xdecaro-organizations-organization-edit">
@@ -19,7 +23,7 @@ $organizationHeading = $organizationName !== ''
             <h2><?php echo $organizationHeading; ?></h2>
         </div>
         <?php
-        echo HTMLHelper::_('uitab.startTabSet', 'organizationTabs', ['active' => 'identity']);
+        echo HTMLHelper::_('uitab.startTabSet', 'organizationTabs', ['active' => $activeTab]);
 
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'identity', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_IDENTITY'));
         echo $this->form->renderFieldset('identity');
