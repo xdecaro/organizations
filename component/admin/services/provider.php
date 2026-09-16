@@ -47,9 +47,9 @@ return new class implements ServiceProviderInterface
             ComponentInterface::class,
             static function (Container $container): ComponentInterface {
                 $component = new OrganizationsComponent(
-                    $container->get(ComponentDispatcherFactoryInterface::class),
-                    $container->get(MVCFactoryInterface::class)
+                    $container->get(ComponentDispatcherFactoryInterface::class)
                 );
+                $component->setMVCFactory($container->get(MVCFactoryInterface::class));
                 $component->setCoreIntegrationService($container->get(CoreIntegrationService::class));
                 $component->setOrganizationProviderService($container->get(OrganizationProviderService::class));
                 $component->setDuplicateService($container->get(DuplicateService::class));
