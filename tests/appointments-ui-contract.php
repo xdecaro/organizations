@@ -43,11 +43,18 @@ if (!($positions['identity'] < $positions['contacts']
     exit(1);
 }
 
-foreach (['data-appointment-add', 'data-appointment-edit', 'data-appointment-end', 'appointment-edit-modal', 'appointment-end-modal'] as $needle) {
+foreach (['data-appointment-add', 'data-appointment-edit', 'data-appointment-end', 'data-appointment-delete', 'appointment-edit-modal', 'appointment-end-modal'] as $needle) {
     if (!str_contains($members, $needle)) {
         fwrite(STDERR, "Members UI is missing {$needle}.\n");
         exit(1);
     }
+}
+
+$historyPosition = strpos($members, 'COM_XDECAROORGANIZATIONS_MEMBERS_HISTORY');
+$deletePosition = strpos($members, 'data-appointment-delete');
+if ($historyPosition === false || $deletePosition === false || $deletePosition > $historyPosition) {
+    fwrite(STDERR, "Delete action must be offered only in the active appointments table.\n");
+    exit(1);
 }
 
 if (!str_contains($members, 'COM_XDECAROORGANIZATIONS_MEMBERS_ACTIVE')
@@ -58,7 +65,7 @@ if (!str_contains($members, 'COM_XDECAROORGANIZATIONS_MEMBERS_ACTIVE')
     exit(1);
 }
 
-foreach (['getPeopleIntegrationService', 'OrganizationAppointments', 'peopleAvailable', 'appointments'] as $needle) {
+foreach (['getPeopleIntegrationService', 'OrganizationAppointments', 'peopleAvailable', 'appointments', 'canDeleteAppointments'] as $needle) {
     if (!str_contains($view, $needle)) {
         fwrite(STDERR, "Organization view is missing members integration: {$needle}.\n");
         exit(1);
@@ -72,7 +79,7 @@ foreach (['Log::add(', "enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 
     }
 }
 
-foreach (["task=appointment.searchPeople", "task=appointment.save", "task=appointment.end", 'data-duration-years', 'window.location.reload()', 'setUTCFullYear'] as $needle) {
+foreach (["task=appointment.searchPeople", "task=appointment.save", "task=appointment.end", "task=appointment.delete", 'data-duration-years', 'data-appointment-delete', 'window.confirm', 'window.location.reload()', 'setUTCFullYear'] as $needle) {
     if (!str_contains($js, $needle)) {
         fwrite(STDERR, "Organization edit JS is missing members behavior: {$needle}.\n");
         exit(1);
@@ -90,6 +97,19 @@ foreach ([
     if (!str_contains($css, $needle)) {
         fwrite(STDERR, "Appointment modal CSS is missing {$needle}.\n");
         exit(1);
+    }
+}
+
+foreach ([$languageIt, $languageEn] as $language) {
+    foreach ([
+        'COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE=',
+        'COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE_CONFIRM=',
+        'COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETED=',
+    ] as $needle) {
+        if (!str_contains($language, $needle)) {
+            fwrite(STDERR, "Appointment delete translations are missing {$needle}.\n");
+            exit(1);
+        }
     }
 }
 
