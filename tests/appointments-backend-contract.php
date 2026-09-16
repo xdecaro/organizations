@@ -4,10 +4,12 @@ $root = dirname(__DIR__);
 $modelPath = $root . '/component/admin/src/Model/OrganizationAppointmentModel.php';
 $listPath = $root . '/component/admin/src/Model/OrganizationAppointmentsModel.php';
 $controllerPath = $root . '/component/admin/src/Controller/AppointmentController.php';
+$providerPath = $root . '/component/admin/services/provider.php';
 
 $model = is_file($modelPath) ? (string) file_get_contents($modelPath) : '';
 $list = is_file($listPath) ? (string) file_get_contents($listPath) : '';
 $controller = is_file($controllerPath) ? (string) file_get_contents($controllerPath) : '';
+$provider = is_file($providerPath) ? (string) file_get_contents($providerPath) : '';
 
 $checks = [
     [$model, 'function saveAppointment', 'Appointment model must expose saveAppointment().'],
@@ -22,6 +24,7 @@ $checks = [
     [$controller, "authorise('core.create'", 'Creating an appointment must require core.create.'],
     [$controller, "authorise('core.edit'", 'Editing/ending an appointment must require core.edit.'],
     [$controller, 'new JsonResponse', 'Appointment controller must return Joomla JSON responses.'],
+    [$provider, 'setMVCFactory($container->get(MVCFactoryInterface::class))', 'OrganizationsComponent must receive the Joomla MVC factory explicitly.'],
 ];
 
 foreach ($checks as [$source, $needle, $message]) {
@@ -38,6 +41,11 @@ if (!preg_match('/function\s+endAppointment\s*\([^)]*\).*?\n\s*}\n/s', $model, $
 
 if (str_contains($match[0], "planned_ends_on") || str_contains($match[0], "plannedEndsOn")) {
     fwrite(STDERR, "Ending an appointment must not overwrite its planned end date.\n");
+    exit(1);
+}
+
+if (preg_match('/new\s+OrganizationsComponent\s*\([^;]*MVCFactoryInterface::class/s', $provider)) {
+    fwrite(STDERR, "MVCFactory must be injected with setMVCFactory(), not as an extra constructor argument.\n");
     exit(1);
 }
 
