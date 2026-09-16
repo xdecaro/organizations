@@ -101,23 +101,36 @@ $appointmentJson = static function ($appointment): string {
                             </td>
                             <td><?php echo Text::_($statusKeys[$appointment->visual_status] ?? 'COM_XDECAROORGANIZATIONS_STATUS_ACTIVE'); ?></td>
                             <td class="text-end">
-                                <?php if ($this->canEditAppointments) : ?>
+                                <?php if ($this->canEditAppointments || $this->canDeleteAppointments) : ?>
                                     <div class="btn-group btn-group-sm flex-wrap" role="group">
-                                        <button type="button" class="btn btn-outline-secondary" data-appointment-edit data-appointment="<?php echo $appointmentJson($appointment); ?>">
-                                            <?php echo Text::_('JACTION_EDIT'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="term_end" data-appointment="<?php echo $appointmentJson($appointment); ?>">
-                                            <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_TERM'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="resignation" data-appointment="<?php echo $appointmentJson($appointment); ?>">
-                                            <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_RESIGNATION'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="revocation" data-appointment="<?php echo $appointmentJson($appointment); ?>">
-                                            <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_REVOCATION'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="forfeiture" data-appointment="<?php echo $appointmentJson($appointment); ?>">
-                                            <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_FORFEITURE'); ?>
-                                        </button>
+                                        <?php if ($this->canEditAppointments) : ?>
+                                            <button type="button" class="btn btn-outline-secondary" data-appointment-edit data-appointment="<?php echo $appointmentJson($appointment); ?>">
+                                                <?php echo Text::_('JACTION_EDIT'); ?>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="term_end" data-appointment="<?php echo $appointmentJson($appointment); ?>">
+                                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_TERM'); ?>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="resignation" data-appointment="<?php echo $appointmentJson($appointment); ?>">
+                                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_RESIGNATION'); ?>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="revocation" data-appointment="<?php echo $appointmentJson($appointment); ?>">
+                                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_REVOCATION'); ?>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="forfeiture" data-appointment="<?php echo $appointmentJson($appointment); ?>">
+                                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_FORFEITURE'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if ($this->canDeleteAppointments) : ?>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-danger"
+                                                data-appointment-delete
+                                                data-appointment-id="<?php echo (int) $appointment->id; ?>"
+                                                data-confirm="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE_CONFIRM'), ENT_QUOTES, 'UTF-8'); ?>"
+                                            >
+                                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE'); ?>
+                                            </button>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
                             </td>
