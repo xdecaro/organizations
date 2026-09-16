@@ -1,7 +1,13 @@
 <?php
 
+$domainPath = dirname(__DIR__) . '/component/admin/src/Service/AppointmentDomain.php';
+if (!is_file($domainPath)) {
+    fwrite(STDERR, "AppointmentDomain implementation is missing.\n");
+    exit(1);
+}
+
 define('_JEXEC', 1);
-require dirname(__DIR__) . '/component/admin/src/Service/AppointmentDomain.php';
+require $domainPath;
 
 use xdecaro\Component\Organizations\Administrator\Service\AppointmentDomain;
 
