@@ -70,16 +70,12 @@ foreach (["task=appointment.searchPeople", "task=appointment.save", "task=appoin
     }
 }
 
-if (!str_contains($members, 'xdecaro-appointment-modal')
-    || substr_count($members, 'modal-dialog-centered') < 2) {
-    fwrite(STDERR, "Appointment modals must use the dedicated centered layout.\n");
-    exit(1);
-}
-
 foreach ([
-    '.xdecaro-appointment-modal .modal-dialog',
+    '#appointment-edit-modal .modal-dialog',
+    '#appointment-end-modal .modal-dialog',
     'max-width: 720px;',
-    '.xdecaro-appointment-modal .modal-body',
+    'align-items: center;',
+    '#appointment-edit-modal .modal-body',
     'overflow-x: hidden;',
 ] as $needle) {
     if (!str_contains($css, $needle)) {
