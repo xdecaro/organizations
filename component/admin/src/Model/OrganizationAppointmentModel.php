@@ -143,6 +143,24 @@ final class OrganizationAppointmentModel extends AdminModel
         return true;
     }
 
+    public function deleteAppointment(int $id): bool
+    {
+        $table = $this->getTable();
+        if ($id < 1 || !$table->load($id)) {
+            throw new RuntimeException('Appointment not found.');
+        }
+
+        if (AppointmentDomain::status($table->getProperties()) !== 'active') {
+            throw new RuntimeException('Only active appointments can be deleted.');
+        }
+
+        if (!$table->delete($id)) {
+            throw new RuntimeException((string) ($table->getError() ?: 'Unable to delete appointment.'));
+        }
+
+        return true;
+    }
+
     private function organizationExists(int $organizationId): bool
     {
         if ($organizationId < 1) {

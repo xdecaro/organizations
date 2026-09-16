@@ -67,7 +67,7 @@ jobs:
           php cli/joomla.php extension:install --path=/tmp/core.zip -vvv
           php cli/joomla.php extension:install --path=/tmp/people.zip -vvv
           php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecaroorganizations_${VERSION}.zip" -vvv
-      - name: Save and reload appointment through Organizations models
+      - name: Save, reload and delete one appointment through Organizations models
         shell: bash
         run: |
           set -euo pipefail
@@ -185,6 +185,33 @@ jobs:
               exit(1);
           }
 
-          echo "Organizations appointment save/reload runtime OK\n";
+          $secondAppointmentId = $appointmentModel->saveAppointment([
+              'organization_id' => $organizationId,
+              'person_uuid' => $personUuid,
+              'role_code' => 'secretary',
+              'starts_on' => '2026-09-16',
+              'duration_years' => 2,
+              'planned_ends_on' => '2028-09-16',
+              'notes' => 'Runtime appointment that must remain',
+          ]);
+          if ($secondAppointmentId < 1 || $secondAppointmentId === $appointmentId) {
+              fwrite(STDERR, "Second appointment was not created independently.\n");
+              exit(1);
+          }
+
+          $appointmentModel->deleteAppointment($appointmentId);
+
+          $query = $db->getQuery(true)
+              ->select($db->quoteName('id'))
+              ->from($db->quoteName('#__xdecaroorganizations_appointments'))
+              ->where($db->quoteName('organization_id') . ' = ' . (int) $organizationId)
+              ->order($db->quoteName('id') . ' ASC');
+          $remainingIds = array_map('intval', $db->setQuery($query)->loadColumn());
+          if ($remainingIds !== [$secondAppointmentId]) {
+              fwrite(STDERR, 'Deleting one appointment affected the wrong rows: ' . json_encode($remainingIds) . "\n");
+              exit(1);
+          }
+
+          echo "Organizations appointment save/reload and single-row delete runtime OK\n";
           PHP
           php appointments-runtime-probe.php

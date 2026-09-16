@@ -21,6 +21,7 @@ final class HtmlView extends BaseHtmlView
     public bool $peopleAvailable = false;
     public bool $canCreateAppointments = false;
     public bool $canEditAppointments = false;
+    public bool $canDeleteAppointments = false;
 
     public function display($tpl = null): void
     {
@@ -43,6 +44,8 @@ final class HtmlView extends BaseHtmlView
         $this->canCreateAppointments = $user->authorise('core.create', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
         $this->canEditAppointments = $user->authorise('core.edit', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canDeleteAppointments = $user->authorise('core.delete', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
 
         $wa = $this->document->getWebAssetManager();

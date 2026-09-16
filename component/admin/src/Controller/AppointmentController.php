@@ -123,6 +123,29 @@ final class AppointmentController extends BaseController
         }
     }
 
+    public function delete(): void
+    {
+        if (!$this->checkPostToken()) {
+            return;
+        }
+
+        $user = Factory::getApplication()->getIdentity();
+        if (!$user->authorise('core.delete', 'com_xdecaroorganizations')
+            && !$user->authorise('core.admin', 'com_xdecaroorganizations')) {
+            $this->respond(null, Text::_('JERROR_ALERTNOAUTHOR'), true);
+            return;
+        }
+
+        try {
+            $input = Factory::getApplication()->getInput();
+            $model = $this->getModel('OrganizationAppointment', 'Administrator', ['ignore_request' => true]);
+            $model->deleteAppointment($input->post->getInt('id', 0));
+            $this->respond(['deleted' => true], Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETED'));
+        } catch (Throwable $e) {
+            $this->respond(null, $e->getMessage(), true);
+        }
+    }
+
     private function checkPostToken(): bool
     {
         if (Session::checkToken('post')) {

@@ -14,6 +14,7 @@ $provider = is_file($providerPath) ? (string) file_get_contents($providerPath) :
 $checks = [
     [$model, 'function saveAppointment', 'Appointment model must expose saveAppointment().'],
     [$model, 'function endAppointment', 'Appointment model must expose endAppointment().'],
+    [$model, 'function deleteAppointment', 'Appointment model must expose deleteAppointment() for deleting one appointment by id.'],
     [$model, 'getPeopleIntegrationService', 'Appointment model must resolve People through the Organizations service.'],
     [$model, 'getPerson($personUuid)', 'New or changed people must be resolved server-side.'],
     [$model, "'person_name_snapshot'", 'Appointment model must persist a person-name snapshot.'],
@@ -23,6 +24,8 @@ $checks = [
     [$controller, "Session::checkToken('post')", 'Appointment JSON actions must check CSRF tokens.'],
     [$controller, "authorise('core.create'", 'Creating an appointment must require core.create.'],
     [$controller, "authorise('core.edit'", 'Editing/ending an appointment must require core.edit.'],
+    [$controller, "authorise('core.delete'", 'Deleting an appointment must require core.delete.'],
+    [$controller, 'function delete', 'Appointment controller must expose a delete action.'],
     [$controller, 'new JsonResponse', 'Appointment controller must return Joomla JSON responses.'],
     [$provider, 'setMVCFactory($container->get(MVCFactoryInterface::class))', 'OrganizationsComponent must receive the Joomla MVC factory explicitly.'],
 ];
