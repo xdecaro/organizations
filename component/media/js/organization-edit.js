@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     search: 'index.php?option=com_xdecaroorganizations&task=appointment.searchPeople&format=json',
     save: 'index.php?option=com_xdecaroorganizations&task=appointment.save&format=json',
     end: 'index.php?option=com_xdecaroorganizations&task=appointment.end&format=json',
+    delete: 'index.php?option=com_xdecaroorganizations&task=appointment.delete&format=json',
   };
 
   const editModalElement = document.getElementById('appointment-edit-modal');
@@ -296,6 +297,21 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       window.alert(error.message || String(error));
     }
+  });
+
+  document.querySelectorAll('[data-appointment-delete]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (!window.confirm(button.dataset.confirm || 'Delete this appointment permanently?')) {
+        return;
+      }
+
+      try {
+        await post(endpoints.delete, { id: button.dataset.appointmentId || '0' });
+        window.location.reload();
+      } catch (error) {
+        window.alert(error.message || String(error));
+      }
+    });
   });
 
   updateCustomRole();
