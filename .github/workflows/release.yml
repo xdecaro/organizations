@@ -12,25 +12,101 @@ jobs:
         with: {fetch-depth: 0}
       - uses: shivammathur/setup-php@v2
         with: {php-version: '8.3', coverage: none}
-      - name: Build stable release
+      - name: Validate stable source
+        shell: bash
         run: |
-          set -euo pipefail; V="$(cat VERSION)"; test -n "$V"; find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php; php tests/edit-name-heading-contract.php; php tests/contacts-ux-contract.php; php tests/hierarchy-list-contract.php; php tests/appointments-schema-contract.php; php tests/appointments-domain.php; php tests/appointments-people-contract.php; php tests/appointments-people-disambiguation-contract.php; php tests/appointments-backend-contract.php; php tests/appointments-ui-contract.php; php tests/members-tab-persistence-contract.php; chmod +x build/build.sh; build/build.sh; cp dist/SHA256SUMS.txt /tmp/sums; build/build.sh; diff -u /tmp/sums dist/SHA256SUMS.txt
+          set -euo pipefail
+          V="$(cat VERSION)"
+          test -n "$V"
+          find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l
+          php tests/core-integration-smoke.php
+          php tests/joomla6-listmodel-contract.php
+          php tests/form-controller-option-contract.php
+          php tests/form-validation-contract.php
+          php tests/trashed-filter-contract.php
+          php tests/information-version-contract.php
+          php tests/state-actions-contract.php
+          php tests/admin-ux-duplicates-contract.php
+          php tests/no-delete-toolbar-contract.php
+          php tests/parent-self-option-contract.php
+          php tests/edit-name-heading-contract.php
+          php tests/contacts-ux-contract.php
+          php tests/hierarchy-list-contract.php
+          php tests/appointments-schema-contract.php
+          php tests/appointments-domain.php
+          php tests/appointments-people-contract.php
+          php tests/appointments-people-disambiguation-contract.php
+          php tests/appointments-backend-contract.php
+          php tests/appointments-ui-contract.php
+          php tests/members-tab-persistence-contract.php
+          php tests/organizations-1.0.26-canonical-package-contract.php
+      - name: Build deterministic release
+        shell: bash
+        run: |
+          set -euo pipefail
+          V="$(cat VERSION)"
+          chmod +x build/build.sh
+          build/build.sh
+          cp dist/SHA256SUMS.txt /tmp/sums
+          build/build.sh
+          diff -u /tmp/sums dist/SHA256SUMS.txt
+          unzip -t "dist/com_xdecaroorganizations_${V}.zip" >/dev/null
+          unzip -t "dist/pkg_organizations_${V}.zip" >/dev/null
+          unzip -Z1 "dist/pkg_organizations_${V}.zip" | grep -Fxq 'pkg_organizations.xml'
+          unzip -p "dist/pkg_organizations_${V}.zip" com_xdecaroorganizations.zip > /tmp/component.zip
+          unzip -p /tmp/component.zip admin/src/Service/PeopleIntegrationService.php | grep -Fq 'searchPeopleForIdentity'
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
       - name: Publish release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
+        shell: bash
         run: |
-          V="$(cat VERSION)"; gh release create "v${V}" dist/com_xdecaroorganizations_${V}.zip dist/pkg_xdecaroorganizations_${V}.zip dist/SHA256SUMS.txt --title "Organizations ${V}" --notes "Organizations ${V}: keeps the Members tab active after saving, ending or deleting an appointment and improves People autocomplete by showing birth date and birth place when the current user is authorised to view sensitive People data, with safe fallback to name-only results otherwise. Joomla 6.1.x only."
-      - name: Publish update metadata and checksum
+          set -euo pipefail
+          V="$(cat VERSION)"
+          gh release create "v${V}" \
+            "dist/com_xdecaroorganizations_${V}.zip" \
+            "dist/pkg_organizations_${V}.zip" \
+            dist/SHA256SUMS.txt \
+            --title "Organizations ${V}" \
+            --notes "Organizations ${V}: migrates the Joomla package identity to pkg_organizations, keeps the Members tab active after appointment actions, and uses People limited identity-details access to show birth date and birth place for authorised person disambiguation without requesting the full sensitive profile. Joomla 6 only."
+      - name: Publish canonical Joomla update metadata
+        shell: bash
         run: |
-          V="$(cat VERSION)"; SHA="$(sha256sum "dist/pkg_xdecaroorganizations_${V}.zip"|awk '{print $1}')"; python3 - "$V" "$SHA" <<'PY'
+          set -euo pipefail
+          V="$(cat VERSION)"
+          SHA="$(sha256sum "dist/pkg_organizations_${V}.zip"|awk '{print $1}')"
+          python3 - "$V" "$SHA" <<'PY'
           import sys,xml.etree.ElementTree as ET
           version, sha = sys.argv[1], sys.argv[2]
-          p='updates/pkg_xdecaroorganizations.xml'; t=ET.parse(p); u=t.getroot().find('./update')
+          p='updates/pkg_organizations.xml'; t=ET.parse(p); u=t.getroot().find('./update')
+          u.find('name').text='Organizations'
+          u.find('element').text='pkg_organizations'
           u.find('version').text=version
-          u.find('./downloads/downloadurl').text=f'https://github.com/xdecaro/organizations/releases/download/v{version}/pkg_xdecaroorganizations_{version}.zip'
+          u.find('./downloads/downloadurl').text=f'https://github.com/xdecaro/organizations/releases/download/v{version}/pkg_organizations_{version}.zip'
           u.find('sha256').text=sha
           ET.indent(t,space='  '); t.write(p,encoding='utf-8',xml_declaration=True)
           PY
-          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'; git add updates/pkg_xdecaroorganizations.xml; git diff --cached --quiet || git commit -m "Publish Organizations ${V} update metadata"; git pull --rebase origin main; git push origin HEAD:main
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add updates/pkg_organizations.xml
+          git diff --cached --quiet || git commit -m "Publish Organizations ${V} update metadata"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Verify published updater resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          V="$(cat VERSION)"
+          EXPECTED_SHA="$(sha256sum "dist/pkg_organizations_${V}.zip"|awk '{print $1}')"
+          for attempt in 1 2 3 4 5; do
+            curl -fsSL "https://raw.githubusercontent.com/xdecaro/organizations/main/updates/pkg_organizations.xml?run=${GITHUB_RUN_ID}-${attempt}" -o /tmp/feed.xml || true
+            if grep -Fq "<version>${V}</version>" /tmp/feed.xml 2>/dev/null; then break; fi
+            sleep 3
+          done
+          grep -Fq '<element>pkg_organizations</element>' /tmp/feed.xml
+          grep -Fq "releases/download/v${V}/pkg_organizations_${V}.zip" /tmp/feed.xml
+          grep -Fq "<sha256>${EXPECTED_SHA}</sha256>" /tmp/feed.xml
+          curl -fL --retry 3 "https://github.com/xdecaro/organizations/releases/download/v${V}/pkg_organizations_${V}.zip" -o /tmp/published-package.zip
+          echo "${EXPECTED_SHA}  /tmp/published-package.zip" | sha256sum --check --strict
+          unzip -t /tmp/published-package.zip >/dev/null
