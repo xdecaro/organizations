@@ -23,6 +23,54 @@
     <field name="tax_identifier" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_TAX_IDENTIFIER" maxlength="64"/>
   </fieldset>
 
+  <fieldset name="structure" label="COM_XDECAROORGANIZATIONS_FIELDSET_STRUCTURE">
+    <field name="structure_level" type="list" label="COM_XDECAROORGANIZATIONS_FIELD_STRUCTURE_LEVEL" default="unspecified">
+      <option value="unspecified">COM_XDECAROORGANIZATIONS_STRUCTURE_UNSPECIFIED</option>
+      <option value="international">COM_XDECAROORGANIZATIONS_STRUCTURE_INTERNATIONAL</option>
+      <option value="national">COM_XDECAROORGANIZATIONS_STRUCTURE_NATIONAL</option>
+      <option value="regional">COM_XDECAROORGANIZATIONS_STRUCTURE_REGIONAL</option>
+      <option value="provincial">COM_XDECAROORGANIZATIONS_STRUCTURE_PROVINCIAL</option>
+      <option value="local">COM_XDECAROORGANIZATIONS_STRUCTURE_LOCAL</option>
+      <option value="branch">COM_XDECAROORGANIZATIONS_STRUCTURE_BRANCH</option>
+      <option value="other">COM_XDECAROORGANIZATIONS_STRUCTURE_OTHER</option>
+    </field>
+    <field name="territory_type" type="list" label="COM_XDECAROORGANIZATIONS_FIELD_TERRITORY_TYPE" default="">
+      <option value="">JNONE</option>
+      <option value="international">COM_XDECAROORGANIZATIONS_TERRITORY_INTERNATIONAL</option>
+      <option value="country">COM_XDECAROORGANIZATIONS_TERRITORY_COUNTRY</option>
+      <option value="region">COM_XDECAROORGANIZATIONS_TERRITORY_REGION</option>
+      <option value="province">COM_XDECAROORGANIZATIONS_TERRITORY_PROVINCE</option>
+      <option value="metropolitan_city">COM_XDECAROORGANIZATIONS_TERRITORY_METROPOLITAN_CITY</option>
+      <option value="municipality">COM_XDECAROORGANIZATIONS_TERRITORY_MUNICIPALITY</option>
+      <option value="custom">COM_XDECAROORGANIZATIONS_TERRITORY_CUSTOM</option>
+    </field>
+    <field name="territory_name" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_TERRITORY_NAME" maxlength="190"/>
+    <field name="operational_status" type="list" label="COM_XDECAROORGANIZATIONS_FIELD_OPERATIONAL_STATUS" default="active">
+      <option value="active">COM_XDECAROORGANIZATIONS_OPERATIONAL_ACTIVE</option>
+      <option value="inactive">COM_XDECAROORGANIZATIONS_OPERATIONAL_INACTIVE</option>
+      <option value="represented">COM_XDECAROORGANIZATIONS_OPERATIONAL_REPRESENTED</option>
+      <option value="commissaried">COM_XDECAROORGANIZATIONS_OPERATIONAL_COMMISSARIED</option>
+      <option value="merged">COM_XDECAROORGANIZATIONS_OPERATIONAL_MERGED</option>
+      <option value="dissolved">COM_XDECAROORGANIZATIONS_OPERATIONAL_DISSOLVED</option>
+    </field>
+    <field name="status_since" type="calendar" label="COM_XDECAROORGANIZATIONS_FIELD_STATUS_SINCE" format="%Y-%m-%d" filter="user_utc"/>
+    <field name="autonomy_legal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_management" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_MANAGEMENT" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_administrative" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_ADMINISTRATIVE" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_tax" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_TAX" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_fiscal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_FISCAL" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+  </fieldset>
+
   <fieldset name="contacts" label="COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS">
     <field name="email" type="email" label="JGLOBAL_EMAIL" maxlength="254"/>
     <field name="pec_email" type="email" label="COM_XDECAROORGANIZATIONS_FIELD_PEC" maxlength="254"/>

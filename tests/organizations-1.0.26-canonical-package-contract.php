@@ -5,8 +5,8 @@ declare(strict_types=1);
 $root = dirname(__DIR__);
 $version = trim((string) file_get_contents($root . '/VERSION'));
 
-if ($version !== '1.0.27') {
-    fwrite(STDERR, "Organizations canonical package migration must target 1.0.27.\n");
+if ($version === '') {
+    fwrite(STDERR, "Organizations VERSION must not be empty.\n");
     exit(1);
 }
 
@@ -15,7 +15,7 @@ $requiredFiles = [
     $root . '/package/script.php',
     $root . '/updates/pkg_organizations.xml',
     $root . '/build/build.sh',
-    $root . '/component/admin/sql/updates/mysql/1.0.27.sql',
+    $root . '/component/admin/sql/updates/mysql/' . $version . '.sql',
 ];
 foreach ($requiredFiles as $path) {
     if (!is_file($path)) {
@@ -31,10 +31,10 @@ $build = (string) file_get_contents($root . '/build/build.sh');
 
 $checks = [
     [$manifest, '<packagename>organizations</packagename>', 'Organizations package must use packagename organizations.'],
-    [$manifest, '<version>1.0.27</version>', 'Organizations package manifest must use version 1.0.27.'],
+    [$manifest, '<version>' . $version . '</version>', 'Organizations package manifest must match VERSION.'],
     [$manifest, 'updates/pkg_organizations.xml', 'Organizations package must register the canonical update feed.'],
     [$feed, '<element>pkg_organizations</element>', 'Organizations update feed must identify pkg_organizations.'],
-    [$feed, '<version>1.0.27</version>', 'Organizations canonical update feed must target 1.0.27.'],
+    [$feed, '<version>' . $version . '</version>', 'Organizations canonical update feed must match VERSION.'],
     [$build, 'pkg_organizations_${VERSION}.zip', 'Organizations build must create pkg_organizations_VERSION.zip.'],
     [$installer, 'pkg_organizationsInstallerScript', 'Organizations installer class must use the canonical package identity.'],
     [$installer, 'pkg_xdecaroorganizations', 'Organizations installer must recognize the legacy package during migration.'],
@@ -50,4 +50,4 @@ foreach ($checks as [$haystack, $needle, $message]) {
     }
 }
 
-echo "Organizations 1.0.27 canonical package contract OK\n";
+echo "Organizations {$version} canonical package contract OK\n";

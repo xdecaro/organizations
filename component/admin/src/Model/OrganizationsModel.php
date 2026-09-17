@@ -13,7 +13,7 @@ final class OrganizationsModel extends ListModel
 {
     public function __construct($config = [])
     {
-        $config['filter_fields'] ??= ['id', 'name', 'legal_name', 'code', 'type', 'state', 'created'];
+        $config['filter_fields'] ??= ['id', 'name', 'legal_name', 'code', 'type', 'structure_level', 'operational_status', 'state', 'created'];
         parent::__construct($config);
     }
 
@@ -48,6 +48,11 @@ final class OrganizationsModel extends ListModel
                 'a.legal_name',
                 'a.code',
                 'a.type',
+                'a.structure_level',
+                'a.territory_type',
+                'a.territory_name',
+                'a.operational_status',
+                'a.status_since',
                 'a.parent_id',
                 'a.email',
                 'a.phone',
@@ -88,7 +93,7 @@ final class OrganizationsModel extends ListModel
         }
 
         $order = (string) $this->state->get('list.ordering', 'a.name');
-        $allowed = ['a.id', 'a.name', 'a.legal_name', 'a.code', 'a.type', 'a.state', 'a.created'];
+        $allowed = ['a.id', 'a.name', 'a.legal_name', 'a.code', 'a.type', 'a.structure_level', 'a.operational_status', 'a.state', 'a.created'];
         if (!in_array($order, $allowed, true)) {
             $order = 'a.name';
         }
