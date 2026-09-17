@@ -5,13 +5,23 @@ $service = (string) file_get_contents($root . '/component/admin/src/Service/Peop
 $controller = (string) file_get_contents($root . '/component/admin/src/Controller/AppointmentController.php');
 $js = (string) file_get_contents($root . '/component/media/js/organization-edit.js');
 
-if (!preg_match('/searchPeople\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit,\s*true\s*\)/s', $service)) {
-    fwrite(STDERR, "People search must request sensitive data first so authorised users can disambiguate homonyms by birth data.\n");
+if (!str_contains($service, "method_exists(\$provider, 'searchPeopleForIdentity')")) {
+    fwrite(STDERR, "Organizations must prefer the limited People identity-disambiguation provider when available.\n");
     exit(1);
 }
 
-if (!preg_match('/catch \(Throwable\).*?searchPeople\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit,\s*false\s*\)/s', $service)) {
-    fwrite(STDERR, "People search must fall back to the public profile when sensitive People data is not authorised.\n");
+if (!preg_match('/searchPeopleForIdentity\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit\s*\)/s', $service)) {
+    fwrite(STDERR, "Organizations must request birth disambiguation through searchPeopleForIdentity().\n");
+    exit(1);
+}
+
+if (!preg_match('/searchPeople\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit,\s*false\s*\)/s', $service)) {
+    fwrite(STDERR, "Organizations must retain a public name-only People fallback.\n");
+    exit(1);
+}
+
+if (preg_match('/searchPeople\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit,\s*true\s*\)/s', $service)) {
+    fwrite(STDERR, "Organizations must not request the full sensitive People profile just to disambiguate homonyms.\n");
     exit(1);
 }
 
@@ -34,4 +44,4 @@ if (str_contains($js, 'option.textContent = person.name;')) {
     exit(1);
 }
 
-echo "appointments People disambiguation contract OK\n";
+echo "appointments People limited-disambiguation contract OK\n";
