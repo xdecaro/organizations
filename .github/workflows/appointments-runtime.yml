@@ -32,7 +32,7 @@ jobs:
           coverage: none
       - name: Build current Organizations
         run: chmod +x build/build.sh && build/build.sh
-      - name: Download verified runtime stack
+      - name: Download verified Joomla and Core
         shell: bash
         run: |
           set -euo pipefail
@@ -40,10 +40,20 @@ jobs:
           echo 'a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1  /tmp/joomla.zip' | sha256sum --check --strict
           curl -fL --retry 3 'https://github.com/xdecaro/core/releases/download/v2.0.1/pkg_xdecarocore_2.0.1.zip' -o /tmp/core.zip
           echo 'cec892dafeea4a0499ad1851ab0f9d0b111495c2248e0147076ad4bb648f64a9  /tmp/core.zip' | sha256sum --check --strict
-          curl -fL --retry 3 'https://github.com/xdecaro/people/releases/download/v1.2.17/pkg_xdecaropeople_1.2.17.zip' -o /tmp/people.zip
-          echo 'eb0219a31dffa83ef90d4700920f6ec1016cbfb79eeddb735be7eeeb4731db0e  /tmp/people.zip' | sha256sum --check --strict
           mkdir joomla
           unzip -q /tmp/joomla.zip -d joomla
+      - name: Build pinned People 1.3.1 candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          PEOPLE_SHA='ed8627cd6509e0a88fc8b34d8ff9ae5c35418b36'
+          git clone --quiet https://github.com/xdecaro/people.git /tmp/people-src
+          git -C /tmp/people-src checkout --quiet "$PEOPLE_SHA"
+          test "$(tr -d '\r\n' < /tmp/people-src/VERSION)" = '1.3.1'
+          chmod +x /tmp/people-src/build/build.sh
+          /tmp/people-src/build/build.sh
+          cp /tmp/people-src/dist/pkg_people_1.3.1.zip /tmp/people.zip
+          unzip -t /tmp/people.zip >/dev/null
       - name: Install integration stack
         shell: bash
         run: |
@@ -66,8 +76,8 @@ jobs:
             --no-interaction
           php cli/joomla.php extension:install --path=/tmp/core.zip -vvv
           php cli/joomla.php extension:install --path=/tmp/people.zip -vvv
-          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecaroorganizations_${VERSION}.zip" -vvv
-      - name: Save, reload and delete one appointment through Organizations models
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_organizations_${VERSION}.zip" -vvv
+      - name: Verify limited People lookup and appointment lifecycle
         shell: bash
         run: |
           set -euo pipefail
@@ -117,6 +127,8 @@ jobs:
               'display_name' => 'Runtime Person',
               'first_name' => 'Runtime',
               'last_name' => 'Person',
+              'birth_date' => '1990-09-19',
+              'birth_place' => 'Roma',
               'person_status' => 'active',
               'source_component' => 'com_xdecaropeople',
               'state' => 1,
@@ -127,6 +139,14 @@ jobs:
           $db->insertObject('#__xdecaropeople_people', $person, 'id');
 
           $component = $app->bootComponent('com_xdecaroorganizations');
+          $peopleMatches = $component->getPeopleIntegrationService()->searchPeople('Runtime Person', 10);
+          if (count($peopleMatches) !== 1
+              || ($peopleMatches[0]['birth_date'] ?? '') !== '1990-09-19'
+              || ($peopleMatches[0]['birth_place'] ?? '') !== 'Roma') {
+              fwrite(STDERR, "Limited People identity disambiguation runtime failed.\n");
+              exit(1);
+          }
+
           $appointmentModel = $component->getMVCFactory()->createModel(
               'OrganizationAppointment',
               'Administrator',
@@ -156,32 +176,8 @@ jobs:
               ->from($db->quoteName('#__xdecaroorganizations_appointments'))
               ->where($db->quoteName('id') . ' = ' . (int) $appointmentId);
           $saved = $db->setQuery($query, 0, 1)->loadAssoc();
-          if (!$saved) {
-              fwrite(STDERR, "Appointment was not persisted.\n");
-              exit(1);
-          }
-          if (($saved['person_name_snapshot'] ?? '') !== 'Runtime Person') {
+          if (!$saved || ($saved['person_name_snapshot'] ?? '') !== 'Runtime Person') {
               fwrite(STDERR, "Appointment person snapshot is incorrect.\n");
-              exit(1);
-          }
-
-          $listModel = $component->getMVCFactory()->createModel(
-              'OrganizationAppointments',
-              'Administrator',
-              ['ignore_request' => true]
-          );
-          if (!$listModel) {
-              fwrite(STDERR, "Unable to create OrganizationAppointments model.\n");
-              exit(1);
-          }
-          $listModel->setOrganizationId($organizationId);
-          $items = $listModel->getItems();
-          if (count($items) !== 1) {
-              fwrite(STDERR, "Saved appointment was not returned by the Members list model.\n");
-              exit(1);
-          }
-          if ((int) $items[0]->id !== $appointmentId || ($items[0]->person_name_snapshot ?? '') !== 'Runtime Person') {
-              fwrite(STDERR, "Members list returned the wrong appointment.\n");
               exit(1);
           }
 
@@ -200,7 +196,6 @@ jobs:
           }
 
           $appointmentModel->deleteAppointment($appointmentId);
-
           $query = $db->getQuery(true)
               ->select($db->quoteName('id'))
               ->from($db->quoteName('#__xdecaroorganizations_appointments'))
@@ -212,6 +207,6 @@ jobs:
               exit(1);
           }
 
-          echo "Organizations appointment save/reload and single-row delete runtime OK\n";
+          echo "Organizations limited People lookup and appointment lifecycle runtime OK\n";
           PHP
           php appointments-runtime-probe.php

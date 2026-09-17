@@ -101,6 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return json.data || {};
   };
 
+  const reloadMembersTab = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('activeTab', 'members');
+    window.location.assign(url.toString());
+  };
+
   const parseAppointment = (button) => {
     try {
       return JSON.parse(button.dataset.appointment || '{}');
@@ -167,6 +173,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (peopleResults) {
       peopleResults.replaceChildren();
     }
+  };
+
+  const formatBirthDate = (value) => {
+    const raw = String(value || '').trim();
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : raw;
+  };
+
+  const formatPersonBirthDetails = (person) => {
+    const birthDate = formatBirthDate(person.birth_date);
+    const birthPlace = String(person.birth_place || '').trim();
+    return [birthDate, birthPlace].filter(Boolean).join(' · ');
   };
 
   const resetEdit = () => {
@@ -237,8 +255,21 @@ document.addEventListener('DOMContentLoaded', () => {
           const option = document.createElement('button');
           option.type = 'button';
           option.className = 'list-group-item list-group-item-action';
-          option.textContent = person.name;
           option.dataset.personUuid = person.uuid;
+
+          const name = document.createElement('span');
+          name.className = 'd-block fw-semibold';
+          name.textContent = person.name;
+          option.appendChild(name);
+
+          const birthDetails = formatPersonBirthDetails(person);
+          if (birthDetails) {
+            const details = document.createElement('span');
+            details.className = 'd-block small text-body-secondary mt-1';
+            details.textContent = birthDetails;
+            option.appendChild(details);
+          }
+
           option.addEventListener('click', () => {
             if (personUuid) personUuid.value = person.uuid;
             if (personSearch) personSearch.value = person.name;
@@ -266,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         planned_ends_on: plannedEndsOn?.value || '',
         notes: notes?.value || '',
       });
-      window.location.reload();
+      reloadMembersTab();
     } catch (error) {
       window.alert(error.message || String(error));
     }
@@ -293,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ended_on: endedOn?.value || '',
         end_note: endNote?.value || '',
       });
-      window.location.reload();
+      reloadMembersTab();
     } catch (error) {
       window.alert(error.message || String(error));
     }
@@ -307,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         await post(endpoints.delete, { id: button.dataset.appointmentId || '0' });
-        window.location.reload();
+        reloadMembersTab();
       } catch (error) {
         window.alert(error.message || String(error));
       }

@@ -11,6 +11,6 @@ file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_S
 ' "$WORK/component/media/joomla.asset.json" "$VERSION"
 find "$WORK" -type f -exec touch -t 198001010000 {} +
 (cd "$WORK/component" && find . -type f -print0|sort -z|xargs -0 zip -X -q "$DIST/com_xdecaroorganizations_${VERSION}.zip")
-cp "$ROOT/package/pkg_xdecaroorganizations.xml" "$WORK/package/pkg_xdecaroorganizations.xml"; cp "$ROOT/package/script.php" "$WORK/package/script.php"; cp "$DIST/com_xdecaroorganizations_${VERSION}.zip" "$WORK/package/com_xdecaroorganizations.zip"; find "$WORK/package" -type f -exec touch -t 198001010000 {} +
-(cd "$WORK/package" && find . -type f -print0|sort -z|xargs -0 zip -X -q "$DIST/pkg_xdecaroorganizations_${VERSION}.zip")
-(cd "$DIST" && sha256sum "com_xdecaroorganizations_${VERSION}.zip" "pkg_xdecaroorganizations_${VERSION}.zip">SHA256SUMS.txt)
+cp "$ROOT/package/pkg_organizations.xml" "$WORK/package/pkg_organizations.xml"; cp "$ROOT/package/script.php" "$WORK/package/script.php"; cp "$DIST/com_xdecaroorganizations_${VERSION}.zip" "$WORK/package/com_xdecaroorganizations.zip"; find "$WORK/package" -type f -exec touch -t 198001010000 {} +
+(cd "$WORK/package" && find . -type f -print0|sort -z|xargs -0 zip -X -q "$DIST/pkg_organizations_${VERSION}.zip")
+(cd "$DIST" && sha256sum "com_xdecaroorganizations_${VERSION}.zip" "pkg_organizations_${VERSION}.zip">SHA256SUMS.txt)

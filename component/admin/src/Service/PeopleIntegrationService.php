@@ -20,18 +20,28 @@ final class PeopleIntegrationService
     public function searchPeople(string $search, int $limit = 20): array
     {
         $provider = $this->provider();
-        if (!$provider || !method_exists($provider, 'searchPeople')) {
+        if (!$provider) {
             return [];
         }
 
         $limit = max(1, min(50, $limit));
+        $filters = ['search' => trim($search)];
+
+        if (method_exists($provider, 'searchPeopleForIdentity')) {
+            try {
+                return array_values((array) $provider->searchPeopleForIdentity($filters, $limit));
+            } catch (Throwable) {
+                // The limited identity-details permission is optional. Fall back
+                // to the public People profile without requesting sensitive data.
+            }
+        }
+
+        if (!method_exists($provider, 'searchPeople')) {
+            return [];
+        }
 
         try {
-            return array_values((array) $provider->searchPeople(
-                ['search' => trim($search)],
-                $limit,
-                false
-            ));
+            return array_values((array) $provider->searchPeople($filters, $limit, false));
         } catch (Throwable) {
             return [];
         }

@@ -44,7 +44,12 @@ final class AppointmentController extends BaseController
                 $uuid = strtolower(trim((string) ($row['uuid'] ?? '')));
                 $name = $this->personName($row);
                 if ($uuid !== '' && $name !== '') {
-                    $items[] = ['uuid' => $uuid, 'name' => $name];
+                    $items[] = [
+                        'uuid' => $uuid,
+                        'name' => $name,
+                        'birth_date' => trim((string) ($row['birth_date'] ?? '')),
+                        'birth_place' => trim((string) ($row['birth_place'] ?? '')),
+                    ];
                 }
             }
 
