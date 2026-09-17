@@ -7,6 +7,8 @@ $migration = is_file($migrationPath) ? (string) file_get_contents($migrationPath
 $form = (string) file_get_contents($root . '/component/admin/forms/organization.xml');
 $model = (string) file_get_contents($root . '/component/admin/src/Model/OrganizationsModel.php');
 $template = (string) file_get_contents($root . '/component/admin/tmpl/organizations/default.php');
+$provider = (string) file_get_contents($root . '/component/admin/src/Service/OrganizationProviderService.php');
+$core = (string) file_get_contents($root . '/component/admin/src/Service/CoreIntegrationService.php');
 
 $schemaFragments = [
     '`structure_level` VARCHAR(32) NOT NULL DEFAULT \'unspecified\'',
@@ -56,6 +58,29 @@ if (!str_contains($model, "'structure_level'")
     || !str_contains($template, "FIELD_STRUCTURE_LEVEL")
     || !str_contains($template, "FIELD_OPERATIONAL_STATUS")) {
     fwrite(STDERR, "Organizations list must expose structure level and operational status.\n");
+    exit(1);
+}
+
+foreach ([
+    "'o.structure_level'",
+    "'o.territory_type'",
+    "'o.territory_name'",
+    "'o.operational_status'",
+    "'o.status_since'",
+    "'o.autonomy_legal'",
+    "'o.autonomy_management'",
+    "'o.autonomy_administrative'",
+    "'o.autonomy_tax'",
+    "'o.autonomy_fiscal'",
+] as $needle) {
+    if (!str_contains($provider, $needle)) {
+        fwrite(STDERR, "Organizations provider must expose institutional field: {$needle}\n");
+        exit(1);
+    }
+}
+
+if (!str_contains($core, "organizations.institutional_profile")) {
+    fwrite(STDERR, "Core capability organizations.institutional_profile is required.\n");
     exit(1);
 }
 
