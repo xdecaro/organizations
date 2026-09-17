@@ -45,6 +45,12 @@ final class OrganizationAppointmentModel extends AdminModel
             throw new RuntimeException('Organization not found.');
         }
 
+        $bodyId = (int) ($data['body_id'] ?? ($existing['body_id'] ?? 0));
+        $bodyId = $bodyId > 0 ? $bodyId : null;
+        if ($bodyId !== null && !$this->bodyBelongsToOrganization($bodyId, $organizationId)) {
+            throw new RuntimeException('Selected body does not belong to this organization.');
+        }
+
         $personUuid = strtolower(trim((string) ($data['person_uuid'] ?? ($existing['person_uuid'] ?? ''))));
         $roleCode = trim((string) ($data['role_code'] ?? ($existing['role_code'] ?? '')));
         $roleCustom = trim((string) ($data['role_custom'] ?? ($existing['role_custom'] ?? '')));
@@ -62,6 +68,7 @@ final class OrganizationAppointmentModel extends AdminModel
         $payload = [
             'id' => $id,
             'organization_id' => $organizationId,
+            'body_id' => $bodyId,
             'person_uuid' => $personUuid,
             'role_code' => $roleCode,
             'role_custom' => $roleCustom !== '' ? $roleCustom : null,
@@ -173,6 +180,21 @@ final class OrganizationAppointmentModel extends AdminModel
             ->from($db->quoteName('#__xdecaroorganizations_organizations'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $organizationId, ParameterType::INTEGER);
+
+        return (int) $db->setQuery($query)->loadResult() > 0;
+    }
+
+    private function bodyBelongsToOrganization(int $bodyId, int $organizationId): bool
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__xdecaroorganizations_bodies'))
+            ->where($db->quoteName('id') . ' = :bodyId')
+            ->where($db->quoteName('organization_id') . ' = :organizationId')
+            ->where($db->quoteName('state') . ' >= 0')
+            ->bind(':bodyId', $bodyId, ParameterType::INTEGER)
+            ->bind(':organizationId', $organizationId, ParameterType::INTEGER);
 
         return (int) $db->setQuery($query)->loadResult() > 0;
     }
