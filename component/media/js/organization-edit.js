@@ -12,7 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const members = document.querySelector('.xdecaro-members[data-organization-id]');
-  if (!members || Number(members.dataset.organizationId || 0) < 1) {
+  const bodies = document.querySelector('.xdecaro-bodies[data-organization-id]');
+  const membersOrganizationId = Number(members?.dataset.organizationId || 0);
+  const bodiesOrganizationId = Number(bodies?.dataset.organizationId || 0);
+  if (membersOrganizationId < 1 && bodiesOrganizationId < 1) {
     return;
   }
 
@@ -21,15 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
     save: 'index.php?option=com_xdecaroorganizations&task=appointment.save&format=json',
     end: 'index.php?option=com_xdecaroorganizations&task=appointment.end&format=json',
     delete: 'index.php?option=com_xdecaroorganizations&task=appointment.delete&format=json',
+    bodySave: 'index.php?option=com_xdecaroorganizations&task=body.save&format=json',
   };
 
   const editModalElement = document.getElementById('appointment-edit-modal');
   const endModalElement = document.getElementById('appointment-end-modal');
+  const bodyModalElement = document.getElementById('body-edit-modal');
   const editModal = editModalElement && window.bootstrap?.Modal
     ? window.bootstrap.Modal.getOrCreateInstance(editModalElement)
     : null;
   const endModal = endModalElement && window.bootstrap?.Modal
     ? window.bootstrap.Modal.getOrCreateInstance(endModalElement)
+    : null;
+  const bodyModal = bodyModalElement && window.bootstrap?.Modal
+    ? window.bootstrap.Modal.getOrCreateInstance(bodyModalElement)
     : null;
 
   const idField = document.getElementById('appointment-id');
@@ -101,11 +109,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return json.data || {};
   };
 
-  const reloadMembersTab = () => {
+  const reloadOrganizationTab = (tab) => {
     const url = new URL(window.location.href);
-    url.searchParams.set('activeTab', 'members');
+    url.searchParams.set('activeTab', tab);
     window.location.assign(url.toString());
   };
+
+  const reloadMembersTab = () => reloadOrganizationTab('members');
 
   const parseAppointment = (button) => {
     try {
@@ -343,6 +353,94 @@ document.addEventListener('DOMContentLoaded', () => {
         window.alert(error.message || String(error));
       }
     });
+  });
+
+
+  const bodyId = document.getElementById('body-id');
+  const bodyName = document.getElementById('body-name');
+  const bodyCode = document.getElementById('body-code');
+  const bodyType = document.getElementById('body-type');
+  const bodyParentId = document.getElementById('body-parent-id');
+  const bodyStartsOn = document.getElementById('body-starts-on');
+  const bodyEndsOn = document.getElementById('body-ends-on');
+  const bodyState = document.getElementById('body-state');
+  const bodyNotes = document.getElementById('body-notes');
+
+  const resetBody = () => {
+    if (bodyId) bodyId.value = '0';
+    if (bodyName) bodyName.value = '';
+    if (bodyCode) bodyCode.value = '';
+    if (bodyType) bodyType.value = 'other';
+    if (bodyParentId) {
+      bodyParentId.value = '0';
+      [...bodyParentId.options].forEach((option) => {
+        option.disabled = false;
+      });
+    }
+    if (bodyStartsOn) bodyStartsOn.value = '';
+    if (bodyEndsOn) bodyEndsOn.value = '';
+    if (bodyState) bodyState.value = '1';
+    if (bodyNotes) bodyNotes.value = '';
+  };
+
+  const parseBody = (button) => {
+    try {
+      return JSON.parse(button.dataset.body || '{}');
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
+  };
+
+  const fillBody = (body) => {
+    if (bodyId) bodyId.value = String(body.id || 0);
+    if (bodyName) bodyName.value = body.name || '';
+    if (bodyCode) bodyCode.value = body.code || '';
+    if (bodyType) bodyType.value = body.body_type || 'other';
+    if (bodyParentId) {
+      [...bodyParentId.options].forEach((option) => {
+        option.disabled = Number(option.value || 0) === Number(body.id || 0);
+      });
+      bodyParentId.value = String(body.parent_id || 0);
+    }
+    if (bodyStartsOn) bodyStartsOn.value = body.starts_on || '';
+    if (bodyEndsOn) bodyEndsOn.value = body.ends_on || '';
+    if (bodyState) bodyState.value = String(Number(body.state ?? 1) === 1 ? 1 : 0);
+    if (bodyNotes) bodyNotes.value = body.notes || '';
+  };
+
+  document.querySelectorAll('[data-body-add]').forEach((button) => {
+    button.addEventListener('click', () => {
+      resetBody();
+      bodyModal?.show();
+    });
+  });
+
+  document.querySelectorAll('[data-body-edit]').forEach((button) => {
+    button.addEventListener('click', () => {
+      fillBody(parseBody(button));
+      bodyModal?.show();
+    });
+  });
+
+  document.querySelector('[data-body-save]')?.addEventListener('click', async () => {
+    try {
+      await post(endpoints.bodySave, {
+        id: bodyId?.value || '0',
+        organization_id: bodiesOrganizationId,
+        parent_id: bodyParentId?.value || '0',
+        name: bodyName?.value || '',
+        code: bodyCode?.value || '',
+        body_type: bodyType?.value || 'other',
+        starts_on: bodyStartsOn?.value || '',
+        ends_on: bodyEndsOn?.value || '',
+        state: bodyState?.value || '1',
+        notes: bodyNotes?.value || '',
+      });
+      reloadOrganizationTab('bodies');
+    } catch (error) {
+      window.alert(error.message || String(error));
+    }
   });
 
   updateCustomRole();
