@@ -1,0 +1,1 @@
+-- Organizations 1.0.27: public read-only person appointment history capability; no database schema changes.
