@@ -16,30 +16,67 @@ jobs:
         run: find component package tests -type f -name '*.php' -print0|xargs -0 -n1 php -l
       - name: Validate source
         run: |
-          test -n "$(cat VERSION)"; php tests/core-integration-smoke.php; php tests/joomla6-listmodel-contract.php; php tests/form-controller-option-contract.php; php tests/form-validation-contract.php; php tests/trashed-filter-contract.php; php tests/information-version-contract.php; php tests/state-actions-contract.php; php tests/admin-ux-duplicates-contract.php; php tests/no-delete-toolbar-contract.php; php tests/parent-self-option-contract.php; php tests/edit-name-heading-contract.php; php tests/contacts-ux-contract.php; php tests/hierarchy-list-contract.php; php tests/appointments-schema-contract.php; php tests/appointments-domain.php; php tests/appointments-people-contract.php; php tests/appointments-people-disambiguation-contract.php; php tests/appointments-backend-contract.php; php tests/appointments-ui-contract.php; php tests/members-tab-persistence-contract.php
+          set -euo pipefail
+          test -n "$(cat VERSION)"
+          php tests/core-integration-smoke.php
+          php tests/joomla6-listmodel-contract.php
+          php tests/form-controller-option-contract.php
+          php tests/form-validation-contract.php
+          php tests/trashed-filter-contract.php
+          php tests/information-version-contract.php
+          php tests/state-actions-contract.php
+          php tests/admin-ux-duplicates-contract.php
+          php tests/no-delete-toolbar-contract.php
+          php tests/parent-self-option-contract.php
+          php tests/edit-name-heading-contract.php
+          php tests/contacts-ux-contract.php
+          php tests/hierarchy-list-contract.php
+          php tests/appointments-schema-contract.php
+          php tests/appointments-domain.php
+          php tests/appointments-people-contract.php
+          php tests/appointments-people-disambiguation-contract.php
+          php tests/appointments-backend-contract.php
+          php tests/appointments-ui-contract.php
+          php tests/members-tab-persistence-contract.php
+          php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
           for p in pathlib.Path('.').rglob('*.xml'): ET.parse(p)
           PY
           grep -Fq 'charset="utf8"' component/xdecaroorganizations.xml
-          grep -Fq 'final class pkg_xdecaroorganizationsInstallerScript' package/script.php
+          grep -Fq 'final class pkg_organizationsInstallerScript' package/script.php
           ! grep -RniE 'DROP[[:space:]]+TABLE|TRUNCATE[[:space:]]+TABLE' component/admin/sql
           ! grep -RniE '#__(xdecaropeople|decarocourses|decarodocuments|decaromembership|xdecarocompetitions)_' component
       - name: Deterministic build
-        run: chmod +x build/build.sh && build/build.sh && cp dist/SHA256SUMS.txt /tmp/sums && build/build.sh && diff -u /tmp/sums dist/SHA256SUMS.txt && for z in dist/*.zip; do unzip -t "$z" >/dev/null; done
+        run: |
+          set -euo pipefail
+          chmod +x build/build.sh
+          build/build.sh
+          cp dist/SHA256SUMS.txt /tmp/sums
+          build/build.sh
+          diff -u /tmp/sums dist/SHA256SUMS.txt
+          for z in dist/*.zip; do unzip -t "$z" >/dev/null; done
+          V="$(cat VERSION)"
+          unzip -Z1 "dist/pkg_organizations_${V}.zip" | grep -Fxq 'pkg_organizations.xml'
+          unzip -Z1 "dist/pkg_organizations_${V}.zip" | grep -Fxq 'com_xdecaroorganizations.zip'
       - name: Upload verified package
         if: matrix.php == '8.3'
         uses: actions/upload-artifact@v4
         with:
           name: organizations-${{ github.sha }}
           path: |
-            dist/pkg_xdecaroorganizations_*.zip
+            dist/pkg_organizations_*.zip
+            dist/com_xdecaroorganizations_*.zip
             dist/SHA256SUMS.txt
           if-no-files-found: error
+
   joomla-runtime:
     runs-on: ubuntu-latest
     needs: validate
-    strategy: {fail-fast: false, matrix: {joomla: ['6.1.3']}}
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [clean, upgrade-1.0.25]
     services:
       mysql:
         image: mysql:8.0
@@ -51,29 +88,63 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with: {php-version: '8.3', extensions: 'mysqli, zip, simplexml', coverage: none}
-      - run: chmod +x build/build.sh && build/build.sh
-      - name: Download verified dependencies
+      - name: Build current Organizations
+        run: chmod +x build/build.sh && build/build.sh
+      - name: Download verified dependencies and baseline
         shell: bash
         run: |
           set -euo pipefail
-          J='${{ matrix.joomla }}'
+          J='6.1.3'
           JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1'
-          curl -fL --retry 3 "https://github.com/joomla/joomla-cms/releases/download/${J}/Joomla_${J}-Stable-Full_Package.zip" -o /tmp/joomla.zip; echo "${JSHA}  /tmp/joomla.zip"|sha256sum --check --strict
-          curl -fL --retry 3 'https://github.com/xdecaro/core/releases/download/v1.4.0/pkg_xdecarocore_1.4.0.zip' -o /tmp/core.zip; echo '4248f7e3de514c2ae2402ffc8ba12845647dca1ebac963da370650e88ac45def  /tmp/core.zip'|sha256sum --check --strict
-          mkdir joomla; unzip -q /tmp/joomla.zip -d joomla
-      - name: Install and verify
+          curl -fL --retry 3 "https://github.com/joomla/joomla-cms/releases/download/${J}/Joomla_${J}-Stable-Full_Package.zip" -o /tmp/joomla.zip
+          echo "${JSHA}  /tmp/joomla.zip"|sha256sum --check --strict
+          curl -fL --retry 3 'https://github.com/xdecaro/core/releases/download/v1.4.0/pkg_xdecarocore_1.4.0.zip' -o /tmp/core.zip
+          echo '4248f7e3de514c2ae2402ffc8ba12845647dca1ebac963da370650e88ac45def  /tmp/core.zip'|sha256sum --check --strict
+          if [ '${{ matrix.mode }}' = 'upgrade-1.0.25' ]; then
+            curl -fL --retry 3 'https://github.com/xdecaro/organizations/releases/download/v1.0.25/pkg_xdecaroorganizations_1.0.25.zip' -o /tmp/organizations-old.zip
+            echo '03af975adecfde2c5fc419d4d5a25856ddc22318cb0585885bc9f832c7e236f5  /tmp/organizations-old.zip' | sha256sum --check --strict
+          fi
+          mkdir joomla
+          unzip -q /tmp/joomla.zip -d joomla
+      - name: Install Joomla and Core
         shell: bash
         run: |
           set -euo pipefail
-          V="$(cat VERSION)"
           ADMIN_PASSWORD="OrgCI-${GITHUB_RUN_ID}-${RANDOM}"
           cd joomla
           php installation/joomla.php install --site-name='Organizations CI' --admin-user='Organizations CI Admin' --admin-username=admin --admin-password="$ADMIN_PASSWORD" --admin-email=admin@example.invalid --db-type=mysqli --db-host=127.0.0.1 --db-user=root --db-pass='' --db-name=joomla --db-prefix=org_ --db-encryption=0 --no-interaction
           php cli/joomla.php extension:install --path=/tmp/core.zip -vvv
-          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecaroorganizations_${V}.zip" -vvv
+      - name: Prepare Organizations 1.0.25 upgrade state
+        if: matrix.mode == 'upgrade-1.0.25'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd joomla
+          php cli/joomla.php extension:install --path=/tmp/organizations-old.zip -vvv
+          mysql --protocol=TCP -h127.0.0.1 -uroot joomla -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,state,access,created,created_by) VALUES ('11111111-2222-4333-8444-555555555555','Legacy Organization','organization',1,1,NOW(),0);"
+          test "$(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla -e "SELECT COUNT(*) FROM org_extensions WHERE type='package' AND element='pkg_xdecaroorganizations';")" = 1
+      - name: Install current canonical Organizations
+        shell: bash
+        run: |
+          set -euo pipefail
+          V="$(cat VERSION)"
+          cd joomla
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_organizations_${V}.zip" -vvv
+      - name: Verify schema, package ownership and preserved data
+        shell: bash
+        run: |
+          set -euo pipefail
+          V="$(cat VERSION)"
           MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
-          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_extensions WHERE type='package' AND element='pkg_xdecaroorganizations';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_extensions WHERE type='package' AND element='pkg_organizations';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_extensions WHERE type='package' AND element='pkg_xdecaroorganizations';")" = 0
+          PACKAGE_ID="$("${MYSQL[@]}" -e "SELECT extension_id FROM org_extensions WHERE type='package' AND element='pkg_organizations' LIMIT 1;")"
+          test -n "$PACKAGE_ID"
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_extensions WHERE type='component' AND element='com_xdecaroorganizations' AND package_id=${PACKAGE_ID};")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments';")" = 1
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM org_schemas s JOIN org_extensions e ON e.extension_id=s.extension_id WHERE e.element='com_xdecaroorganizations' LIMIT 1;")"
           test "$schema" = "$V"
+          if [ '${{ matrix.mode }}' = 'upgrade-1.0.25' ]; then
+            test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND name='Legacy Organization';")" = 1
+          fi
