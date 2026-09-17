@@ -60,3 +60,28 @@ CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_appointments` (
  CONSTRAINT `fk_xdecaroorganizations_appointment_org` FOREIGN KEY (`organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE,
  CONSTRAINT `fk_xdecaroorganizations_appointment_body` FOREIGN KEY (`body_id`) REFERENCES `#__xdecaroorganizations_bodies` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_delegations` (
+ `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+ `uuid` CHAR(36) NOT NULL,
+ `organization_id` INT UNSIGNED NOT NULL,
+ `appointment_id` INT UNSIGNED NOT NULL,
+ `title` VARCHAR(190) NOT NULL,
+ `scope` TEXT DEFAULT NULL,
+ `starts_on` DATE NOT NULL,
+ `ends_on` DATE DEFAULT NULL,
+ `notes` TEXT DEFAULT NULL,
+ `state` TINYINT NOT NULL DEFAULT 1,
+ `created` DATETIME NOT NULL,
+ `created_by` INT UNSIGNED NOT NULL DEFAULT 0,
+ `modified` DATETIME DEFAULT NULL,
+ `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `idx_delegation_uuid` (`uuid`),
+ KEY `idx_delegation_org` (`organization_id`),
+ KEY `idx_delegation_appointment` (`appointment_id`),
+ KEY `idx_delegation_org_dates` (`organization_id`,`starts_on`,`ends_on`),
+ KEY `idx_delegation_state` (`state`),
+ CONSTRAINT `fk_xdecaroorganizations_delegation_org` FOREIGN KEY (`organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE,
+ CONSTRAINT `fk_xdecaroorganizations_delegation_appointment` FOREIGN KEY (`appointment_id`) REFERENCES `#__xdecaroorganizations_appointments` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
