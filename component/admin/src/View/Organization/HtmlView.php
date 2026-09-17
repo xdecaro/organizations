@@ -13,6 +13,7 @@ use Throwable;
 use xdecaro\Component\Organizations\Administrator\Extension\OrganizationsComponent;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationAppointmentsModel;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationBodiesModel;
+use xdecaro\Component\Organizations\Administrator\Model\OrganizationDelegationsModel;
 
 final class HtmlView extends BaseHtmlView
 {
@@ -20,12 +21,15 @@ final class HtmlView extends BaseHtmlView
     public $item;
     public array $appointments = [];
     public array $bodies = [];
+    public array $delegations = [];
     public bool $peopleAvailable = false;
     public bool $canCreateAppointments = false;
     public bool $canEditAppointments = false;
     public bool $canDeleteAppointments = false;
     public bool $canCreateBodies = false;
     public bool $canEditBodies = false;
+    public bool $canCreateDelegations = false;
+    public bool $canEditDelegations = false;
 
     public function display($tpl = null): void
     {
@@ -44,6 +48,7 @@ final class HtmlView extends BaseHtmlView
             $component->getCoreIntegrationService()->enableUi($this->document->getWebAssetManager());
             $this->loadAppointments($component);
             $this->loadBodies($component);
+            $this->loadDelegations($component);
         }
 
         $this->canCreateAppointments = $user->authorise('core.create', 'com_xdecaroorganizations')
@@ -55,6 +60,10 @@ final class HtmlView extends BaseHtmlView
         $this->canCreateBodies = $user->authorise('core.create', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
         $this->canEditBodies = $user->authorise('core.edit', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canCreateDelegations = $user->authorise('core.create', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canEditDelegations = $user->authorise('core.edit', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
 
         $wa = $this->document->getWebAssetManager();
@@ -72,6 +81,42 @@ final class HtmlView extends BaseHtmlView
         ToolbarHelper::cancel('organization.cancel');
 
         parent::display($tpl);
+    }
+
+    private function loadDelegations(OrganizationsComponent $component): void
+    {
+        $organizationId = (int) ($this->item->id ?? 0);
+        if ($organizationId < 1) {
+            return;
+        }
+
+        try {
+            $model = $component->getMVCFactory()->createModel(
+                'OrganizationDelegations',
+                'Administrator',
+                ['ignore_request' => true]
+            );
+
+            if (!$model instanceof OrganizationDelegationsModel) {
+                throw new \RuntimeException('Unable to create OrganizationDelegations model.');
+            }
+
+            $model->setOrganizationId($organizationId);
+            $items = $model->getItems();
+            if ($items === false) {
+                throw new \RuntimeException((string) ($model->getError() ?: 'Unable to load organization delegations.'));
+            }
+
+            $this->delegations = $items;
+        } catch (Throwable $exception) {
+            $this->delegations = [];
+            Log::add(
+                'Organizations delegations load failed: ' . $exception->getMessage(),
+                Log::ERROR,
+                'com_xdecaroorganizations'
+            );
+            Factory::getApplication()->enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+        }
     }
 
     private function loadBodies(OrganizationsComponent $component): void
