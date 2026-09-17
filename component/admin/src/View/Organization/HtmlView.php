@@ -12,16 +12,20 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Throwable;
 use xdecaro\Component\Organizations\Administrator\Extension\OrganizationsComponent;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationAppointmentsModel;
+use xdecaro\Component\Organizations\Administrator\Model\OrganizationBodiesModel;
 
 final class HtmlView extends BaseHtmlView
 {
     public $form;
     public $item;
     public array $appointments = [];
+    public array $bodies = [];
     public bool $peopleAvailable = false;
     public bool $canCreateAppointments = false;
     public bool $canEditAppointments = false;
     public bool $canDeleteAppointments = false;
+    public bool $canCreateBodies = false;
+    public bool $canEditBodies = false;
 
     public function display($tpl = null): void
     {
@@ -39,6 +43,7 @@ final class HtmlView extends BaseHtmlView
         if ($component instanceof OrganizationsComponent) {
             $component->getCoreIntegrationService()->enableUi($this->document->getWebAssetManager());
             $this->loadAppointments($component);
+            $this->loadBodies($component);
         }
 
         $this->canCreateAppointments = $user->authorise('core.create', 'com_xdecaroorganizations')
@@ -46,6 +51,10 @@ final class HtmlView extends BaseHtmlView
         $this->canEditAppointments = $user->authorise('core.edit', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
         $this->canDeleteAppointments = $user->authorise('core.delete', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canCreateBodies = $user->authorise('core.create', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canEditBodies = $user->authorise('core.edit', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
 
         $wa = $this->document->getWebAssetManager();
@@ -63,6 +72,42 @@ final class HtmlView extends BaseHtmlView
         ToolbarHelper::cancel('organization.cancel');
 
         parent::display($tpl);
+    }
+
+    private function loadBodies(OrganizationsComponent $component): void
+    {
+        $organizationId = (int) ($this->item->id ?? 0);
+        if ($organizationId < 1) {
+            return;
+        }
+
+        try {
+            $model = $component->getMVCFactory()->createModel(
+                'OrganizationBodies',
+                'Administrator',
+                ['ignore_request' => true]
+            );
+
+            if (!$model instanceof OrganizationBodiesModel) {
+                throw new \RuntimeException('Unable to create OrganizationBodies model.');
+            }
+
+            $model->setOrganizationId($organizationId);
+            $items = $model->getItems();
+            if ($items === false) {
+                throw new \RuntimeException((string) ($model->getError() ?: 'Unable to load organization bodies.'));
+            }
+
+            $this->bodies = $items;
+        } catch (Throwable $exception) {
+            $this->bodies = [];
+            Log::add(
+                'Organizations bodies load failed: ' . $exception->getMessage(),
+                Log::ERROR,
+                'com_xdecaroorganizations'
+            );
+            Factory::getApplication()->enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+        }
     }
 
     private function loadAppointments(OrganizationsComponent $component): void
