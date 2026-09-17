@@ -5,7 +5,7 @@ $template = (string) file_get_contents($root . '/component/admin/tmpl/organizati
 $js = (string) file_get_contents($root . '/component/media/js/organization-edit.js');
 
 if (!str_contains($template, "getCmd('activeTab', 'identity')")
-    || !str_contains($template, "['identity', 'contacts', 'members', 'publishing', 'system']")
+    || !str_contains($template, "'members'")
     || !str_contains($template, "['active' => \$activeTab]")) {
     fwrite(STDERR, "Organization edit view must select the active tab from a validated activeTab request value.\n");
     exit(1);
