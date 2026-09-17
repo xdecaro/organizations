@@ -161,6 +161,10 @@ final class OrganizationAppointmentModel extends AdminModel
             throw new RuntimeException('Only active appointments can be deleted.');
         }
 
+        if ($this->hasDelegations($id)) {
+            throw new RuntimeException('This appointment has delegations and cannot be deleted. End the appointment instead.');
+        }
+
         if (!$table->delete($id)) {
             throw new RuntimeException((string) ($table->getError() ?: 'Unable to delete appointment.'));
         }
@@ -195,6 +199,18 @@ final class OrganizationAppointmentModel extends AdminModel
             ->where($db->quoteName('state') . ' >= 0')
             ->bind(':bodyId', $bodyId, ParameterType::INTEGER)
             ->bind(':organizationId', $organizationId, ParameterType::INTEGER);
+
+        return (int) $db->setQuery($query)->loadResult() > 0;
+    }
+
+    private function hasDelegations(int $appointmentId): bool
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__xdecaroorganizations_delegations'))
+            ->where($db->quoteName('appointment_id') . ' = :appointmentId')
+            ->bind(':appointmentId', $appointmentId, ParameterType::INTEGER);
 
         return (int) $db->setQuery($query)->loadResult() > 0;
     }
