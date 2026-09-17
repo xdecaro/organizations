@@ -70,7 +70,7 @@ jobs:
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
             --notes "Organizations ${V}: migrates the Joomla package identity to pkg_organizations, keeps the Members tab active after appointment actions, and uses People limited identity-details access to show birth date and birth place for authorised person disambiguation without requesting the full sensitive profile. Joomla 6 only."
-      - name: Publish canonical Joomla update metadata
+      - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
           set -euo pipefail
@@ -79,17 +79,22 @@ jobs:
           python3 - "$V" "$SHA" <<'PY'
           import sys,xml.etree.ElementTree as ET
           version, sha = sys.argv[1], sys.argv[2]
-          p='updates/pkg_organizations.xml'; t=ET.parse(p); u=t.getroot().find('./update')
-          u.find('name').text='Organizations'
-          u.find('element').text='pkg_organizations'
-          u.find('version').text=version
-          u.find('./downloads/downloadurl').text=f'https://github.com/xdecaro/organizations/releases/download/v{version}/pkg_organizations_{version}.zip'
-          u.find('sha256').text=sha
-          ET.indent(t,space='  '); t.write(p,encoding='utf-8',xml_declaration=True)
+          url=f'https://github.com/xdecaro/organizations/releases/download/v{version}/pkg_organizations_{version}.zip'
+          for path, element in [
+              ('updates/pkg_organizations.xml', 'pkg_organizations'),
+              ('updates/pkg_xdecaroorganizations.xml', 'pkg_xdecaroorganizations'),
+          ]:
+              t=ET.parse(path); u=t.getroot().find('./update')
+              u.find('name').text='Organizations'
+              u.find('element').text=element
+              u.find('version').text=version
+              u.find('./downloads/downloadurl').text=url
+              u.find('sha256').text=sha
+              ET.indent(t,space='  '); t.write(path,encoding='utf-8',xml_declaration=True)
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add updates/pkg_organizations.xml
+          git add updates/pkg_organizations.xml updates/pkg_xdecaroorganizations.xml
           git diff --cached --quiet || git commit -m "Publish Organizations ${V} update metadata"
           git pull --rebase origin main
           git push origin HEAD:main
@@ -99,14 +104,17 @@ jobs:
           set -euo pipefail
           V="$(cat VERSION)"
           EXPECTED_SHA="$(sha256sum "dist/pkg_organizations_${V}.zip"|awk '{print $1}')"
-          for attempt in 1 2 3 4 5; do
-            curl -fsSL "https://raw.githubusercontent.com/xdecaro/organizations/main/updates/pkg_organizations.xml?run=${GITHUB_RUN_ID}-${attempt}" -o /tmp/feed.xml || true
-            if grep -Fq "<version>${V}</version>" /tmp/feed.xml 2>/dev/null; then break; fi
-            sleep 3
+          for FEED in pkg_organizations pkg_xdecaroorganizations; do
+            for attempt in 1 2 3 4 5; do
+              curl -fsSL "https://raw.githubusercontent.com/xdecaro/organizations/main/updates/${FEED}.xml?run=${GITHUB_RUN_ID}-${attempt}" -o "/tmp/${FEED}.xml" || true
+              if grep -Fq "<version>${V}</version>" "/tmp/${FEED}.xml" 2>/dev/null; then break; fi
+              sleep 3
+            done
+            grep -Fq "releases/download/v${V}/pkg_organizations_${V}.zip" "/tmp/${FEED}.xml"
+            grep -Fq "<sha256>${EXPECTED_SHA}</sha256>" "/tmp/${FEED}.xml"
           done
-          grep -Fq '<element>pkg_organizations</element>' /tmp/feed.xml
-          grep -Fq "releases/download/v${V}/pkg_organizations_${V}.zip" /tmp/feed.xml
-          grep -Fq "<sha256>${EXPECTED_SHA}</sha256>" /tmp/feed.xml
+          grep -Fq '<element>pkg_organizations</element>' /tmp/pkg_organizations.xml
+          grep -Fq '<element>pkg_xdecaroorganizations</element>' /tmp/pkg_xdecaroorganizations.xml
           curl -fL --retry 3 "https://github.com/xdecaro/organizations/releases/download/v${V}/pkg_organizations_${V}.zip" -o /tmp/published-package.zip
           echo "${EXPECTED_SHA}  /tmp/published-package.zip" | sha256sum --check --strict
           unzip -t /tmp/published-package.zip >/dev/null
