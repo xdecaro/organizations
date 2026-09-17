@@ -10,17 +10,18 @@ if (!str_contains($service, "method_exists(\$provider, 'searchPeopleForIdentity'
     exit(1);
 }
 
-if (!preg_match('/searchPeopleForIdentity\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit\s*\)/s', $service)) {
+if (!str_contains($service, "\$filters = ['search' => trim(\$search)]")
+    || !preg_match('/searchPeopleForIdentity\(\s*\$filters,\s*\$limit\s*\)/s', $service)) {
     fwrite(STDERR, "Organizations must request birth disambiguation through searchPeopleForIdentity().\n");
     exit(1);
 }
 
-if (!preg_match('/searchPeople\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit,\s*false\s*\)/s', $service)) {
+if (!preg_match('/searchPeople\(\s*\$filters,\s*\$limit,\s*false\s*\)/s', $service)) {
     fwrite(STDERR, "Organizations must retain a public name-only People fallback.\n");
     exit(1);
 }
 
-if (preg_match('/searchPeople\(\s*\[\'search\' => trim\(\$search\)\],\s*\$limit,\s*true\s*\)/s', $service)) {
+if (preg_match('/searchPeople\([^;]*,\s*true\s*\)/s', $service)) {
     fwrite(STDERR, "Organizations must not request the full sensitive People profile just to disambiguate homonyms.\n");
     exit(1);
 }
