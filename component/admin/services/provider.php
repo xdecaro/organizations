@@ -42,6 +42,12 @@ return new class implements ServiceProviderInterface
             PeopleIntegrationService::class,
             static fn(): PeopleIntegrationService => new PeopleIntegrationService()
         );
+        $container->share(
+            PersonAppointmentsService::class,
+            static fn(Container $container): PersonAppointmentsService => new PersonAppointmentsService(
+                $container->get(DatabaseInterface::class)
+            )
+        );
 
         $container->set(
             ComponentInterface::class,
@@ -54,6 +60,7 @@ return new class implements ServiceProviderInterface
                 $component->setOrganizationProviderService($container->get(OrganizationProviderService::class));
                 $component->setDuplicateService($container->get(DuplicateService::class));
                 $component->setPeopleIntegrationService($container->get(PeopleIntegrationService::class));
+                $component->setPersonAppointmentsService($container->get(PersonAppointmentsService::class));
 
                 return $component;
             }

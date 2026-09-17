@@ -10,6 +10,7 @@ use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService
 use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
 use xdecaro\Component\Organizations\Administrator\Service\PeopleIntegrationService;
+use xdecaro\Component\Organizations\Administrator\Service\PersonAppointmentsService;
 
 final class OrganizationsComponent extends MVCComponent
 {
@@ -17,6 +18,7 @@ final class OrganizationsComponent extends MVCComponent
     private ?OrganizationProviderService $provider = null;
     private ?DuplicateService $duplicates = null;
     private ?PeopleIntegrationService $people = null;
+    private ?PersonAppointmentsService $personAppointments = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void
     {
@@ -68,5 +70,19 @@ final class OrganizationsComponent extends MVCComponent
         }
 
         return $this->people;
+    }
+
+    public function setPersonAppointmentsService(PersonAppointmentsService $service): void
+    {
+        $this->personAppointments = $service;
+    }
+
+    public function getPersonAppointmentsService(): PersonAppointmentsService
+    {
+        if (!$this->personAppointments) {
+            throw new RuntimeException('Organizations person appointments service not initialized.');
+        }
+
+        return $this->personAppointments;
     }
 }
