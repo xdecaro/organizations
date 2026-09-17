@@ -83,6 +83,7 @@ final class AppointmentController extends BaseController
             $data = [
                 'id' => $id,
                 'organization_id' => $input->post->getInt('organization_id', 0),
+                'body_id' => $input->post->getInt('body_id', 0),
                 'person_uuid' => $input->post->getString('person_uuid', ''),
                 'role_code' => $input->post->getCmd('role_code', ''),
                 'role_custom' => $input->post->getString('role_custom', ''),

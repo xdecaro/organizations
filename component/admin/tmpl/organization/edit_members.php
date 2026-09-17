@@ -36,6 +36,7 @@ $roleText = static function ($appointment): string {
 $appointmentJson = static function ($appointment): string {
     return htmlspecialchars((string) json_encode([
         'id' => (int) ($appointment->id ?? 0),
+        'body_id' => (int) ($appointment->body_id ?? 0),
         'person_uuid' => (string) ($appointment->person_uuid ?? ''),
         'person_name_snapshot' => (string) ($appointment->person_name_snapshot ?? ''),
         'role_code' => (string) ($appointment->role_code ?? ''),
@@ -81,6 +82,7 @@ $appointmentJson = static function ($appointment): string {
                     <tr>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?></th>
+                        <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_MANDATE'); ?></th>
                         <th><?php echo Text::_('JSTATUS'); ?></th>
                         <th class="text-end"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ACTIONS'); ?></th>
@@ -88,12 +90,13 @@ $appointmentJson = static function ($appointment): string {
                 </thead>
                 <tbody>
                     <?php if ($active === []) : ?>
-                        <tr><td colspan="5" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_ACTIVE_NONE'); ?></td></tr>
+                        <tr><td colspan="6" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_ACTIVE_NONE'); ?></td></tr>
                     <?php endif; ?>
                     <?php foreach ($active as $appointment) : ?>
                         <tr>
                             <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
                             <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
                                 <?php echo $this->escape((string) $appointment->starts_on); ?>
                                 →
@@ -147,6 +150,7 @@ $appointmentJson = static function ($appointment): string {
                     <tr>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?></th>
+                        <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_MANDATE'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ENDED_ON'); ?></th>
                         <th><?php echo Text::_('JSTATUS'); ?></th>
@@ -155,12 +159,13 @@ $appointmentJson = static function ($appointment): string {
                 </thead>
                 <tbody>
                     <?php if ($history === []) : ?>
-                        <tr><td colspan="6" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_HISTORY_NONE'); ?></td></tr>
+                        <tr><td colspan="7" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_HISTORY_NONE'); ?></td></tr>
                     <?php endif; ?>
                     <?php foreach ($history as $appointment) : ?>
                         <tr>
                             <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
                             <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
                                 <?php echo $this->escape((string) $appointment->starts_on); ?>
                                 →
@@ -199,6 +204,15 @@ $appointmentJson = static function ($appointment): string {
                         </div>
 
                         <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" for="appointment-body-id"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></label>
+                                <select class="form-select" id="appointment-body-id">
+                                    <option value="0"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY_NONE'); ?></option>
+                                    <?php foreach ($this->bodies as $body) : ?>
+                                        <option value="<?php echo (int) $body->id; ?>"><?php echo $this->escape((string) $body->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="appointment-role-code"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?> *</label>
                                 <select class="form-select" id="appointment-role-code">
@@ -210,6 +224,12 @@ $appointmentJson = static function ($appointment): string {
                                     <option value="auditor"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_AUDITOR'); ?></option>
                                     <option value="director"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_DIRECTOR'); ?></option>
                                     <option value="coordinator"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_COORDINATOR'); ?></option>
+                                    <option value="representative"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_REPRESENTATIVE'); ?></option>
+                                    <option value="commissioner"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_COMMISSIONER'); ?></option>
+                                    <option value="vice_commissioner"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_VICE_COMMISSIONER'); ?></option>
+                                    <option value="delegate"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_DELEGATE'); ?></option>
+                                    <option value="control_member"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_CONTROL_MEMBER'); ?></option>
+                                    <option value="administrative_secretary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_ADMINISTRATIVE_SECRETARY'); ?></option>
                                     <option value="custom"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_CUSTOM'); ?></option>
                                 </select>
                             </div>

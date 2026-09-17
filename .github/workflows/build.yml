@@ -39,6 +39,9 @@ jobs:
           php tests/appointments-ui-contract.php
           php tests/members-tab-persistence-contract.php
           php tests/institutional-profile-contract.php
+          php tests/bodies-contract.php
+          php tests/organization-body-domain.php
+          php tests/appointment-bodies-roles-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET

@@ -63,6 +63,9 @@ $assert($endedBeforeStart !== [], 'termination before start must fail');
 
 $roles = AppointmentDomain::roles();
 $assert(in_array('president', $roles, true) && in_array('custom', $roles, true), 'role catalog incomplete');
-$assert(count($roles) === 9, 'role catalog must contain exactly the approved first-version roles');
+foreach (['representative', 'commissioner', 'vice_commissioner', 'delegate', 'control_member', 'administrative_secretary'] as $role) {
+    $assert(in_array($role, $roles, true), "missing generic organization role {$role}");
+}
+$assert(count($roles) === 15, 'role catalog must contain the approved generic organization roles');
 
 echo "appointments domain OK\n";

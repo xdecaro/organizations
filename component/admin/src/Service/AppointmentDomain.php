@@ -18,6 +18,12 @@ final class AppointmentDomain
         'auditor',
         'director',
         'coordinator',
+        'representative',
+        'commissioner',
+        'vice_commissioner',
+        'delegate',
+        'control_member',
+        'administrative_secretary',
         'custom',
     ];
 
@@ -158,6 +164,12 @@ final class AppointmentDomain
             'auditor' => 'COM_XDECAROORGANIZATIONS_ROLE_AUDITOR',
             'director' => 'COM_XDECAROORGANIZATIONS_ROLE_DIRECTOR',
             'coordinator' => 'COM_XDECAROORGANIZATIONS_ROLE_COORDINATOR',
+            'representative' => 'COM_XDECAROORGANIZATIONS_ROLE_REPRESENTATIVE',
+            'commissioner' => 'COM_XDECAROORGANIZATIONS_ROLE_COMMISSIONER',
+            'vice_commissioner' => 'COM_XDECAROORGANIZATIONS_ROLE_VICE_COMMISSIONER',
+            'delegate' => 'COM_XDECAROORGANIZATIONS_ROLE_DELEGATE',
+            'control_member' => 'COM_XDECAROORGANIZATIONS_ROLE_CONTROL_MEMBER',
+            'administrative_secretary' => 'COM_XDECAROORGANIZATIONS_ROLE_ADMINISTRATIVE_SECRETARY',
             'custom' => 'COM_XDECAROORGANIZATIONS_ROLE_CUSTOM',
             default => 'COM_XDECAROORGANIZATIONS_ROLE_CUSTOM',
         };

@@ -9,6 +9,7 @@ use RuntimeException;
 use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationBodiesService;
 use xdecaro\Component\Organizations\Administrator\Service\PeopleIntegrationService;
 use xdecaro\Component\Organizations\Administrator\Service\PersonAppointmentsService;
 
@@ -19,6 +20,7 @@ final class OrganizationsComponent extends MVCComponent
     private ?DuplicateService $duplicates = null;
     private ?PeopleIntegrationService $people = null;
     private ?PersonAppointmentsService $personAppointments = null;
+    private ?OrganizationBodiesService $bodies = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void
     {
@@ -84,5 +86,19 @@ final class OrganizationsComponent extends MVCComponent
         }
 
         return $this->personAppointments;
+    }
+
+    public function setOrganizationBodiesService(OrganizationBodiesService $service): void
+    {
+        $this->bodies = $service;
+    }
+
+    public function getOrganizationBodiesService(): OrganizationBodiesService
+    {
+        if (!$this->bodies) {
+            throw new RuntimeException('Organizations bodies service not initialized.');
+        }
+
+        return $this->bodies;
     }
 }

@@ -18,6 +18,7 @@ final class OrganizationAppointmentTable extends Table
     public function check(): bool
     {
         $this->organization_id = (int) ($this->organization_id ?? 0);
+        $this->body_id = !empty($this->body_id) ? (int) $this->body_id : null;
         $this->person_uuid = strtolower(trim((string) ($this->person_uuid ?? '')));
         $this->person_name_snapshot = trim((string) ($this->person_name_snapshot ?? ''));
         $this->role_code = trim((string) ($this->role_code ?? ''));

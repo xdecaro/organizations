@@ -13,7 +13,8 @@ if (!str_contains($template, "getCmd('activeTab', 'identity')")
 
 foreach ([
     'const reloadMembersTab',
-    "searchParams.set('activeTab', 'members')",
+    "const reloadMembersTab = () => reloadOrganizationTab('members')",
+    "url.searchParams.set('activeTab', tab)",
     'window.location.assign(url.toString())',
 ] as $needle) {
     if (!str_contains($js, $needle)) {

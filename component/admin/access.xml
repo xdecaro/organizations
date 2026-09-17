@@ -9,5 +9,6 @@
     <action name="core.delete" title="JACTION_DELETE"/>
     <action name="organizations.view_sensitive" title="COM_XDECAROORGANIZATIONS_ACTION_VIEW_SENSITIVE"/>
     <action name="organizations.view_appointments" title="COM_XDECAROORGANIZATIONS_ACTION_VIEW_APPOINTMENTS"/>
+    <action name="organizations.view_bodies" title="COM_XDECAROORGANIZATIONS_ACTION_VIEW_BODIES"/>
   </section>
 </access>

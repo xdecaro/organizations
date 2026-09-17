@@ -55,6 +55,7 @@ final class CoreIntegrationService
             new Capability(self::COMPONENT, 'organizations.query', '1.0.0'),
             new Capability(self::COMPONENT, 'organizations.hierarchy', '1.0.0'),
             new Capability(self::COMPONENT, 'organizations.institutional_profile', '1'),
+            new Capability(self::COMPONENT, 'organizations.bodies', '1'),
             new Capability(self::COMPONENT, 'organizations.duplicates', '1.0.0'),
             new Capability(self::COMPONENT, 'organizations.people_appointments', '1'),
         ]);

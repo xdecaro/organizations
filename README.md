@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.0.28`
+- Stable candidate version: `1.0.29`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -17,3 +17,5 @@ For member/appointment person disambiguation, Organizations uses the public Peop
 Organizations 1.0.27 adds the read-only Core capability `organizations.people_appointments` and public `PersonAppointmentsService::getAppointmentsByPersonUuid()` contract. Access is controlled by `organizations.view_appointments` or `core.admin`. The public response is limited to organization identity, role, dates, cessation reason and derived appointment status; appointment notes and sensitive organization fields are not exposed.
 
 Organizations 1.0.28 adds a generic institutional profile for multi-level organizations: organizational level, territorial scope, operational status and separate legal/management/administrative/tax/fiscal autonomy flags. These are organization-owned facts; meeting, voting and deliberation workflow remains outside Organizations.
+
+Organizations 1.0.29 adds reusable organization bodies/internal structures and optional body-linked appointments. Bodies describe static organizational structure only; meeting, quorum, voting, agenda and resolution workflows remain the responsibility of a future Governance component.
