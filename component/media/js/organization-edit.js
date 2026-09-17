@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     : null;
 
   const idField = document.getElementById('appointment-id');
+  const appointmentBodyId = document.getElementById('appointment-body-id');
   const personUuid = document.getElementById('appointment-person-uuid');
   const personSearch = document.querySelector('[data-people-search]');
   const peopleResults = document.querySelector('[data-people-results]');
@@ -199,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const resetEdit = () => {
     if (idField) idField.value = '0';
+    if (appointmentBodyId) appointmentBodyId.value = '0';
     if (personUuid) personUuid.value = '';
     if (personSearch) personSearch.value = '';
     if (roleCode) roleCode.value = 'councillor';
@@ -213,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const fillEdit = (appointment) => {
     if (idField) idField.value = String(appointment.id || 0);
+    if (appointmentBodyId) appointmentBodyId.value = String(appointment.body_id || 0);
     if (personUuid) personUuid.value = appointment.person_uuid || '';
     if (personSearch) personSearch.value = appointment.person_name_snapshot || '';
     if (roleCode) roleCode.value = appointment.role_code || 'councillor';
@@ -298,7 +301,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const selectedDuration = duration?.value || 'custom';
       await post(endpoints.save, {
         id: idField?.value || '0',
-        organization_id: members.dataset.organizationId,
+        organization_id: membersOrganizationId,
+        body_id: appointmentBodyId?.value || '0',
         person_uuid: personUuid?.value || '',
         role_code: roleCode?.value || '',
         role_custom: roleCustom?.value || '',
