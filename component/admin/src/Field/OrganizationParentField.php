@@ -7,6 +7,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationHierarchy;
 
@@ -29,6 +30,7 @@ final class OrganizationParentField extends ListField
                 $db->quoteName('id'),
                 $db->quoteName('parent_id'),
                 $db->quoteName('name'),
+                $db->quoteName('structure_level'),
             ])
             ->from($db->quoteName('#__xdecaroorganizations_organizations'))
             ->where($db->quoteName('state') . ' >= 0');
@@ -55,7 +57,14 @@ final class OrganizationParentField extends ListField
                 ? str_repeat("\u{00A0}\u{00A0}", $depth) . '↳ '
                 : '';
 
-            $options[] = HTMLHelper::_('select.option', (string) (int) $item->id, $prefix . (string) $item->name);
+            $level = strtolower(trim((string) ($item->structure_level ?? 'unspecified')));
+            $levelKey = 'COM_XDECAROORGANIZATIONS_STRUCTURE_' . strtoupper($level);
+            $levelLabel = Text::_($levelKey);
+            $label = $level !== 'unspecified' && $levelLabel !== $levelKey
+                ? $levelLabel . ' · ' . (string) $item->name
+                : (string) $item->name;
+
+            $options[] = HTMLHelper::_('select.option', (string) (int) $item->id, $prefix . $label);
         }
 
         return $options;
