@@ -14,6 +14,7 @@ use xdecaro\Component\Organizations\Administrator\Extension\OrganizationsCompone
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationAppointmentsModel;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationBodiesModel;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationDelegationsModel;
+use xdecaro\Component\Organizations\Administrator\Model\OrganizationModel;
 
 final class HtmlView extends BaseHtmlView
 {
@@ -22,6 +23,8 @@ final class HtmlView extends BaseHtmlView
     public array $appointments = [];
     public array $bodies = [];
     public array $delegations = [];
+    public array $hierarchyPath = [];
+    public array $hierarchyDescendants = [];
     public bool $peopleAvailable = false;
     public bool $canCreateAppointments = false;
     public bool $canEditAppointments = false;
@@ -42,6 +45,8 @@ final class HtmlView extends BaseHtmlView
         if (!$user->authorise($new ? 'core.create' : 'core.edit', 'com_xdecaroorganizations')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
+
+        $this->loadHierarchyContext();
 
         $component = $app->bootComponent('com_xdecaroorganizations');
         if ($component instanceof OrganizationsComponent) {
@@ -81,6 +86,35 @@ final class HtmlView extends BaseHtmlView
         ToolbarHelper::cancel('organization.cancel');
 
         parent::display($tpl);
+    }
+
+    private function loadHierarchyContext(): void
+    {
+        $organizationId = (int) ($this->item->id ?? 0);
+        if ($organizationId < 1) {
+            return;
+        }
+
+        try {
+            $model = $this->getModel();
+
+            if (!$model instanceof OrganizationModel) {
+                throw new \RuntimeException('Unable to resolve Organization model.');
+            }
+
+            $context = $model->getHierarchyContext($organizationId);
+            $this->hierarchyPath = array_values((array) ($context['path'] ?? []));
+            $this->hierarchyDescendants = array_values((array) ($context['descendants'] ?? []));
+        } catch (Throwable $exception) {
+            $this->hierarchyPath = [];
+            $this->hierarchyDescendants = [];
+            Log::add(
+                'Organizations hierarchy context load failed: ' . $exception->getMessage(),
+                Log::ERROR,
+                'com_xdecaroorganizations'
+            );
+            Factory::getApplication()->enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+        }
     }
 
     private function loadDelegations(OrganizationsComponent $component): void

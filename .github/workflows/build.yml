@@ -44,6 +44,8 @@ jobs:
           php tests/appointment-bodies-roles-contract.php
           php tests/delegations-contract.php
           php tests/organization-delegation-domain.php
+          php tests/organization-hierarchy-context.php
+          php tests/hierarchy-context-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET

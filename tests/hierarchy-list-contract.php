@@ -14,14 +14,14 @@ $items = [
     (object) ['id' => 3, 'parent_id' => 2, 'name' => 'Sezione Provinciale ENS Roma'],
     (object) ['id' => 4, 'parent_id' => 0, 'name' => 'Zeta'],
     (object) ['id' => 1, 'parent_id' => 0, 'name' => 'ENS'],
-    (object) ['id' => 2, 'parent_id' => 1, 'name' => 'Consiglio Regionale ENS Lazio'],
+    (object) ['id' => 2, 'parent_id' => 1, 'name' => 'ENS Lazio'],
 ];
 
 $ordered = OrganizationHierarchy::order($items);
 $names = array_map(static fn(object $item): string => $item->name, $ordered);
 $depths = array_map(static fn(object $item): int => (int) $item->hierarchy_depth, $ordered);
 
-$expectedNames = ['ENS', 'Consiglio Regionale ENS Lazio', 'Sezione Provinciale ENS Roma', 'Zeta'];
+$expectedNames = ['ENS', 'ENS Lazio', 'Sezione Provinciale ENS Roma', 'Zeta'];
 $expectedDepths = [0, 1, 2, 0];
 
 $cycleItems = [
