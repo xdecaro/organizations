@@ -14,7 +14,7 @@ $items = [
     (object) ['id' => 3, 'parent_id' => 2, 'name' => 'Sezione Provinciale ENS Roma'],
     (object) ['id' => 4, 'parent_id' => 0, 'name' => 'Zeta'],
     (object) ['id' => 1, 'parent_id' => 0, 'name' => 'ENS'],
-    (object) ['id' => 2, 'parent_id' => 1, 'name' => 'Consiglio Regionale ENS Lazio'],
+    (object) ['id' => 2, 'parent_id' => 1, 'name' => 'ENS Lazio'],
 ];
 
 $ordered = OrganizationHierarchy::order($items);
