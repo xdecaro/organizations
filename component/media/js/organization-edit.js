@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const endpoints = {
     search: 'index.php?option=com_xdecaroorganizations&task=appointment.searchPeople&format=json',
+    eligibility: 'index.php?option=com_xdecaroorganizations&task=appointment.eligibility&format=json',
     save: 'index.php?option=com_xdecaroorganizations&task=appointment.save&format=json',
     end: 'index.php?option=com_xdecaroorganizations&task=appointment.end&format=json',
     delete: 'index.php?option=com_xdecaroorganizations&task=appointment.delete&format=json',
@@ -52,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const personUuid = document.getElementById('appointment-person-uuid');
   const personSearch = document.querySelector('[data-people-search]');
   const peopleResults = document.querySelector('[data-people-results]');
+  const membershipRequirement = members?.dataset.membershipRequirement || 'none';
+  const membershipEligibility = editModalElement?.querySelector('[data-membership-eligibility]') || null;
   const roleCode = document.getElementById('appointment-role-code');
   const roleCustom = document.getElementById('appointment-role-custom');
   const roleCustomWrap = document.querySelector('[data-role-custom-wrap]');
@@ -193,6 +196,62 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const clearMembershipEligibility = () => {
+    if (!membershipEligibility) {
+      return;
+    }
+
+    membershipEligibility.textContent = '';
+    membershipEligibility.className = 'alert mt-2 mb-0 d-none';
+    delete membershipEligibility.dataset.status;
+  };
+
+  const renderMembershipEligibility = (result) => {
+    if (!membershipEligibility || membershipRequirement === 'none') {
+      return;
+    }
+
+    const status = String(result?.status || 'unavailable');
+    const labelMap = {
+      eligible: membershipEligibility.dataset.labelEligible,
+      not_member: membershipEligibility.dataset.labelNotMember,
+      inactive_member: membershipEligibility.dataset.labelInactiveMember,
+      fee_not_current: membershipEligibility.dataset.labelFeeNotCurrent,
+      unavailable: membershipEligibility.dataset.labelUnavailable,
+    };
+
+    const classMap = {
+      eligible: 'alert-success',
+      not_member: 'alert-danger',
+      inactive_member: 'alert-warning',
+      fee_not_current: 'alert-warning',
+      unavailable: 'alert-secondary',
+    };
+
+    membershipEligibility.textContent = labelMap[status] || labelMap.unavailable || status;
+    membershipEligibility.className = `alert mt-2 mb-0 ${classMap[status] || 'alert-secondary'}`;
+    membershipEligibility.dataset.status = status;
+  };
+
+  const checkMembershipEligibility = async (uuid) => {
+    clearMembershipEligibility();
+
+    if (membershipRequirement === 'none' || !uuid || membersOrganizationId < 1) {
+      return;
+    }
+
+    try {
+      const result = await post(endpoints.eligibility, {
+        organization_id: membersOrganizationId,
+        person_uuid: uuid,
+      });
+      renderMembershipEligibility(result);
+    } catch (error) {
+      console.error(error);
+      renderMembershipEligibility({ status: 'unavailable' });
+    }
+  };
+
   const formatBirthDate = (value) => {
     const raw = String(value || '').trim();
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
@@ -217,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (plannedEndsOn) plannedEndsOn.value = '';
     if (notes) notes.value = '';
     clearResults();
+    clearMembershipEligibility();
     updateCustomRole();
   };
 
@@ -232,7 +292,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (duration) duration.value = detectDuration(appointment.starts_on || '', appointment.planned_ends_on || '');
     if (notes) notes.value = appointment.notes || '';
     clearResults();
+    clearMembershipEligibility();
     updateCustomRole();
+    void checkMembershipEligibility(appointment.person_uuid || '');
   };
 
   document.querySelectorAll('[data-appointment-add]').forEach((button) => {
@@ -259,6 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
       personUuid.value = '';
     }
     clearResults();
+    clearMembershipEligibility();
     window.clearTimeout(searchTimer);
 
     const query = personSearch.value.trim();
@@ -294,6 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (personUuid) personUuid.value = person.uuid;
             if (personSearch) personSearch.value = person.name;
             clearResults();
+            void checkMembershipEligibility(person.uuid);
           });
           peopleResults?.appendChild(option);
         });
