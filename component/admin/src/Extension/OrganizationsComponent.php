@@ -13,6 +13,8 @@ use xdecaro\Component\Organizations\Administrator\Service\OrganizationBodiesServ
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationDelegationsService;
 use xdecaro\Component\Organizations\Administrator\Service\PeopleIntegrationService;
 use xdecaro\Component\Organizations\Administrator\Service\PersonAppointmentsService;
+use xdecaro\Component\Organizations\Administrator\Service\MembershipIntegrationService;
+use xdecaro\Component\Organizations\Administrator\Service\AppointmentMembershipPolicyService;
 
 final class OrganizationsComponent extends MVCComponent
 {
@@ -23,6 +25,8 @@ final class OrganizationsComponent extends MVCComponent
     private ?PersonAppointmentsService $personAppointments = null;
     private ?OrganizationBodiesService $bodies = null;
     private ?OrganizationDelegationsService $delegations = null;
+    private ?MembershipIntegrationService $membership = null;
+    private ?AppointmentMembershipPolicyService $appointmentMembershipPolicy = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void
     {
@@ -116,5 +120,33 @@ final class OrganizationsComponent extends MVCComponent
         }
 
         return $this->delegations;
+    }
+
+    public function setMembershipIntegrationService(MembershipIntegrationService $service): void
+    {
+        $this->membership = $service;
+    }
+
+    public function getMembershipIntegrationService(): MembershipIntegrationService
+    {
+        if (!$this->membership) {
+            throw new RuntimeException('Organizations Membership integration service not initialized.');
+        }
+
+        return $this->membership;
+    }
+
+    public function setAppointmentMembershipPolicyService(AppointmentMembershipPolicyService $service): void
+    {
+        $this->appointmentMembershipPolicy = $service;
+    }
+
+    public function getAppointmentMembershipPolicyService(): AppointmentMembershipPolicyService
+    {
+        if (!$this->appointmentMembershipPolicy) {
+            throw new RuntimeException('Organizations appointment membership policy service not initialized.');
+        }
+
+        return $this->appointmentMembershipPolicy;
     }
 }
