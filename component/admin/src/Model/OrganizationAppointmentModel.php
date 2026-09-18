@@ -168,8 +168,9 @@ final class OrganizationAppointmentModel extends AdminModel
             throw new RuntimeException('Appointment not found.');
         }
 
-        if (AppointmentDomain::status($table->getProperties()) !== 'active') {
-            throw new RuntimeException('Only active appointments can be deleted.');
+        $status = AppointmentDomain::status($table->getProperties());
+        if (!in_array($status, ['active', 'scheduled'], true)) {
+            throw new RuntimeException('Only active or scheduled appointments can be deleted.');
         }
 
         if ($this->hasDelegations($id)) {
