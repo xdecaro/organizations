@@ -143,10 +143,16 @@ final class AppointmentDomain
             };
         }
 
+        $startsOn = trim((string) ($appointment['starts_on'] ?? ''));
         $plannedEndsOn = trim((string) ($appointment['planned_ends_on'] ?? ''));
         $today ??= new DateTimeImmutable('today');
+        $todayValue = $today->format('Y-m-d');
 
-        if (self::validDate($plannedEndsOn) && $plannedEndsOn < $today->format('Y-m-d')) {
+        if (self::validDate($startsOn) && $startsOn > $todayValue) {
+            return 'scheduled';
+        }
+
+        if (self::validDate($plannedEndsOn) && $plannedEndsOn < $todayValue) {
             return 'expired';
         }
 

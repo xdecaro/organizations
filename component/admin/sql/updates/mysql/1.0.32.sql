@@ -1,0 +1,1 @@
+-- Organizations 1.0.32: scheduled appointment status fix only; no database schema changes.
