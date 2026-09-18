@@ -25,6 +25,7 @@ final class HtmlView extends BaseHtmlView
     public array $delegations = [];
     public array $hierarchyPath = [];
     public array $hierarchyDescendants = [];
+    public string $appointmentMembershipRequirement = 'none';
     public bool $peopleAvailable = false;
     public bool $canCreateAppointments = false;
     public bool $canEditAppointments = false;
@@ -220,8 +221,25 @@ final class HtmlView extends BaseHtmlView
             }
 
             $this->appointments = $items;
+            $policy = $component->getAppointmentMembershipPolicyService();
+            $this->appointmentMembershipRequirement = $policy->resolveRequirement($organizationId);
+
+            if ($this->appointmentMembershipRequirement !== 'none') {
+                foreach ($this->appointments as $appointment) {
+                    $status = (string) ($appointment->visual_status ?? '');
+                    if (!in_array($status, ['active', 'scheduled'], true)) {
+                        continue;
+                    }
+
+                    $appointment->membership_eligibility = $policy->evaluate(
+                        $organizationId,
+                        (string) ($appointment->person_uuid ?? '')
+                    );
+                }
+            }
         } catch (Throwable $exception) {
             $this->appointments = [];
+            $this->appointmentMembershipRequirement = 'none';
             Log::add(
                 'Organizations appointments load failed: ' . $exception->getMessage(),
                 Log::ERROR,
