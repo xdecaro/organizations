@@ -39,6 +39,13 @@ final class OrganizationTable extends Table
         'dissolved',
     ];
 
+    private const APPOINTMENT_MEMBERSHIP_REQUIREMENTS = [
+        'inherit',
+        'none',
+        'active_member',
+        'active_member_fee_current',
+    ];
+
     public function __construct(DatabaseDriver $db)
     {
         parent::__construct('#__xdecaroorganizations_organizations', 'id', $db);
@@ -100,6 +107,13 @@ final class OrganizationTable extends Table
         $this->operational_status = in_array($operationalStatus, self::OPERATIONAL_STATUSES, true)
             ? $operationalStatus
             : 'active';
+
+        $membershipRequirement = strtolower(trim((string) ($this->appointment_membership_requirement ?? 'inherit')));
+        $this->appointment_membership_requirement = in_array(
+            $membershipRequirement,
+            self::APPOINTMENT_MEMBERSHIP_REQUIREMENTS,
+            true
+        ) ? $membershipRequirement : 'inherit';
 
         foreach (
             [

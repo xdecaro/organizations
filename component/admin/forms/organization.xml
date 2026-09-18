@@ -69,6 +69,18 @@
     <field name="autonomy_fiscal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_FISCAL" default="0">
       <option value="0">JNO</option><option value="1">JYES</option>
     </field>
+    <field
+      name="appointment_membership_requirement"
+      type="list"
+      label="COM_XDECAROORGANIZATIONS_FIELD_APPOINTMENT_MEMBERSHIP_REQUIREMENT"
+      description="COM_XDECAROORGANIZATIONS_FIELD_APPOINTMENT_MEMBERSHIP_REQUIREMENT_DESC"
+      default="inherit"
+    >
+      <option value="inherit">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_INHERIT</option>
+      <option value="none">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_NONE</option>
+      <option value="active_member">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_ACTIVE_MEMBER</option>
+      <option value="active_member_fee_current">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_ACTIVE_MEMBER_FEE_CURRENT</option>
+    </field>
   </fieldset>
 
   <fieldset name="contacts" label="COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS">

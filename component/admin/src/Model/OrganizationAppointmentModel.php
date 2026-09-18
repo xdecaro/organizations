@@ -6,11 +6,13 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
 use RuntimeException;
 use xdecaro\Component\Organizations\Administrator\Service\AppointmentDomain;
+use xdecaro\Component\Organizations\Administrator\Service\AppointmentMembershipPolicyService;
 use xdecaro\Component\Organizations\Administrator\Service\PeopleIntegrationService;
 
 final class OrganizationAppointmentModel extends AdminModel
@@ -87,6 +89,11 @@ final class OrganizationAppointmentModel extends AdminModel
         }
 
         $personChanged = !$existing || strtolower((string) ($existing['person_uuid'] ?? '')) !== $personUuid;
+
+        if (!$existing || $personChanged) {
+            $this->assertMembershipEligibility($organizationId, $personUuid);
+        }
+
         $snapshot = trim((string) ($existing['person_name_snapshot'] ?? ''));
 
         if ($personChanged) {
@@ -265,6 +272,44 @@ final class OrganizationAppointmentModel extends AdminModel
             ->bind(':appointmentId', $appointmentId, ParameterType::INTEGER);
 
         return (int) $db->setQuery($query)->loadResult() > 0;
+    }
+
+    private function assertMembershipEligibility(int $organizationId, string $personUuid): void
+    {
+        $result = $this->appointmentMembershipPolicy()->evaluate($organizationId, $personUuid);
+        $requirement = (string) ($result['requirement'] ?? 'none');
+
+        if ($requirement === 'none') {
+            return;
+        }
+
+        if (($result['available'] ?? false) !== true) {
+            throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE_ERROR'));
+        }
+
+        if (($result['eligible'] ?? false) === true) {
+            return;
+        }
+
+        $messageKey = match ((string) ($result['status'] ?? '')) {
+            'not_member' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_NOT_MEMBER_ERROR',
+            'inactive_member' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_INACTIVE_ERROR',
+            'fee_not_current' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_FEE_ERROR',
+            default => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_NOT_ELIGIBLE_ERROR',
+        };
+
+        throw new RuntimeException(Text::_($messageKey));
+    }
+
+    private function appointmentMembershipPolicy(): AppointmentMembershipPolicyService
+    {
+        $component = Factory::getApplication()->bootComponent('com_xdecaroorganizations');
+
+        if (!method_exists($component, 'getAppointmentMembershipPolicyService')) {
+            throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE_ERROR'));
+        }
+
+        return $component->getAppointmentMembershipPolicyService();
     }
 
     private function people(): PeopleIntegrationService

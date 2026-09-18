@@ -47,6 +47,8 @@ jobs:
           php tests/organization-hierarchy-context.php
           php tests/hierarchy-context-contract.php
           php tests/scheduled-appointments-contract.php
+          php tests/appointment-membership-requirement-contract.php
+          php tests/appointment-membership-policy-domain.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET

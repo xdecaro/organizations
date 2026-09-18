@@ -59,6 +59,40 @@ final class AppointmentController extends BaseController
         }
     }
 
+    public function eligibility(): void
+    {
+        if (!$this->checkPostToken()) {
+            return;
+        }
+
+        $user = Factory::getApplication()->getIdentity();
+        if (!$user->authorise('core.create', 'com_xdecaroorganizations')
+            && !$user->authorise('core.edit', 'com_xdecaroorganizations')
+            && !$user->authorise('core.manage', 'com_xdecaroorganizations')
+            && !$user->authorise('core.admin', 'com_xdecaroorganizations')) {
+            $this->respond(null, Text::_('JERROR_ALERTNOAUTHOR'), true);
+            return;
+        }
+
+        try {
+            $input = Factory::getApplication()->getInput();
+            $organizationId = $input->post->getInt('organization_id', 0);
+            $personUuid = strtolower(trim($input->post->getString('person_uuid', '')));
+
+            $component = Factory::getApplication()->bootComponent('com_xdecaroorganizations');
+            $result = $component->getAppointmentMembershipPolicyService()->evaluate($organizationId, $personUuid);
+
+            $this->respond([
+                'requirement' => (string) ($result['requirement'] ?? 'none'),
+                'available' => (bool) ($result['available'] ?? false),
+                'eligible' => $result['eligible'] ?? null,
+                'status' => (string) ($result['status'] ?? 'unavailable'),
+            ]);
+        } catch (Throwable $e) {
+            $this->respond(null, $e->getMessage(), true);
+        }
+    }
+
     public function save(): void
     {
         if (!$this->checkPostToken()) {

@@ -31,6 +31,26 @@ $statusKeys = [
     'forfeited' => 'COM_XDECAROORGANIZATIONS_STATUS_FORFEITED',
 ];
 
+$membershipStatusKeys = [
+    'eligible' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_ELIGIBLE',
+    'not_member' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_NOT_MEMBER',
+    'inactive_member' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_INACTIVE',
+    'fee_not_current' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_FEE_NOT_CURRENT',
+    'unavailable' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE',
+];
+
+$membershipBadgeClasses = [
+    'eligible' => 'text-bg-success',
+    'not_member' => 'text-bg-danger',
+    'inactive_member' => 'text-bg-warning',
+    'fee_not_current' => 'text-bg-warning',
+    'unavailable' => 'text-bg-secondary',
+];
+
+$membershipRequirementKey = 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_' . strtoupper(
+    (string) ($this->appointmentMembershipRequirement ?: 'none')
+);
+
 $roleText = static function ($appointment): string {
     if (($appointment->role_code ?? '') === 'custom') {
         return trim((string) ($appointment->role_custom ?? '')) ?: Text::_('COM_XDECAROORGANIZATIONS_ROLE_CUSTOM');
@@ -53,7 +73,11 @@ $appointmentJson = static function ($appointment): string {
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
 };
 ?>
-<div class="xdecaro-members" data-organization-id="<?php echo $organizationId; ?>">
+<div
+    class="xdecaro-members"
+    data-organization-id="<?php echo $organizationId; ?>"
+    data-membership-requirement="<?php echo $this->escape((string) $this->appointmentMembershipRequirement); ?>"
+>
     <?php if ($organizationId < 1) : ?>
         <div class="alert alert-info mb-0">
             <?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_SAVE_FIRST'); ?>
@@ -82,6 +106,13 @@ $appointmentJson = static function ($appointment): string {
             </div>
         <?php endif; ?>
 
+        <?php if ($this->appointmentMembershipRequirement !== 'none') : ?>
+            <div class="alert alert-info">
+                <strong><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT'); ?>:</strong>
+                <?php echo Text::_($membershipRequirementKey); ?>
+            </div>
+        <?php endif; ?>
+
         <div class="table-responsive mb-4">
             <table class="table table-striped align-middle mb-0">
                 <thead>
@@ -100,7 +131,23 @@ $appointmentJson = static function ($appointment): string {
                     <?php endif; ?>
                     <?php foreach ($active as $appointment) : ?>
                         <tr>
-                            <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
+                            <td>
+                                <?php echo $this->escape((string) $appointment->person_name_snapshot); ?>
+                                <?php if ($this->appointmentMembershipRequirement !== 'none') : ?>
+                                    <?php
+                                    $eligibility = is_array($appointment->membership_eligibility ?? null)
+                                        ? $appointment->membership_eligibility
+                                        : ['status' => 'unavailable'];
+                                    $eligibilityStatus = (string) ($eligibility['status'] ?? 'unavailable');
+                                    ?>
+                                    <span
+                                        class="badge <?php echo $membershipBadgeClasses[$eligibilityStatus] ?? 'text-bg-secondary'; ?> d-block mt-1 text-wrap"
+                                        data-membership-status="<?php echo $this->escape($eligibilityStatus); ?>"
+                                    >
+                                        <?php echo Text::_($membershipStatusKeys[$eligibilityStatus] ?? 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE'); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
                             <td><?php echo $this->escape($roleText($appointment)); ?></td>
                             <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
@@ -168,7 +215,23 @@ $appointmentJson = static function ($appointment): string {
                     <?php endif; ?>
                     <?php foreach ($scheduled as $appointment) : ?>
                         <tr>
-                            <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
+                            <td>
+                                <?php echo $this->escape((string) $appointment->person_name_snapshot); ?>
+                                <?php if ($this->appointmentMembershipRequirement !== 'none') : ?>
+                                    <?php
+                                    $eligibility = is_array($appointment->membership_eligibility ?? null)
+                                        ? $appointment->membership_eligibility
+                                        : ['status' => 'unavailable'];
+                                    $eligibilityStatus = (string) ($eligibility['status'] ?? 'unavailable');
+                                    ?>
+                                    <span
+                                        class="badge <?php echo $membershipBadgeClasses[$eligibilityStatus] ?? 'text-bg-secondary'; ?> d-block mt-1 text-wrap"
+                                        data-membership-status="<?php echo $this->escape($eligibilityStatus); ?>"
+                                    >
+                                        <?php echo Text::_($membershipStatusKeys[$eligibilityStatus] ?? 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE'); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
                             <td><?php echo $this->escape($roleText($appointment)); ?></td>
                             <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
@@ -263,6 +326,15 @@ $appointmentJson = static function ($appointment): string {
                             <label class="form-label" for="appointment-person-search"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?> *</label>
                             <input type="search" class="form-control" id="appointment-person-search" data-people-search autocomplete="off">
                             <div class="xdecaro-people-results list-group mt-1" data-people-results role="listbox"></div>
+                            <div
+                                class="alert mt-2 mb-0 d-none"
+                                data-membership-eligibility
+                                data-label-eligible="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_ELIGIBLE'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-not-member="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_NOT_MEMBER'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-inactive-member="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_INACTIVE'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-fee-not-current="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_FEE_NOT_CURRENT'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-unavailable="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE'), ENT_QUOTES, 'UTF-8'); ?>"
+                            ></div>
                         </div>
 
                         <div class="row g-3">

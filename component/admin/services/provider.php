@@ -60,6 +60,17 @@ return new class implements ServiceProviderInterface
                 $container->get(DatabaseInterface::class)
             )
         );
+        $container->share(
+            MembershipIntegrationService::class,
+            static fn(): MembershipIntegrationService => new MembershipIntegrationService()
+        );
+        $container->share(
+            AppointmentMembershipPolicyService::class,
+            static fn(Container $container): AppointmentMembershipPolicyService => new AppointmentMembershipPolicyService(
+                $container->get(DatabaseInterface::class),
+                $container->get(MembershipIntegrationService::class)
+            )
+        );
 
         $container->set(
             ComponentInterface::class,
@@ -75,6 +86,8 @@ return new class implements ServiceProviderInterface
                 $component->setPersonAppointmentsService($container->get(PersonAppointmentsService::class));
                 $component->setOrganizationBodiesService($container->get(OrganizationBodiesService::class));
                 $component->setOrganizationDelegationsService($container->get(OrganizationDelegationsService::class));
+                $component->setMembershipIntegrationService($container->get(MembershipIntegrationService::class));
+                $component->setAppointmentMembershipPolicyService($container->get(AppointmentMembershipPolicyService::class));
 
                 return $component;
             }
