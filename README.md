@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.1.0`
+- Stable candidate version: `1.1.1`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -27,3 +27,5 @@ Organizations 1.0.31 clarifies the distinction between parent organizations/terr
 Organizations 1.0.32 fixes future appointment classification: appointments whose start date is after today are shown as Scheduled rather than Active and remain separate from appointment history.
 
 Organizations 1.1.0 adds an inheritable appointment membership requirement. A parent organization such as ENS can require active Membership status (optionally with the annual fee current), child organizations can inherit the rule, and appointment selection shows eligibility without duplicating Membership data. Membership remains optional unless an organization explicitly enables a membership requirement.
+
+Organizations 1.1.1 updates the optional Membership adapter for Membership 1.7.0. The current `membership.eligibility` contract is preferred, while the previous 1.6.x history contract remains supported as a compatibility fallback. No direct Membership database access is introduced.
