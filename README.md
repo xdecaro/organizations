@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.0.31`
+- Stable candidate version: `1.0.32`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -23,3 +23,5 @@ Organizations 1.0.29 adds reusable organization bodies/internal structures and o
 Organizations 1.0.30 adds organization delegations/assignments linked to existing appointments, with scope, period and history. Ending an appointment closes any longer/open delegation on the same date, while appointments referenced by delegations cannot be physically deleted. Governance workflows remain outside Organizations.
 
 Organizations 1.0.31 clarifies the distinction between parent organizations/territorial structures and internal bodies. The organization editor now includes a hierarchy context tab showing the root-to-current path and all descendant organizations, while the parent selector displays organization levels to reduce accidental use of councils/boards as parent organizations.
+
+Organizations 1.0.32 fixes future appointment classification: appointments whose start date is after today are shown as Scheduled rather than Active and remain separate from appointment history.
