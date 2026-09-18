@@ -6,11 +6,16 @@ use Joomla\CMS\Language\Text;
 
 $organizationId = (int) ($this->item->id ?? 0);
 $active = [];
+$scheduled = [];
 $history = [];
 
 foreach ($this->appointments as $appointment) {
-    if (($appointment->visual_status ?? '') === 'active') {
+    $visualStatus = (string) ($appointment->visual_status ?? '');
+
+    if ($visualStatus === 'active') {
         $active[] = $appointment;
+    } elseif ($visualStatus === 'scheduled') {
+        $scheduled[] = $appointment;
     } else {
         $history[] = $appointment;
     }
@@ -18,6 +23,7 @@ foreach ($this->appointments as $appointment) {
 
 $statusKeys = [
     'active' => 'COM_XDECAROORGANIZATIONS_STATUS_ACTIVE',
+    'scheduled' => 'COM_XDECAROORGANIZATIONS_STATUS_SCHEDULED',
     'expired' => 'COM_XDECAROORGANIZATIONS_STATUS_EXPIRED',
     'ended' => 'COM_XDECAROORGANIZATIONS_STATUS_ENDED',
     'resigned' => 'COM_XDECAROORGANIZATIONS_STATUS_RESIGNED',
@@ -121,6 +127,62 @@ $appointmentJson = static function ($appointment): string {
                                             </button>
                                             <button type="button" class="btn btn-outline-secondary" data-appointment-end data-end-reason="forfeiture" data-appointment="<?php echo $appointmentJson($appointment); ?>">
                                                 <?php echo Text::_('COM_XDECAROORGANIZATIONS_END_FORFEITURE'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if ($this->canDeleteAppointments) : ?>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-danger"
+                                                data-appointment-delete
+                                                data-appointment-id="<?php echo (int) $appointment->id; ?>"
+                                                data-confirm="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE_CONFIRM'), ENT_QUOTES, 'UTF-8'); ?>"
+                                            >
+                                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="h5 mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_SCHEDULED'); ?></h3>
+        <div class="table-responsive mb-4">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?></th>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?></th>
+                        <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></th>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_MANDATE'); ?></th>
+                        <th><?php echo Text::_('JSTATUS'); ?></th>
+                        <th class="text-end"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ACTIONS'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($scheduled === []) : ?>
+                        <tr><td colspan="6" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_SCHEDULED_NONE'); ?></td></tr>
+                    <?php endif; ?>
+                    <?php foreach ($scheduled as $appointment) : ?>
+                        <tr>
+                            <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
+                            <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
+                            <td>
+                                <?php echo $this->escape((string) $appointment->starts_on); ?>
+                                →
+                                <?php echo $this->escape((string) ($appointment->planned_ends_on ?: Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_OPEN_END'))); ?>
+                            </td>
+                            <td><?php echo Text::_($statusKeys[$appointment->visual_status] ?? 'COM_XDECAROORGANIZATIONS_STATUS_SCHEDULED'); ?></td>
+                            <td class="text-end">
+                                <?php if ($this->canEditAppointments || $this->canDeleteAppointments) : ?>
+                                    <div class="btn-group btn-group-sm flex-wrap" role="group">
+                                        <?php if ($this->canEditAppointments) : ?>
+                                            <button type="button" class="btn btn-outline-secondary" data-appointment-edit data-appointment="<?php echo $appointmentJson($appointment); ?>">
+                                                <?php echo Text::_('JACTION_EDIT'); ?>
                                             </button>
                                         <?php endif; ?>
                                         <?php if ($this->canDeleteAppointments) : ?>
