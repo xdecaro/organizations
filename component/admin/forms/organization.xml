@@ -16,7 +16,7 @@
       <option value="sponsor">COM_XDECAROORGANIZATIONS_TYPE_SPONSOR</option>
       <option value="supplier">COM_XDECAROORGANIZATIONS_TYPE_SUPPLIER</option>
     </field>
-    <field name="parent_id" type="OrganizationParent" label="COM_XDECAROORGANIZATIONS_FIELD_PARENT">
+    <field name="parent_id" type="OrganizationParent" label="COM_XDECAROORGANIZATIONS_FIELD_PARENT" description="COM_XDECAROORGANIZATIONS_FIELD_PARENT_DESC">
       <option value="0">JNONE</option>
     </field>
     <field name="vat_id" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_VAT_ID" maxlength="64"/>
