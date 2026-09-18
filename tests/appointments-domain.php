@@ -25,6 +25,7 @@ $assert(AppointmentDomain::plannedEnd('2026-09-16', null, '2028-03-16') === '202
 
 $today = new DateTimeImmutable('2026-09-16');
 $assert(AppointmentDomain::status(['planned_ends_on' => '2026-09-16', 'ended_on' => null, 'end_reason' => null], $today) === 'active', 'appointment ending today is active');
+$assert(AppointmentDomain::status(['starts_on' => '2026-09-17', 'planned_ends_on' => '2027-09-17', 'ended_on' => null, 'end_reason' => null], $today) === 'scheduled', 'future appointment must be scheduled');
 $assert(AppointmentDomain::status(['planned_ends_on' => '2026-09-15', 'ended_on' => null, 'end_reason' => null], $today) === 'expired', 'past appointment must expire');
 $assert(AppointmentDomain::status(['end_reason' => 'term_end', 'ended_on' => '2026-09-10'], $today) === 'ended', 'term_end mapping failed');
 $assert(AppointmentDomain::status(['end_reason' => 'resignation', 'ended_on' => '2026-09-10'], $today) === 'resigned', 'resignation mapping failed');
