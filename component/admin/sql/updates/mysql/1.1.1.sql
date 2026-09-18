@@ -1,0 +1,1 @@
+-- Organizations 1.1.1: Membership 1.7 contract compatibility fix only; no database schema changes.
