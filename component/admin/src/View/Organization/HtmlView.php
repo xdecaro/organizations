@@ -41,11 +41,12 @@ final class HtmlView extends BaseHtmlView
         $app = Factory::getApplication();
         $user = $app->getIdentity();
         $new = empty($this->item->id);
-        $this->loadHierarchyContext();
 
         if (!$user->authorise($new ? 'core.create' : 'core.edit', 'com_xdecaroorganizations')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
+
+        $this->loadHierarchyContext();
 
         $component = $app->bootComponent('com_xdecaroorganizations');
         if ($component instanceof OrganizationsComponent) {
