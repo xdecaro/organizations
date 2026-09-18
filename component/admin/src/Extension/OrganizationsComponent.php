@@ -10,6 +10,7 @@ use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService
 use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationBodiesService;
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationDelegationsService;
 use xdecaro\Component\Organizations\Administrator\Service\PeopleIntegrationService;
 use xdecaro\Component\Organizations\Administrator\Service\PersonAppointmentsService;
 
@@ -21,6 +22,7 @@ final class OrganizationsComponent extends MVCComponent
     private ?PeopleIntegrationService $people = null;
     private ?PersonAppointmentsService $personAppointments = null;
     private ?OrganizationBodiesService $bodies = null;
+    private ?OrganizationDelegationsService $delegations = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void
     {
@@ -100,5 +102,19 @@ final class OrganizationsComponent extends MVCComponent
         }
 
         return $this->bodies;
+    }
+
+    public function setOrganizationDelegationsService(OrganizationDelegationsService $service): void
+    {
+        $this->delegations = $service;
+    }
+
+    public function getOrganizationDelegationsService(): OrganizationDelegationsService
+    {
+        if (!$this->delegations) {
+            throw new RuntimeException('Organizations delegations service not initialized.');
+        }
+
+        return $this->delegations;
     }
 }

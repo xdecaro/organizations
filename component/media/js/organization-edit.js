@@ -13,9 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const members = document.querySelector('.xdecaro-members[data-organization-id]');
   const bodies = document.querySelector('.xdecaro-bodies[data-organization-id]');
+  const delegations = document.querySelector('.xdecaro-delegations[data-organization-id]');
   const membersOrganizationId = Number(members?.dataset.organizationId || 0);
   const bodiesOrganizationId = Number(bodies?.dataset.organizationId || 0);
-  if (membersOrganizationId < 1 && bodiesOrganizationId < 1) {
+  const delegationsOrganizationId = Number(delegations?.dataset.organizationId || 0);
+  if (membersOrganizationId < 1 && bodiesOrganizationId < 1 && delegationsOrganizationId < 1) {
     return;
   }
 
@@ -25,11 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     end: 'index.php?option=com_xdecaroorganizations&task=appointment.end&format=json',
     delete: 'index.php?option=com_xdecaroorganizations&task=appointment.delete&format=json',
     bodySave: 'index.php?option=com_xdecaroorganizations&task=body.save&format=json',
+    delegationSave: 'index.php?option=com_xdecaroorganizations&task=delegation.save&format=json',
   };
 
   const editModalElement = document.getElementById('appointment-edit-modal');
   const endModalElement = document.getElementById('appointment-end-modal');
   const bodyModalElement = document.getElementById('body-edit-modal');
+  const delegationModalElement = document.getElementById('delegation-edit-modal');
   const editModal = editModalElement && window.bootstrap?.Modal
     ? window.bootstrap.Modal.getOrCreateInstance(editModalElement)
     : null;
@@ -38,6 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
     : null;
   const bodyModal = bodyModalElement && window.bootstrap?.Modal
     ? window.bootstrap.Modal.getOrCreateInstance(bodyModalElement)
+    : null;
+  const delegationModal = delegationModalElement && window.bootstrap?.Modal
+    ? window.bootstrap.Modal.getOrCreateInstance(delegationModalElement)
     : null;
 
   const idField = document.getElementById('appointment-id');
@@ -442,6 +449,104 @@ document.addEventListener('DOMContentLoaded', () => {
         notes: bodyNotes?.value || '',
       });
       reloadOrganizationTab('bodies');
+    } catch (error) {
+      window.alert(error.message || String(error));
+    }
+  });
+
+
+  const delegationId = document.getElementById('delegation-id');
+  const delegationAppointmentId = document.getElementById('delegation-appointment-id');
+  const delegationTitle = document.getElementById('delegation-title');
+  const delegationScope = document.getElementById('delegation-scope');
+  const delegationStartsOn = document.getElementById('delegation-starts-on');
+  const delegationEndsOn = document.getElementById('delegation-ends-on');
+  const delegationState = document.getElementById('delegation-state');
+  const delegationNotes = document.getElementById('delegation-notes');
+
+  const resetDelegation = () => {
+    if (delegationId) delegationId.value = '0';
+    if (delegationAppointmentId) delegationAppointmentId.value = '0';
+    if (delegationTitle) delegationTitle.value = '';
+    if (delegationScope) delegationScope.value = '';
+    if (delegationStartsOn) delegationStartsOn.value = '';
+    if (delegationEndsOn) delegationEndsOn.value = '';
+    if (delegationState) delegationState.value = '1';
+    if (delegationNotes) delegationNotes.value = '';
+  };
+
+  const parseDelegation = (button) => {
+    try {
+      return JSON.parse(button.dataset.delegation || '{}');
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
+  };
+
+  const fillDelegation = (delegation) => {
+    if (delegationId) delegationId.value = String(delegation.id || 0);
+    if (delegationAppointmentId) delegationAppointmentId.value = String(delegation.appointment_id || 0);
+    if (delegationTitle) delegationTitle.value = delegation.title || '';
+    if (delegationScope) delegationScope.value = delegation.scope || '';
+    if (delegationStartsOn) delegationStartsOn.value = delegation.starts_on || '';
+    if (delegationEndsOn) delegationEndsOn.value = delegation.ends_on || '';
+    if (delegationState) delegationState.value = String(Number(delegation.state ?? 1) === 1 ? 1 : 0);
+    if (delegationNotes) delegationNotes.value = delegation.notes || '';
+  };
+
+  const syncDelegationDatesWithAppointment = () => {
+    if (!delegationAppointmentId) {
+      return;
+    }
+
+    const selected = delegationAppointmentId.selectedOptions?.[0];
+    if (!selected) {
+      return;
+    }
+
+    const appointmentStart = selected.dataset.startsOn || '';
+    const appointmentEnd = selected.dataset.endedOn || '';
+
+    if (delegationStartsOn && !delegationStartsOn.value && appointmentStart) {
+      delegationStartsOn.value = appointmentStart;
+    }
+
+    if (delegationEndsOn && appointmentEnd && (!delegationEndsOn.value || delegationEndsOn.value > appointmentEnd)) {
+      delegationEndsOn.value = appointmentEnd;
+    }
+  };
+
+  document.querySelectorAll('[data-delegation-add]').forEach((button) => {
+    button.addEventListener('click', () => {
+      resetDelegation();
+      delegationModal?.show();
+    });
+  });
+
+  document.querySelectorAll('[data-delegation-edit]').forEach((button) => {
+    button.addEventListener('click', () => {
+      fillDelegation(parseDelegation(button));
+      delegationModal?.show();
+    });
+  });
+
+  delegationAppointmentId?.addEventListener('change', syncDelegationDatesWithAppointment);
+
+  document.querySelector('[data-delegation-save]')?.addEventListener('click', async () => {
+    try {
+      await post(endpoints.delegationSave, {
+        id: delegationId?.value || '0',
+        organization_id: delegationsOrganizationId,
+        appointment_id: delegationAppointmentId?.value || '0',
+        title: delegationTitle?.value || '',
+        scope: delegationScope?.value || '',
+        starts_on: delegationStartsOn?.value || '',
+        ends_on: delegationEndsOn?.value || '',
+        state: delegationState?.value || '1',
+        notes: delegationNotes?.value || '',
+      });
+      reloadOrganizationTab('delegations');
     } catch (error) {
       window.alert(error.message || String(error));
     }

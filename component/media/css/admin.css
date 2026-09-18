@@ -60,7 +60,8 @@
 
 #appointment-edit-modal .modal-dialog,
 #appointment-end-modal .modal-dialog,
-#body-edit-modal .modal-dialog {
+#body-edit-modal .modal-dialog,
+#delegation-edit-modal .modal-dialog {
   display: flex;
   align-items: center;
   width: calc(100% - 2rem);
@@ -71,7 +72,8 @@
 
 #appointment-edit-modal .modal-content,
 #appointment-end-modal .modal-content,
-#body-edit-modal .modal-content {
+#body-edit-modal .modal-content,
+#delegation-edit-modal .modal-content {
   width: 100%;
   overflow: hidden;
   border-radius: .75rem;
@@ -79,33 +81,38 @@
 
 #appointment-edit-modal .modal-header,
 #appointment-end-modal .modal-header,
-#body-edit-modal .modal-header {
+#body-edit-modal .modal-header,
+#delegation-edit-modal .modal-header {
   padding: 1rem 1.25rem;
 }
 
 #appointment-edit-modal .modal-body,
 #appointment-end-modal .modal-body,
-#body-edit-modal .modal-body {
+#body-edit-modal .modal-body,
+#delegation-edit-modal .modal-body {
   padding: 1.25rem;
   overflow-x: hidden;
 }
 
 #appointment-edit-modal .modal-footer,
 #appointment-end-modal .modal-footer,
-#body-edit-modal .modal-footer {
+#body-edit-modal .modal-footer,
+#delegation-edit-modal .modal-footer {
   gap: .5rem;
   padding: 1rem 1.25rem;
 }
 
 #appointment-edit-modal .form-label,
 #appointment-end-modal .form-label,
-#body-edit-modal .form-label {
+#body-edit-modal .form-label,
+#delegation-edit-modal .form-label {
   margin-bottom: .4rem;
 }
 
 #appointment-edit-modal textarea,
 #appointment-end-modal textarea,
-#body-edit-modal textarea {
+#body-edit-modal textarea,
+#delegation-edit-modal textarea {
   min-height: 7rem;
   resize: vertical;
 }
@@ -150,7 +157,8 @@
 @media (max-width: 575.98px) {
   #appointment-edit-modal .modal-dialog,
   #appointment-end-modal .modal-dialog,
-  #body-edit-modal .modal-dialog {
+  #body-edit-modal .modal-dialog,
+  #delegation-edit-modal .modal-dialog {
     width: calc(100% - 1rem);
     min-height: calc(100% - 1rem);
     margin: .5rem auto;
@@ -159,12 +167,15 @@
   #appointment-edit-modal .modal-header,
   #appointment-end-modal .modal-header,
   #body-edit-modal .modal-header,
+  #delegation-edit-modal .modal-header,
   #appointment-edit-modal .modal-body,
   #appointment-end-modal .modal-body,
   #body-edit-modal .modal-body,
+  #delegation-edit-modal .modal-body,
   #appointment-edit-modal .modal-footer,
   #appointment-end-modal .modal-footer,
-  #body-edit-modal .modal-footer {
+  #body-edit-modal .modal-footer,
+  #delegation-edit-modal .modal-footer {
     padding: 1rem;
   }
 }

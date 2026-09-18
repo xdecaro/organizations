@@ -143,8 +143,19 @@ final class OrganizationAppointmentModel extends AdminModel
         $table->modified = Factory::getDate()->toSql();
         $table->modified_by = (int) Factory::getApplication()->getIdentity()->id;
 
-        if (!$table->check() || !$table->store()) {
-            throw new RuntimeException((string) ($table->getError() ?: 'Unable to end appointment.'));
+        $db = $this->getDatabase();
+        $db->transactionStart();
+
+        try {
+            if (!$table->check() || !$table->store()) {
+                throw new RuntimeException((string) ($table->getError() ?: 'Unable to end appointment.'));
+            }
+
+            $this->endDelegations($id, $data['ended_on'], (int) $table->modified_by, (string) $table->modified);
+            $db->transactionCommit();
+        } catch (\Throwable $exception) {
+            $db->transactionRollback();
+            throw $exception;
         }
 
         return true;
@@ -159,6 +170,10 @@ final class OrganizationAppointmentModel extends AdminModel
 
         if (AppointmentDomain::status($table->getProperties()) !== 'active') {
             throw new RuntimeException('Only active appointments can be deleted.');
+        }
+
+        if ($this->hasDelegations($id)) {
+            throw new RuntimeException('This appointment has delegations and cannot be deleted. End the appointment instead.');
         }
 
         if (!$table->delete($id)) {
@@ -195,6 +210,58 @@ final class OrganizationAppointmentModel extends AdminModel
             ->where($db->quoteName('state') . ' >= 0')
             ->bind(':bodyId', $bodyId, ParameterType::INTEGER)
             ->bind(':organizationId', $organizationId, ParameterType::INTEGER);
+
+        return (int) $db->setQuery($query)->loadResult() > 0;
+    }
+
+    private function endDelegations(int $appointmentId, string $endedOn, int $userId, string $modified): void
+    {
+        $db = $this->getDatabase();
+
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__xdecaroorganizations_delegations'))
+            ->set($db->quoteName('ends_on') . ' = :endedOn')
+            ->set($db->quoteName('modified') . ' = :modified')
+            ->set($db->quoteName('modified_by') . ' = :modifiedBy')
+            ->where($db->quoteName('appointment_id') . ' = :appointmentId')
+            ->where($db->quoteName('state') . ' >= 0')
+            ->where($db->quoteName('starts_on') . ' <= :endedOnStart')
+            ->where('(' . $db->quoteName('ends_on') . ' IS NULL OR ' . $db->quoteName('ends_on') . ' > :endedOnLimit)')
+            ->bind(':endedOn', $endedOn)
+            ->bind(':modified', $modified)
+            ->bind(':modifiedBy', $userId, ParameterType::INTEGER)
+            ->bind(':appointmentId', $appointmentId, ParameterType::INTEGER)
+            ->bind(':endedOnStart', $endedOn)
+            ->bind(':endedOnLimit', $endedOn);
+
+        $db->setQuery($query)->execute();
+
+        $inactiveState = 0;
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__xdecaroorganizations_delegations'))
+            ->set($db->quoteName('state') . ' = :inactiveState')
+            ->set($db->quoteName('modified') . ' = :modifiedFuture')
+            ->set($db->quoteName('modified_by') . ' = :modifiedByFuture')
+            ->where($db->quoteName('appointment_id') . ' = :appointmentIdFuture')
+            ->where($db->quoteName('state') . ' >= 0')
+            ->where($db->quoteName('starts_on') . ' > :endedOnFuture')
+            ->bind(':inactiveState', $inactiveState, ParameterType::INTEGER)
+            ->bind(':modifiedFuture', $modified)
+            ->bind(':modifiedByFuture', $userId, ParameterType::INTEGER)
+            ->bind(':appointmentIdFuture', $appointmentId, ParameterType::INTEGER)
+            ->bind(':endedOnFuture', $endedOn);
+
+        $db->setQuery($query)->execute();
+    }
+
+    private function hasDelegations(int $appointmentId): bool
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__xdecaroorganizations_delegations'))
+            ->where($db->quoteName('appointment_id') . ' = :appointmentId')
+            ->bind(':appointmentId', $appointmentId, ParameterType::INTEGER);
 
         return (int) $db->setQuery($query)->loadResult() > 0;
     }
