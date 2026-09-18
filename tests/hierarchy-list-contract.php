@@ -21,7 +21,7 @@ $ordered = OrganizationHierarchy::order($items);
 $names = array_map(static fn(object $item): string => $item->name, $ordered);
 $depths = array_map(static fn(object $item): int => (int) $item->hierarchy_depth, $ordered);
 
-$expectedNames = ['ENS', 'Consiglio Regionale ENS Lazio', 'Sezione Provinciale ENS Roma', 'Zeta'];
+$expectedNames = ['ENS', 'ENS Lazio', 'Sezione Provinciale ENS Roma', 'Zeta'];
 $expectedDepths = [0, 1, 2, 0];
 
 $cycleItems = [
