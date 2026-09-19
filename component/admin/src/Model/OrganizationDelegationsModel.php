@@ -28,6 +28,8 @@ final class OrganizationDelegationsModel extends ListModel
                 'a.role_code',
                 'a.role_custom',
                 'a.body_id',
+                'a.planned_ends_on AS appointment_planned_ends_on',
+                'a.ended_on AS appointment_ended_on',
                 'b.name AS body_name',
             ])
             ->from($db->quoteName('#__xdecaroorganizations_delegations', 'd'))
@@ -51,6 +53,7 @@ final class OrganizationDelegationsModel extends ListModel
         $items = parent::getItems();
 
         foreach ($items as $item) {
+            $item->effective_end = OrganizationDelegationDomain::effectiveEnd($item);
             $item->visual_status = OrganizationDelegationDomain::status($item);
             $item->role_label_key = AppointmentDomain::roleLabelKey((string) $item->role_code);
         }
