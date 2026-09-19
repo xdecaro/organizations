@@ -29,6 +29,7 @@ $delegationJson = static function ($delegation): string {
         'scope' => (string) ($delegation->scope ?? ''),
         'starts_on' => (string) ($delegation->starts_on ?? ''),
         'ends_on' => (string) ($delegation->ends_on ?? ''),
+        'effective_end' => (string) ($delegation->effective_end ?? ''),
         'notes' => (string) ($delegation->notes ?? ''),
         'state' => (int) ($delegation->state ?? 1),
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
@@ -109,7 +110,14 @@ $appointmentLabel = static function ($appointment) use ($roleText): string {
                                 <td>
                                     <?php echo $this->escape((string) $delegation->starts_on); ?>
                                     →
-                                    <?php echo $this->escape((string) ($delegation->ends_on ?: Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_OPEN_END'))); ?>
+                                    <?php if (trim((string) ($delegation->ends_on ?? '')) !== '') : ?>
+                                        <?php echo $this->escape((string) $delegation->ends_on); ?>
+                                    <?php elseif (trim((string) ($delegation->effective_end ?? '')) !== '') : ?>
+                                        <?php echo $this->escape((string) $delegation->effective_end); ?>
+                                        <span class="d-block small text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_MANDATE_LIMIT'); ?></span>
+                                    <?php else : ?>
+                                        <?php echo Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_OPEN_END'); ?>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo Text::_($statusKeys[(string) ($delegation->visual_status ?? 'inactive')] ?? 'COM_XDECAROORGANIZATIONS_DELEGATION_STATUS_INACTIVE'); ?></td>
                                 <?php if ($this->canEditDelegations) : ?>
@@ -146,6 +154,7 @@ $appointmentLabel = static function ($appointment) use ($roleText): string {
                                             <option
                                                 value="<?php echo (int) $appointment->id; ?>"
                                                 data-starts-on="<?php echo $this->escape((string) ($appointment->starts_on ?? '')); ?>"
+                                                data-planned-ends-on="<?php echo $this->escape((string) ($appointment->planned_ends_on ?? '')); ?>"
                                                 data-ended-on="<?php echo $this->escape((string) ($appointment->ended_on ?? '')); ?>"
                                             >
                                                 <?php echo $this->escape($appointmentLabel($appointment)); ?>
@@ -178,6 +187,7 @@ $appointmentLabel = static function ($appointment) use ($roleText): string {
                                 <div class="col-12 col-md-6">
                                     <label class="form-label" for="delegation-ends-on"><?php echo Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_ENDS_ON'); ?></label>
                                     <input type="date" class="form-control" id="delegation-ends-on">
+                                    <div class="form-text" data-delegation-mandate-limit></div>
                                 </div>
 
                                 <div class="col-12">
