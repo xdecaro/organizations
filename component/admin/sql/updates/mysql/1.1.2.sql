@@ -1,0 +1,1 @@
+-- Organizations 1.1.2: delegation mandate boundary enforcement only; no database schema changes.
