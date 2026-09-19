@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
@@ -130,11 +131,11 @@ final class OrganizationDelegationModel extends AdminModel
 
         if ($appointmentBoundary !== '') {
             if ($delegationStart > $appointmentBoundary) {
-                throw new RuntimeException('Delegation cannot start after the linked appointment boundary.');
+                throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_AFTER_MANDATE_START_ERROR'));
             }
 
             if ($delegationEnd !== '' && $delegationEnd > $appointmentBoundary) {
-                throw new RuntimeException('Delegation cannot end after the linked appointment boundary.');
+                throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_AFTER_MANDATE_END_ERROR'));
             }
         }
     }
