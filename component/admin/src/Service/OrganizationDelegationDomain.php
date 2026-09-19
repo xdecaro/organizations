@@ -45,7 +45,7 @@ final class OrganizationDelegationDomain
         $today ??= new DateTimeImmutable('today');
         $todayValue = $today->format('Y-m-d');
         $startsOn = trim((string) ($row['starts_on'] ?? ''));
-        $endsOn = trim((string) ($row['ends_on'] ?? ''));
+        $endsOn = self::effectiveEnd($row);
 
         if (self::validDate($startsOn) && $startsOn > $todayValue) {
             return 'scheduled';
@@ -56,6 +56,28 @@ final class OrganizationDelegationDomain
         }
 
         return 'active';
+    }
+
+    public static function effectiveEnd(array|object $delegation): string
+    {
+        $row = is_object($delegation) ? get_object_vars($delegation) : $delegation;
+        $delegationEnd = trim((string) ($row['ends_on'] ?? ''));
+        $actualAppointmentEnd = trim((string) ($row['appointment_ended_on'] ?? ''));
+        $plannedAppointmentEnd = trim((string) ($row['appointment_planned_ends_on'] ?? ''));
+
+        $appointmentBoundary = self::validDate($actualAppointmentEnd)
+            ? $actualAppointmentEnd
+            : (self::validDate($plannedAppointmentEnd) ? $plannedAppointmentEnd : '');
+
+        if (!self::validDate($delegationEnd)) {
+            return $appointmentBoundary;
+        }
+
+        if ($appointmentBoundary === '') {
+            return $delegationEnd;
+        }
+
+        return $delegationEnd <= $appointmentBoundary ? $delegationEnd : $appointmentBoundary;
     }
 
     private static function validDate(string $value): bool
