@@ -120,19 +120,21 @@ final class OrganizationDelegationModel extends AdminModel
         $appointmentStart = trim((string) ($appointment['starts_on'] ?? ''));
         $delegationStart = trim((string) ($delegation['starts_on'] ?? ''));
         $delegationEnd = trim((string) ($delegation['ends_on'] ?? ''));
-        $appointmentEnd = trim((string) ($appointment['ended_on'] ?? ''));
+        $actualAppointmentEnd = trim((string) ($appointment['ended_on'] ?? ''));
+        $plannedAppointmentEnd = trim((string) ($appointment['planned_ends_on'] ?? ''));
+        $appointmentBoundary = $actualAppointmentEnd !== '' ? $actualAppointmentEnd : $plannedAppointmentEnd;
 
         if ($appointmentStart !== '' && $delegationStart < $appointmentStart) {
             throw new RuntimeException('Delegation cannot start before the linked appointment.');
         }
 
-        if ($appointmentEnd !== '') {
-            if ($delegationStart > $appointmentEnd) {
-                throw new RuntimeException('Delegation cannot start after the linked appointment ended.');
+        if ($appointmentBoundary !== '') {
+            if ($delegationStart > $appointmentBoundary) {
+                throw new RuntimeException('Delegation cannot start after the linked appointment boundary.');
             }
 
-            if ($delegationEnd === '' || $delegationEnd > $appointmentEnd) {
-                throw new RuntimeException('Delegation linked to an ended appointment must also end no later than that appointment.');
+            if ($delegationEnd !== '' && $delegationEnd > $appointmentBoundary) {
+                throw new RuntimeException('Delegation cannot end after the linked appointment boundary.');
             }
         }
     }
