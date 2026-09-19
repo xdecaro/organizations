@@ -525,6 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const delegationScope = document.getElementById('delegation-scope');
   const delegationStartsOn = document.getElementById('delegation-starts-on');
   const delegationEndsOn = document.getElementById('delegation-ends-on');
+  const delegationMandateLimit = document.querySelector('[data-delegation-mandate-limit]');
   const delegationState = document.getElementById('delegation-state');
   const delegationNotes = document.getElementById('delegation-notes');
 
@@ -534,7 +535,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (delegationTitle) delegationTitle.value = '';
     if (delegationScope) delegationScope.value = '';
     if (delegationStartsOn) delegationStartsOn.value = '';
-    if (delegationEndsOn) delegationEndsOn.value = '';
+    if (delegationEndsOn) {
+      delegationEndsOn.value = '';
+      delegationEndsOn.removeAttribute('max');
+    }
+    if (delegationMandateLimit) delegationMandateLimit.textContent = '';
     if (delegationState) delegationState.value = '1';
     if (delegationNotes) delegationNotes.value = '';
   };
@@ -570,20 +575,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const appointmentStart = selected.dataset.startsOn || '';
-    const appointmentEnd = selected.dataset.endedOn || '';
+    const appointmentPlannedEnd = selected.dataset.plannedEndsOn || '';
+    const appointmentActualEnd = selected.dataset.endedOn || '';
+    const appointmentEnd = appointmentActualEnd || appointmentPlannedEnd;
 
     if (delegationStartsOn && !delegationStartsOn.value && appointmentStart) {
       delegationStartsOn.value = appointmentStart;
     }
 
-    if (delegationEndsOn && appointmentEnd && (!delegationEndsOn.value || delegationEndsOn.value > appointmentEnd)) {
-      delegationEndsOn.value = appointmentEnd;
+    if (delegationEndsOn) {
+      if (appointmentEnd) {
+        delegationEndsOn.max = appointmentEnd;
+
+        if (!delegationEndsOn.value || delegationEndsOn.value > appointmentEnd) {
+          delegationEndsOn.value = appointmentEnd;
+        }
+      } else {
+        delegationEndsOn.removeAttribute('max');
+      }
+    }
+
+    if (delegationMandateLimit) {
+      delegationMandateLimit.textContent = appointmentEnd
+        ? `${delegationMandateLimit.dataset.label || 'Limite mandato'}: ${appointmentEnd}`
+        : '';
     }
   };
 
   document.querySelectorAll('[data-delegation-add]').forEach((button) => {
     button.addEventListener('click', () => {
       resetDelegation();
+      syncDelegationDatesWithAppointment();
       delegationModal?.show();
     });
   });
@@ -591,6 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-delegation-edit]').forEach((button) => {
     button.addEventListener('click', () => {
       fillDelegation(parseDelegation(button));
+      syncDelegationDatesWithAppointment();
       delegationModal?.show();
     });
   });
