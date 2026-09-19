@@ -187,7 +187,11 @@ $appointmentLabel = static function ($appointment) use ($roleText): string {
                                 <div class="col-12 col-md-6">
                                     <label class="form-label" for="delegation-ends-on"><?php echo Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_ENDS_ON'); ?></label>
                                     <input type="date" class="form-control" id="delegation-ends-on">
-                                    <div class="form-text" data-delegation-mandate-limit></div>
+                                    <div
+                                        class="form-text"
+                                        data-delegation-mandate-limit
+                                        data-label="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_DELEGATION_MANDATE_LIMIT'), ENT_QUOTES, 'UTF-8'); ?>"
+                                    ></div>
                                 </div>
 
                                 <div class="col-12">
