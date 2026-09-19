@@ -9,8 +9,8 @@ $appointmentModel = (string) file_get_contents($root . '/component/admin/src/Mod
 
 foreach ([
     'planned_ends_on',
-    'Delegation cannot start after the linked appointment boundary.',
-    'Delegation cannot end after the linked appointment boundary.',
+    'COM_XDECAROORGANIZATIONS_DELEGATION_AFTER_MANDATE_START_ERROR',
+    'COM_XDECAROORGANIZATIONS_DELEGATION_AFTER_MANDATE_END_ERROR',
 ] as $needle) {
     if (!str_contains($model, $needle)) {
         fwrite(STDERR, "Delegation save validation missing {$needle}.\n");
