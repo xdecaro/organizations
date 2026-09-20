@@ -80,6 +80,9 @@ final class OrganizationAppointmentModel extends AdminModel
             'end_reason' => $existing['end_reason'] ?? null,
             'end_note' => $existing['end_note'] ?? null,
             'notes' => $this->nullableString($data['notes'] ?? ($existing['notes'] ?? null)),
+            'show_on_frontend' => array_key_exists('show_on_frontend', $data)
+                ? (!empty($data['show_on_frontend']) ? 1 : 0)
+                : (int) ($existing['show_on_frontend'] ?? 0),
             'state' => (int) ($existing['state'] ?? 1),
         ];
 
