@@ -15,6 +15,11 @@
       "attributes": {
         "defer": true
       }
+    },
+    {
+      "name": "com_xdecaroorganizations.site",
+      "type": "style",
+      "uri": "com_xdecaroorganizations/site.css"
     }
   ]
 }
