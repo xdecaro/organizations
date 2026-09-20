@@ -58,7 +58,7 @@ $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'iden
         echo HTMLHelper::_('uitab.endTab');
 
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'system', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_SYSTEM'));
-        echo $this->form->renderFieldset('system');
+        echo $this->loadTemplate('system');
         echo HTMLHelper::_('uitab.endTab');
 
         echo HTMLHelper::_('uitab.endTabSet');
