@@ -70,6 +70,7 @@ $appointmentJson = static function ($appointment): string {
         'starts_on' => (string) ($appointment->starts_on ?? ''),
         'planned_ends_on' => (string) ($appointment->planned_ends_on ?? ''),
         'notes' => (string) ($appointment->notes ?? ''),
+        'show_on_frontend' => (int) ($appointment->show_on_frontend ?? 0),
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
 };
 ?>
@@ -148,7 +149,12 @@ $appointmentJson = static function ($appointment): string {
                                     </span>
                                 <?php endif; ?>
                             </td>
-                            <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td>
+                                <?php echo $this->escape($roleText($appointment)); ?>
+                                <?php if (!empty($appointment->show_on_frontend)) : ?>
+                                    <span class="badge text-bg-info d-block mt-1 text-wrap"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PUBLIC_BADGE'); ?></span>
+                                <?php endif; ?>
+                            </td>
                             <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
                                 <?php echo $this->escape((string) $appointment->starts_on); ?>
@@ -232,7 +238,12 @@ $appointmentJson = static function ($appointment): string {
                                     </span>
                                 <?php endif; ?>
                             </td>
-                            <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td>
+                                <?php echo $this->escape($roleText($appointment)); ?>
+                                <?php if (!empty($appointment->show_on_frontend)) : ?>
+                                    <span class="badge text-bg-info d-block mt-1 text-wrap"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PUBLIC_BADGE'); ?></span>
+                                <?php endif; ?>
+                            </td>
                             <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
                                 <?php echo $this->escape((string) $appointment->starts_on); ?>
@@ -289,7 +300,12 @@ $appointmentJson = static function ($appointment): string {
                     <?php foreach ($history as $appointment) : ?>
                         <tr>
                             <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
-                            <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td>
+                                <?php echo $this->escape($roleText($appointment)); ?>
+                                <?php if (!empty($appointment->show_on_frontend)) : ?>
+                                    <span class="badge text-bg-info d-block mt-1 text-wrap"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PUBLIC_BADGE'); ?></span>
+                                <?php endif; ?>
+                            </td>
                             <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
                                 <?php echo $this->escape((string) $appointment->starts_on); ?>
@@ -395,6 +411,16 @@ $appointmentJson = static function ($appointment): string {
                         <div class="mt-3">
                             <label class="form-label" for="appointment-notes"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_NOTES'); ?></label>
                             <textarea class="form-control" id="appointment-notes" rows="3"></textarea>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="appointment-show-on-frontend">
+                                <label class="form-check-label" for="appointment-show-on-frontend">
+                                    <?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_SHOW_ON_FRONTEND'); ?>
+                                </label>
+                            </div>
+                            <div class="form-text"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_SHOW_ON_FRONTEND_DESC'); ?></div>
                         </div>
                     </div>
                     <div class="modal-footer">
