@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <layout title="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_TITLE" option="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_OPTION">
+    <message key="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_DESC"/>
+  </layout>
+  <fields name="request">
+    <fieldset name="request">
+      <field
+        name="id"
+        type="sql"
+        required="true"
+        label="COM_XDECAROORGANIZATIONS_SITE_MENU_ORGANIZATION"
+        query="SELECT id AS value, name AS text FROM #__xdecaroorganizations_organizations WHERE state = 1 ORDER BY name"
+      />
+    </fieldset>
+  </fields>
+</metadata>
