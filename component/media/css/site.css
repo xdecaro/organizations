@@ -1,0 +1,308 @@
+.xo-public {
+  color: var(--body-color);
+}
+
+.xo-public .xo-page-header,
+.xo-public .xo-profile-header,
+.xo-public .xo-section {
+  margin-block-end: 2rem;
+}
+
+.xo-public .xo-page-header h1,
+.xo-public .xo-profile-header h1,
+.xo-public .xo-section h2,
+.xo-public .xo-body-card h3,
+.xo-public .xo-delegation-card h3 {
+  color: inherit;
+}
+
+.xo-page-header,
+.xo-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: var(--card-bg, var(--body-bg));
+  border: 1px solid var(--border-color, currentColor);
+  border-radius: .9rem;
+}
+
+.xo-profile-header {
+  align-items: flex-start;
+}
+
+.xo-profile-header h1,
+.xo-page-header h1 {
+  margin: .15rem 0 .35rem;
+}
+
+.xo-eyebrow {
+  margin: 0 0 .25rem;
+  color: var(--secondary-color, inherit);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.xo-subtitle,
+.xo-muted,
+.xo-territory {
+  color: var(--secondary-color, inherit);
+}
+
+.xo-subtitle,
+.xo-territory,
+.xo-muted {
+  margin: .25rem 0 0;
+}
+
+.xo-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: .65rem;
+  margin-block-end: 1.5rem;
+}
+
+.xo-card-grid,
+.xo-body-grid,
+.xo-delegation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.xo-card,
+.xo-body-card,
+.xo-delegation-card,
+.xo-contact,
+.xo-linked-list a {
+  background: var(--card-bg, var(--body-bg));
+  border: 1px solid var(--border-color, currentColor);
+  border-radius: .8rem;
+}
+
+.xo-card {
+  overflow: hidden;
+}
+
+.xo-card-link {
+  display: block;
+  height: 100%;
+  padding: 1.15rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.xo-card-link:hover,
+.xo-card-link:focus-visible,
+.xo-linked-list a:hover,
+.xo-linked-list a:focus-visible {
+  border-color: var(--link-color, currentColor);
+  color: inherit;
+  text-decoration: none;
+}
+
+.xo-card-link:focus-visible,
+.xo-contact:focus-visible,
+.xo-linked-list a:focus-visible {
+  outline: 2px solid var(--link-color, currentColor);
+  outline-offset: 2px;
+}
+
+.xo-card-head {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+}
+
+.xo-card-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.xo-logo,
+.xo-profile-logo {
+  flex: 0 0 auto;
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: contain;
+  border-radius: .7rem;
+}
+
+.xo-profile-logo {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.xo-logo-placeholder {
+  display: grid;
+  place-items: center;
+  background: var(--secondary-bg, var(--body-bg));
+  border: 1px solid var(--border-color, currentColor);
+  font-weight: 700;
+}
+
+.xo-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-block: .8rem .4rem;
+}
+
+.xo-more {
+  display: inline-block;
+  margin-block-start: 1rem;
+  color: var(--link-color, inherit);
+  font-weight: 600;
+}
+
+.xo-pagination {
+  margin-block-start: 1.5rem;
+}
+
+.xo-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-block-end: 1rem;
+  color: var(--secondary-color, inherit);
+  font-size: .9rem;
+}
+
+.xo-breadcrumb a {
+  color: var(--link-color, inherit);
+}
+
+.xo-section {
+  padding: 1.25rem;
+  background: var(--card-bg, var(--body-bg));
+  border: 1px solid var(--border-color, currentColor);
+  border-radius: .9rem;
+}
+
+.xo-section-heading {
+  margin-block-end: 1rem;
+}
+
+.xo-section-heading h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.xo-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.xo-contact {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: .9rem;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.xo-contact span {
+  color: var(--secondary-color, inherit);
+  font-size: .82rem;
+}
+
+.xo-body-card,
+.xo-delegation-card {
+  padding: 1rem;
+}
+
+.xo-body-card h3,
+.xo-delegation-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.xo-role-list {
+  display: grid;
+  gap: .55rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.xo-role-list li {
+  display: flex;
+  flex-direction: column;
+  padding-block-start: .55rem;
+  border-top: 1px solid var(--border-color, currentColor);
+}
+
+.xo-role-list span,
+.xo-delegation-holder {
+  color: var(--secondary-color, inherit);
+}
+
+.xo-delegation-holder {
+  margin: .45rem 0 .7rem;
+}
+
+.xo-linked-list {
+  display: grid;
+  gap: .65rem;
+}
+
+.xo-linked-list a {
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .85rem 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.xo-linked-list span {
+  color: var(--secondary-color, inherit);
+}
+
+@media (max-width: 991.98px) {
+  .xo-card-grid,
+  .xo-body-grid,
+  .xo-delegation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .xo-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .xo-page-header,
+  .xo-profile-header,
+  .xo-section {
+    padding: 1rem;
+  }
+
+  .xo-profile-header {
+    flex-direction: column;
+  }
+
+  .xo-profile-logo {
+    width: 4.25rem;
+    height: 4.25rem;
+  }
+
+  .xo-search {
+    grid-template-columns: 1fr;
+  }
+
+  .xo-card-grid,
+  .xo-body-grid,
+  .xo-delegation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .xo-linked-list a {
+    flex-direction: column;
+  }
+}
