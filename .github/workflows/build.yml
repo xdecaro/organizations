@@ -161,11 +161,11 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments' AND column_name='show_on_frontend' AND column_default='0';")" = 1
-          test -f components/com_xdecaroorganizations/src/Controller/DisplayController.php
-          test -f components/com_xdecaroorganizations/src/Model/OrganizationsModel.php
-          test -f components/com_xdecaroorganizations/src/Model/OrganizationModel.php
-          test -f components/com_xdecaroorganizations/tmpl/organizations/default.xml
-          test -f components/com_xdecaroorganizations/tmpl/organization/default.xml
+          test -f joomla/components/com_xdecaroorganizations/src/Controller/DisplayController.php
+          test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationsModel.php
+          test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationModel.php
+          test -f joomla/components/com_xdecaroorganizations/tmpl/organizations/default.xml
+          test -f joomla/components/com_xdecaroorganizations/tmpl/organization/default.xml
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM org_schemas s JOIN org_extensions e ON e.extension_id=s.extension_id WHERE e.element='com_xdecaroorganizations' LIMIT 1;")"
           test "$schema" = "$V"
           if [ '${{ matrix.mode }}' = 'upgrade-1.0.25' ]; then
