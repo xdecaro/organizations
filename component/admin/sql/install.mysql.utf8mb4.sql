@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_appointments` (
  `end_reason` VARCHAR(50) DEFAULT NULL,
  `end_note` TEXT DEFAULT NULL,
  `notes` TEXT DEFAULT NULL,
+ `show_on_frontend` TINYINT(1) NOT NULL DEFAULT 0,
  `state` TINYINT NOT NULL DEFAULT 1,
  `created` DATETIME NOT NULL,
  `created_by` INT UNSIGNED NOT NULL DEFAULT 0,
