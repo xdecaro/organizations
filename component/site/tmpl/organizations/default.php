@@ -7,6 +7,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
 $search = trim((string) $this->state->get('filter.search', ''));
+$itemId = (int) \Joomla\CMS\Factory::getApplication()->getInput()->getInt('Itemid', 0);
+$itemIdQuery = $itemId > 0 ? '&Itemid=' . $itemId : '';
 
 $typeLabels = [
     'organization' => 'COM_XDECAROORGANIZATIONS_SITE_TYPE_ORGANIZATION',
@@ -43,6 +45,9 @@ $structureLabels = [
         <form class="xo-search" method="get" action="<?php echo Route::_('index.php'); ?>">
             <input type="hidden" name="option" value="com_xdecaroorganizations">
             <input type="hidden" name="view" value="organizations">
+            <?php if ($itemId > 0) : ?>
+                <input type="hidden" name="Itemid" value="<?php echo $itemId; ?>">
+            <?php endif; ?>
             <label class="visually-hidden" for="xo-organization-search"><?php echo Text::_('JSEARCH_FILTER'); ?></label>
             <input
                 id="xo-organization-search"
@@ -54,7 +59,7 @@ $structureLabels = [
             >
             <button class="btn btn-primary" type="submit"><?php echo Text::_('JSEARCH_FILTER_SUBMIT'); ?></button>
             <?php if ($search !== '') : ?>
-                <a class="btn btn-outline-secondary" href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&view=organizations'); ?>">
+                <a class="btn btn-outline-secondary" href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&view=organizations' . $itemIdQuery); ?>">
                     <?php echo Text::_('JCLEAR'); ?>
                 </a>
             <?php endif; ?>
@@ -76,7 +81,7 @@ $structureLabels = [
                 $structureKey = $structureLabels[(string) ($item->structure_level ?? '')] ?? '';
                 ?>
                 <article class="xo-card">
-                    <a class="xo-card-link" href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&view=organization&id=' . (int) $item->id); ?>">
+                    <a class="xo-card-link" href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&view=organization&id=' . (int) $item->id . $itemIdQuery); ?>">
                         <div class="xo-card-head">
                             <?php if ($logoUrl !== '') : ?>
                                 <img class="xo-logo" src="<?php echo $this->escape($logoUrl); ?>" alt="">
