@@ -52,6 +52,7 @@ jobs:
           php tests/membership-1.7-compatibility-contract.php
           php tests/delegation-mandate-boundary-domain.php
           php tests/delegation-mandate-boundary-contract.php
+          php tests/system-audit-ux-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
