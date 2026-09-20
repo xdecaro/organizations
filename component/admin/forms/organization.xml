@@ -106,7 +106,7 @@
       <option value="-2">JTRASHED</option>
     </field>
     <field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"/>
-    <field name="notes" type="textarea" label="COM_XDECAROORGANIZATIONS_FIELD_NOTES" rows="5" filter="safehtml"/>
+    <field name="notes" type="textarea" label="COM_XDECAROORGANIZATIONS_FIELD_PUBLISHING_NOTES" rows="5" filter="safehtml"/>
   </fieldset>
 
   <fieldset name="system" label="COM_XDECAROORGANIZATIONS_FIELDSET_SYSTEM">
