@@ -1,5 +1,5 @@
 .xo-public {
-  color: var(--body-color);
+  color: var(--body-color, inherit);
 }
 
 .xo-public .xo-page-header,
