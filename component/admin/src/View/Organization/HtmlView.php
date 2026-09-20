@@ -9,6 +9,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\CMS\User\UserFactoryInterface;
 use Throwable;
 use xdecaro\Component\Organizations\Administrator\Extension\OrganizationsComponent;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationAppointmentsModel;
@@ -34,6 +35,8 @@ final class HtmlView extends BaseHtmlView
     public bool $canEditBodies = false;
     public bool $canCreateDelegations = false;
     public bool $canEditDelegations = false;
+    public string $auditCreatedByName = '';
+    public string $auditModifiedByName = '';
 
     public function display($tpl = null): void
     {
@@ -47,6 +50,7 @@ final class HtmlView extends BaseHtmlView
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
+        $this->loadSystemAudit();
         $this->loadHierarchyContext();
 
         $component = $app->bootComponent('com_xdecaroorganizations');
@@ -87,6 +91,35 @@ final class HtmlView extends BaseHtmlView
         ToolbarHelper::cancel('organization.cancel');
 
         parent::display($tpl);
+    }
+
+    private function loadSystemAudit(): void
+    {
+        $this->auditCreatedByName = $this->auditUserName((int) ($this->item->created_by ?? 0));
+        $this->auditModifiedByName = $this->auditUserName((int) ($this->item->modified_by ?? 0));
+    }
+
+    private function auditUserName(int $userId): string
+    {
+        if ($userId < 1) {
+            return '';
+        }
+
+        try {
+            $factory = Factory::getContainer()->get(UserFactoryInterface::class);
+            $user = $factory->loadUserById($userId);
+            $name = trim((string) ($user->name ?? ''));
+
+            return $name !== '' ? $name : trim((string) ($user->username ?? ''));
+        } catch (Throwable $exception) {
+            Log::add(
+                'Organizations audit user lookup failed for user ' . $userId . ': ' . $exception->getMessage(),
+                Log::WARNING,
+                'com_xdecaroorganizations'
+            );
+
+            return '';
+        }
     }
 
     private function loadHierarchyContext(): void
