@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const duration = document.querySelector('[data-duration-years]');
   const plannedEndsOn = document.getElementById('appointment-planned-ends-on');
   const notes = document.getElementById('appointment-notes');
+  const showOnFrontend = document.getElementById('appointment-show-on-frontend');
 
   const endId = document.getElementById('appointment-end-id');
   const endReason = document.getElementById('appointment-end-reason');
@@ -275,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (duration) duration.value = '1';
     if (plannedEndsOn) plannedEndsOn.value = '';
     if (notes) notes.value = '';
+    if (showOnFrontend) showOnFrontend.checked = false;
     clearResults();
     clearMembershipEligibility();
     updateCustomRole();
@@ -291,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (plannedEndsOn) plannedEndsOn.value = appointment.planned_ends_on || '';
     if (duration) duration.value = detectDuration(appointment.starts_on || '', appointment.planned_ends_on || '');
     if (notes) notes.value = appointment.notes || '';
+    if (showOnFrontend) showOnFrontend.checked = Number(appointment.show_on_frontend || 0) === 1;
     clearResults();
     clearMembershipEligibility();
     updateCustomRole();
@@ -381,6 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         duration_years: selectedDuration === 'custom' ? '' : selectedDuration,
         planned_ends_on: plannedEndsOn?.value || '',
         notes: notes?.value || '',
+        show_on_frontend: showOnFrontend?.checked ? '1' : '0',
       });
       reloadMembersTab();
     } catch (error) {
