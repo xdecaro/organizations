@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.1.2`
+- Stable candidate version: `1.1.3`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -31,3 +31,5 @@ Organizations 1.1.0 adds an inheritable appointment membership requirement. A pa
 Organizations 1.1.1 updates the optional Membership adapter for Membership 1.7.0. The current `membership.eligibility` contract is preferred, while the previous 1.6.x history contract remains supported as a compatibility fallback. No direct Membership database access is introduced.
 
 Organizations 1.1.2 binds delegations to the effective end of their linked appointment. A delegation cannot start or end beyond the mandate boundary; when no delegation-specific end is provided, the UI shows the mandate limit. Existing appointment termination already closes linked delegations transactionally and remains unchanged.
+
+Organizations 1.1.3 refines the System and Publishing tabs. The System tab now shows localized Joomla dates plus Created by and Modified by audit users, while making clear that the last-modified timestamp belongs only to the organization record. Publishing notes are explicitly labeled as publishing-specific notes. No schema changes are required.
