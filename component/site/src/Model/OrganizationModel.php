@@ -156,11 +156,19 @@ final class OrganizationModel extends BaseDatabaseModel
             ->where($db->quoteName('a.starts_on') . ' <= :todayStart')
             ->where('(' . $db->quoteName('a.ended_on') . ' IS NULL OR ' . $db->quoteName('a.ended_on') . ' >= :todayEnded)')
             ->where('(' . $db->quoteName('a.planned_ends_on') . ' IS NULL OR ' . $db->quoteName('a.planned_ends_on') . ' >= :todayPlanned)')
-            ->where('(' . $db->quoteName('a.body_id') . ' IS NULL OR ' . $db->quoteName('b.state') . ' = 1)')
+            ->where(
+                '(' . $db->quoteName('a.body_id') . ' IS NULL OR ('
+                . $db->quoteName('b.state') . ' = 1'
+                . ' AND (' . $db->quoteName('b.starts_on') . ' IS NULL OR ' . $db->quoteName('b.starts_on') . ' <= :todayBodyStart)'
+                . ' AND (' . $db->quoteName('b.ends_on') . ' IS NULL OR ' . $db->quoteName('b.ends_on') . ' >= :todayBodyEnd)'
+                . '))'
+            )
             ->bind(':organizationId', $id, ParameterType::INTEGER)
             ->bind(':todayStart', $today)
             ->bind(':todayEnded', $today)
             ->bind(':todayPlanned', $today)
+            ->bind(':todayBodyStart', $today)
+            ->bind(':todayBodyEnd', $today)
             ->order($db->quoteName('b.name') . ' ASC, ' . $db->quoteName('a.role_code') . ' ASC, ' . $db->quoteName('a.person_name_snapshot') . ' ASC');
 
         return $db->setQuery($query)->loadObjectList() ?: [];
@@ -200,11 +208,20 @@ final class OrganizationModel extends BaseDatabaseModel
             ->where('(' . $db->quoteName('d.ends_on') . ' IS NULL OR ' . $db->quoteName('d.ends_on') . ' >= :todayDelegation)')
             ->where('(' . $db->quoteName('a.ended_on') . ' IS NULL OR ' . $db->quoteName('a.ended_on') . ' >= :todayActual)')
             ->where('(' . $db->quoteName('a.planned_ends_on') . ' IS NULL OR ' . $db->quoteName('a.planned_ends_on') . ' >= :todayPlanned)')
+            ->where(
+                '(' . $db->quoteName('a.body_id') . ' IS NULL OR ('
+                . $db->quoteName('b.state') . ' = 1'
+                . ' AND (' . $db->quoteName('b.starts_on') . ' IS NULL OR ' . $db->quoteName('b.starts_on') . ' <= :todayDelegationBodyStart)'
+                . ' AND (' . $db->quoteName('b.ends_on') . ' IS NULL OR ' . $db->quoteName('b.ends_on') . ' >= :todayDelegationBodyEnd)'
+                . '))'
+            )
             ->bind(':organizationId', $id, ParameterType::INTEGER)
             ->bind(':todayStart', $today)
             ->bind(':todayDelegation', $today)
             ->bind(':todayActual', $today)
             ->bind(':todayPlanned', $today)
+            ->bind(':todayDelegationBodyStart', $today)
+            ->bind(':todayDelegationBodyEnd', $today)
             ->order($db->quoteName('d.title') . ' ASC');
 
         $items = $db->setQuery($query)->loadObjectList() ?: [];
