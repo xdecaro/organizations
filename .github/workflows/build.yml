@@ -171,3 +171,30 @@ jobs:
           if [ '${{ matrix.mode }}' = 'upgrade-1.0.25' ]; then
             test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND name='Legacy Organization';")" = 1
           fi
+      - name: Smoke test public frontend and private-by-default appointments
+        shell: bash
+        run: |
+          set -euo pipefail
+          MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,state,access,language,created,created_by) VALUES ('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee','Frontend Test Organization','association','national',1,1,'*',NOW(),0);"
+          ORG_ID="$("${MYSQL[@]}" -e "SELECT id FROM org_xdecaroorganizations_organizations WHERE uuid='aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee' LIMIT 1;")"
+          test -n "$ORG_ID"
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_appointments (uuid,organization_id,person_uuid,person_name_snapshot,role_code,starts_on,planned_ends_on,show_on_frontend,state,created,created_by) VALUES ('bbbbbbbb-cccc-4ddd-8eee-ffffffffffff',${ORG_ID},'cccccccc-dddd-4eee-8fff-aaaaaaaaaaaa','Private Appointment Person','councillor','2026-01-01','2027-12-31',0,1,NOW(),0);"
+          cd joomla
+          php -S 127.0.0.1:8099 -t . >/tmp/organizations-site.log 2>&1 &
+          SERVER_PID=$!
+          cleanup() { kill "$SERVER_PID" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          for i in {1..20}; do
+            if curl -fsS 'http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organizations' >/tmp/organizations-list.html; then
+              break
+            fi
+            sleep 1
+          done
+          grep -Fq 'Frontend Test Organization' /tmp/organizations-list.html
+          curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&id=${ORG_ID}" >/tmp/organization-profile-private.html
+          grep -Fq 'Frontend Test Organization' /tmp/organization-profile-private.html
+          ! grep -Fq 'Private Appointment Person' /tmp/organization-profile-private.html
+          "${MYSQL[@]}" -e "UPDATE org_xdecaroorganizations_appointments SET show_on_frontend=1 WHERE uuid='bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';"
+          curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&id=${ORG_ID}" >/tmp/organization-profile-public.html
+          grep -Fq 'Private Appointment Person' /tmp/organization-profile-public.html
