@@ -48,6 +48,9 @@ final class HtmlView extends BaseHtmlView
 
     public function organizationUrl(int $id): string
     {
-        return Route::_('index.php?option=com_xdecaroorganizations&view=organization&id=' . $id);
+        $itemId = Factory::getApplication()->getInput()->getInt('Itemid', 0);
+        $itemIdQuery = $itemId > 0 ? '&Itemid=' . $itemId : '';
+
+        return Route::_('index.php?option=com_xdecaroorganizations&view=organization&id=' . $id . $itemIdQuery);
     }
 }
