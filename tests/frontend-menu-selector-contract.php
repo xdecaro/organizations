@@ -13,7 +13,7 @@ foreach ([
     'operational_status',
     'COM_XDECAROORGANIZATIONS_OPERATIONAL_',
     'COM_XDECAROORGANIZATIONS_SITE_MENU_NOT_PUBLISHED',
-    '\$disabled = !\$published || !\$active',
+    '$disabled = !$published || !$active',
 ] as $needle) {
     if (!str_contains($field, $needle)) {
         fwrite(STDERR, "Organization menu selector missing {$needle}.\n");
