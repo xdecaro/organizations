@@ -19,7 +19,7 @@ foreach ([
     '<folder>language</folder>',
     '<folder>src</folder>',
     '<folder>tmpl</folder>',
-    '<version>1.2.1</version>',
+    '<version>1.2.2</version>',
 ] as $needle) {
     if (!str_contains($manifest, $needle)) {
         fwrite(STDERR, "Frontend manifest contract missing {$needle}.\n");
@@ -101,7 +101,7 @@ foreach ([
 
 if (!str_contains($listMenu, 'COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATIONS_DEFAULT_TITLE')
     || !str_contains($itemMenu, 'COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_TITLE')
-    || !str_contains($itemMenu, 'name="id"')) {
+    || !str_contains($itemMenu, 'name="organization_id"')) {
     fwrite(STDERR, "Frontend Joomla menu metadata is incomplete.\n");
     exit(1);
 }
