@@ -306,3 +306,12 @@
     flex-direction: column;
   }
 }
+
+.xo-badges .badge {
+  border: 1px solid var(--border-color, currentColor);
+}
+
+.xo-badges .text-bg-light {
+  background: var(--secondary-bg, var(--body-bg)) !important;
+  color: var(--body-color, inherit) !important;
+}
