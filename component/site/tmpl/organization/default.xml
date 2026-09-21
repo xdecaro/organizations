@@ -3,14 +3,13 @@
   <layout title="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_TITLE" option="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_OPTION">
     <message key="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_DESC"/>
   </layout>
-  <fields name="request">
+  <fields name="request" addfieldprefix="xdecaro\Component\Organizations\Site\Field">
     <fieldset name="request">
       <field
         name="id"
-        type="sql"
+        type="OrganizationMenu"
         required="true"
         label="COM_XDECAROORGANIZATIONS_SITE_MENU_ORGANIZATION"
-        query="SELECT id AS value, name AS text FROM #__xdecaroorganizations_organizations WHERE state = 1 ORDER BY name"
       />
     </fieldset>
   </fields>
