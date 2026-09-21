@@ -95,7 +95,6 @@
     <field name="country_code" type="Country" code="alpha2" label="COM_XDECAROORGANIZATIONS_FIELD_COUNTRY" filter="cmd" validate="options" layout="joomla.form.field.list-fancy-select">
       <option value="">COM_XDECAROORGANIZATIONS_SELECT_COUNTRY</option>
     </field>
-    <field name="language" type="contentlanguage" label="COM_XDECAROORGANIZATIONS_FIELD_LANGUAGE"/>
     <field name="logo" type="media" label="COM_XDECAROORGANIZATIONS_FIELD_LOGO"/>
   </fieldset>
 
@@ -106,6 +105,14 @@
       <option value="-2">JTRASHED</option>
     </field>
     <field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"/>
+    <field
+      name="language"
+      type="contentlanguage"
+      label="JFIELD_LANGUAGE_LABEL"
+      default="*"
+    >
+      <option value="*">JALL</option>
+    </field>
     <field name="notes" type="textarea" label="COM_XDECAROORGANIZATIONS_FIELD_PUBLISHING_NOTES" rows="5" filter="safehtml"/>
   </fieldset>
 
