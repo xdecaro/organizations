@@ -197,6 +197,8 @@ jobs:
           ! grep -Fq 'Inactive Frontend Organization' /tmp/organizations-list.html
           curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&id=${ORG_ID}" >/tmp/organization-profile-private.html
           grep -Fq 'Frontend Test Organization' /tmp/organization-profile-private.html
+          curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&organization_id=${ORG_ID}" >/tmp/organization-profile-menu-param.html
+          grep -Fq 'Frontend Test Organization' /tmp/organization-profile-menu-param.html
           ! grep -Fq 'Private Appointment Person' /tmp/organization-profile-private.html
           "${MYSQL[@]}" -e "UPDATE org_xdecaroorganizations_appointments SET show_on_frontend=1 WHERE uuid='bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';"
           curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&id=${ORG_ID}" >/tmp/organization-profile-public.html
