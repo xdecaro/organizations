@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.2.2`
+- Stable candidate version: `1.2.3`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -39,3 +39,5 @@ Organizations 1.2.0 adds a public Joomla frontend with an organizations director
 Organizations 1.2.1 improves frontend menu selection and visibility. The single-organization menu selector now shows organization name plus operational status, keeps inactive/unpublished organizations visible but disabled, and the public directory/profile only expose operationally active organizations. Public badge contrast is improved for light and dark templates. No schema changes are required.
 
 Organizations 1.2.2 fixes the single-organization Joomla menu route by replacing the ambiguous request field `id` with `organization_id`. The site model resolves `organization_id` first while preserving direct public-directory links that still use `id`. Existing menu items should be reopened, the organization reselected, and saved once after updating.
+
+Organizations 1.2.3 fixes publishing-language handling. The language selector now lives in the Publishing tab, defaults to All languages (`*`) for new organizations, and no longer changes automatically when the country changes. Blank legacy language values are normalized to `*` without overwriting explicit language selections such as `en-GB` or `it-IT`. The public frontend continues to respect Joomla content language filtering.
