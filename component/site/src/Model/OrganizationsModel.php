@@ -41,7 +41,8 @@ final class OrganizationsModel extends ListModel
                 'a.access',
             ])
             ->from($db->quoteName('#__xdecaroorganizations_organizations', 'a'))
-            ->where($db->quoteName('a.state') . ' = 1');
+            ->where($db->quoteName('a.state') . ' = 1')
+            ->where($db->quoteName('a.operational_status') . ' = ' . $db->quote('active'));
 
         $levels = array_values(array_unique(array_map('intval', Factory::getApplication()->getIdentity()->getAuthorisedViewLevels())));
         if ($levels === []) {
