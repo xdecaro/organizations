@@ -50,7 +50,7 @@ foreach ([
 }
 
 foreach ([
-    "$this->language = $language !== '' ? $language : '*'",
+    '$this->language = $language !== \'\' ? $language : \'*\'',
 ] as $needle) {
     if (!str_contains($table, $needle)) {
         fwrite(STDERR, "Organization table language normalization missing {$needle}.\n");
