@@ -19,7 +19,7 @@ foreach ([
     '<folder>language</folder>',
     '<folder>src</folder>',
     '<folder>tmpl</folder>',
-    '<version>1.2.2</version>',
+    '<version>1.2.3</version>',
 ] as $needle) {
     if (!str_contains($manifest, $needle)) {
         fwrite(STDERR, "Frontend manifest contract missing {$needle}.\n");
