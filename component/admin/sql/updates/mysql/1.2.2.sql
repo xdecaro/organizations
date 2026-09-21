@@ -1,0 +1,1 @@
+-- Organizations 1.2.2: fix frontend single-organization menu request key; no database schema changes.
