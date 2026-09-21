@@ -1,16 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const country = document.getElementById('jform_country_code');
-  const language = document.getElementById('jform_language');
-
-  if (country && language) {
-    country.addEventListener('change', () => {
-      if (country.value === 'IT') {
-        language.value = 'it-IT';
-        language.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    });
-  }
-
   const members = document.querySelector('.xdecaro-members[data-organization-id]');
   const bodies = document.querySelector('.xdecaro-bodies[data-organization-id]');
   const delegations = document.querySelector('.xdecaro-delegations[data-organization-id]');
