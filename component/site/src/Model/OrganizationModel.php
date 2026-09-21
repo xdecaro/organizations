@@ -245,10 +245,25 @@ final class OrganizationModel extends BaseDatabaseModel
     private function organizationId(): int
     {
         $app = Factory::getApplication();
-        $id = $app->getInput()->getInt('id', 0);
+        $input = $app->getInput();
+
+        // Joomla menu items have their own generic "id". Keep the selected
+        // organization in an explicit request variable to avoid collisions.
+        $id = $input->getInt('organization_id', 0);
+
+        // Backward-compatible direct links from the public directory use id.
+        if ($id < 1) {
+            $id = $input->getInt('id', 0);
+        }
 
         if ($id < 1) {
-            $id = (int) $app->getParams()->get('id', 0);
+            $params = $app->getParams();
+            $id = (int) $params->get('organization_id', 0);
+
+            // Compatibility with any previously stored menu configuration.
+            if ($id < 1) {
+                $id = (int) $params->get('id', 0);
+            }
         }
 
         return max(0, $id);
