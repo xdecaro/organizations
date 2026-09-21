@@ -77,7 +77,6 @@ final class OrganizationTable extends Table
                 'postal_code',
                 'city',
                 'region',
-                'language',
                 'logo',
                 'notes',
             ] as $field
@@ -91,6 +90,11 @@ final class OrganizationTable extends Table
         if (property_exists($this, 'country_code') && $this->country_code !== null) {
             $value = strtoupper(trim((string) $this->country_code));
             $this->country_code = $value !== '' ? $value : null;
+        }
+
+        if (property_exists($this, 'language')) {
+            $language = trim((string) ($this->language ?? ''));
+            $this->language = $language !== '' ? $language : '*';
         }
 
         $structureLevel = strtolower(trim((string) ($this->structure_level ?? 'unspecified')));
