@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.2.0`
+- Stable candidate version: `1.2.1`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -35,3 +35,5 @@ Organizations 1.1.2 binds delegations to the effective end of their linked appoi
 Organizations 1.1.3 refines the System and Publishing tabs. The System tab now shows localized Joomla dates plus Created by and Modified by audit users, while making clear that the last-modified timestamp belongs only to the organization record. Publishing notes are explicitly labeled as publishing-specific notes. No schema changes are required.
 
 Organizations 1.2.0 adds a public Joomla frontend with an organizations directory and individual organization profiles. Public output respects organization state, Joomla access levels and language. Appointment holder names are opt-in through `show_on_frontend`, which defaults to disabled for existing and new records. The frontend never exposes Membership eligibility, fee state, UUID/audit data, PEC, fiscal identifiers or other sensitive organization fields.
+
+Organizations 1.2.1 improves frontend menu selection and visibility. The single-organization menu selector now shows organization name plus operational status, keeps inactive/unpublished organizations visible but disabled, and the public directory/profile only expose operationally active organizations. Public badge contrast is improved for light and dark templates. No schema changes are required.
