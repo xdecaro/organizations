@@ -23,10 +23,22 @@ foreach ([
 
 foreach ([
     'type="OrganizationMenu"',
+    'name="organization_id"',
     'addfieldprefix="xdecaro\\Component\\Organizations\\Site\\Field"',
 ] as $needle) {
     if (!str_contains($menu, $needle)) {
         fwrite(STDERR, "Organization menu metadata missing {$needle}.\n");
+        exit(1);
+    }
+}
+
+foreach ([
+    "getInt('organization_id', 0)",
+    "getInt('id', 0)",
+    "get('organization_id', 0)",
+] as $needle) {
+    if (!str_contains($itemModel, $needle)) {
+        fwrite(STDERR, "Organization ID resolution contract missing {$needle}.\n");
         exit(1);
     }
 }
