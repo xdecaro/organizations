@@ -45,6 +45,7 @@ final class OrganizationModel extends BaseDatabaseModel
             ->from($db->quoteName('#__xdecaroorganizations_organizations', 'o'))
             ->where($db->quoteName('o.id') . ' = :id')
             ->where($db->quoteName('o.state') . ' = 1')
+            ->where($db->quoteName('o.operational_status') . ' = ' . $db->quote('active'))
             ->bind(':id', $id, ParameterType::INTEGER);
 
         $this->applyPublicAccess($query, 'o');
@@ -65,7 +66,8 @@ final class OrganizationModel extends BaseDatabaseModel
         $query = $db->getQuery(true)
             ->select(['o.id', 'o.parent_id', 'o.name'])
             ->from($db->quoteName('#__xdecaroorganizations_organizations', 'o'))
-            ->where($db->quoteName('o.state') . ' = 1');
+            ->where($db->quoteName('o.state') . ' = 1')
+            ->where($db->quoteName('o.operational_status') . ' = ' . $db->quote('active'));
 
         $this->applyPublicAccess($query, 'o');
         $rows = $db->setQuery($query)->loadObjectList('id') ?: [];
@@ -96,6 +98,7 @@ final class OrganizationModel extends BaseDatabaseModel
             ->from($db->quoteName('#__xdecaroorganizations_organizations', 'o'))
             ->where($db->quoteName('o.parent_id') . ' = :parentId')
             ->where($db->quoteName('o.state') . ' = 1')
+            ->where($db->quoteName('o.operational_status') . ' = ' . $db->quote('active'))
             ->bind(':parentId', $id, ParameterType::INTEGER)
             ->order($db->quoteName('o.name') . ' ASC');
 
