@@ -6,7 +6,7 @@
   <fields name="request" addfieldprefix="xdecaro\Component\Organizations\Site\Field">
     <fieldset name="request">
       <field
-        name="id"
+        name="organization_id"
         type="OrganizationMenu"
         required="true"
         label="COM_XDECAROORGANIZATIONS_SITE_MENU_ORGANIZATION"
