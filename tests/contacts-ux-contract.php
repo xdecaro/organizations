@@ -24,15 +24,14 @@ $peopleStyleHeading = str_contains($template, 'xdecaro-organizations-organizatio
 $countryClass = is_file($root . '/component/admin/src/Field/CountryField.php');
 $countryMetadata = is_file($root . '/component/admin/src/Service/CountryMetadata.php');
 
-$autoLanguage = str_contains($assets, 'com_xdecaroorganizations.organization-edit')
+$languageIndependent = str_contains($assets, 'com_xdecaroorganizations.organization-edit')
     && str_contains($view, "useScript('com_xdecaroorganizations.organization-edit')")
     && str_contains($manifest, '<folder>js</folder>')
-    && str_contains($js, "country.value === 'IT'")
-    && str_contains($js, "language.value = 'it-IT'")
-    && str_contains($js, "addEventListener('change'");
+    && !str_contains($js, "country.value === 'IT'")
+    && !str_contains($js, "language.value = 'it-IT'");
 
-if (!$countryField || !$peopleStyleHeading || !$countryClass || !$countryMetadata || !$autoLanguage) {
-    fwrite(STDERR, "Organizations contacts UX must match People heading style, use a searchable Country field, and default Italian language when Italy is selected.\n");
+if (!$countryField || !$peopleStyleHeading || !$countryClass || !$countryMetadata || !$languageIndependent) {
+    fwrite(STDERR, "Organizations contacts UX must match People heading style, use a searchable Country field, and keep country independent from publishing language.\n");
     exit(1);
 }
 

@@ -125,6 +125,7 @@ final class AppointmentController extends BaseController
                 'planned_ends_on' => $input->post->getString('planned_ends_on', ''),
                 'duration_years' => $duration !== '' ? (int) $duration : null,
                 'notes' => $input->post->getString('notes', ''),
+                'show_on_frontend' => $input->post->getInt('show_on_frontend', 0) === 1 ? 1 : 0,
             ];
 
             $model = $this->getModel('OrganizationAppointment', 'Administrator', ['ignore_request' => true]);

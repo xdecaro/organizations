@@ -1,0 +1,1 @@
+-- Organizations 1.2.1: public menu selector and frontend visibility refinements only; no database schema changes.

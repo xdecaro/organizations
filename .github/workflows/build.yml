@@ -40,6 +40,7 @@ jobs:
           php tests/members-tab-persistence-contract.php
           php tests/institutional-profile-contract.php
           php tests/bodies-contract.php
+          php tests/body-delete-contract.php
           php tests/organization-body-domain.php
           php tests/appointment-bodies-roles-contract.php
           php tests/delegations-contract.php
@@ -53,6 +54,11 @@ jobs:
           php tests/delegation-mandate-boundary-domain.php
           php tests/delegation-mandate-boundary-contract.php
           php tests/system-audit-ux-contract.php
+          php tests/public-frontend-contract.php
+          php tests/public-frontend-privacy-contract.php
+          php tests/frontend-menu-selector-contract.php
+          php tests/publishing-language-contract.php
+          php tests/organization-editor-1.2.4-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
@@ -136,7 +142,7 @@ jobs:
           set -euo pipefail
           cd joomla
           php cli/joomla.php extension:install --path=/tmp/organizations-old.zip -vvv
-          mysql --protocol=TCP -h127.0.0.1 -uroot joomla -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,state,access,created,created_by) VALUES ('11111111-2222-4333-8444-555555555555','Legacy Organization','organization',1,1,NOW(),0);"
+          mysql --protocol=TCP -h127.0.0.1 -uroot joomla -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,region,state,access,created,created_by) VALUES ('11111111-2222-4333-8444-555555555555','Legacy Organization','organization','Legacy Region',1,1,NOW(),0);"
           test "$(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla -e "SELECT COUNT(*) FROM org_extensions WHERE type='package' AND element='pkg_xdecaroorganizations';")" = 1
       - name: Install current canonical Organizations
         shell: bash
@@ -158,8 +164,54 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_extensions WHERE type='component' AND element='com_xdecaroorganizations' AND package_id=${PACKAGE_ID};")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments' AND column_name='show_on_frontend' AND column_default='0';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations' AND column_name='language' AND is_nullable='NO' AND column_default='*';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations' AND column_name='province' AND is_nullable='YES';")" = 1
+          test -f joomla/components/com_xdecaroorganizations/src/Controller/DisplayController.php
+          test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationsModel.php
+          test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationModel.php
+          test -f joomla/components/com_xdecaroorganizations/tmpl/organizations/default.xml
+          test -f joomla/components/com_xdecaroorganizations/tmpl/organization/default.xml
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM org_schemas s JOIN org_extensions e ON e.extension_id=s.extension_id WHERE e.element='com_xdecaroorganizations' LIMIT 1;")"
           test "$schema" = "$V"
           if [ '${{ matrix.mode }}' = 'upgrade-1.0.25' ]; then
             test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND name='Legacy Organization';")" = 1
+            test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND language='*';")" = 1
+            test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND region='Legacy Region' AND province IS NULL;")" = 1
           fi
+      - name: Smoke test public frontend and private-by-default appointments
+        shell: bash
+        run: |
+          set -euo pipefail
+          MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,state,access,language,created,created_by) VALUES ('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee','Frontend Test Organization','association','national',1,1,'*',NOW(),0);"
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,state,access,created,created_by) VALUES ('eeeeeeee-ffff-4000-8aaa-cccccccccccc','Default Language Organization','association','local',1,1,NOW(),0);"
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,state,access,language,created,created_by) VALUES ('ffffffff-aaaa-4111-8bbb-dddddddddddd','Italian Only Organization','association','local',1,1,'it-IT',NOW(),0);"
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,operational_status,state,access,language,created,created_by) VALUES ('dddddddd-eeee-4fff-8aaa-bbbbbbbbbbbb','Inactive Frontend Organization','association','local','inactive',1,1,'*',NOW(),0);"
+          ORG_ID="$("${MYSQL[@]}" -e "SELECT id FROM org_xdecaroorganizations_organizations WHERE uuid='aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee' LIMIT 1;")"
+          test -n "$ORG_ID"
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_appointments (uuid,organization_id,person_uuid,person_name_snapshot,role_code,starts_on,planned_ends_on,show_on_frontend,state,created,created_by) VALUES ('bbbbbbbb-cccc-4ddd-8eee-ffffffffffff',${ORG_ID},'cccccccc-dddd-4eee-8fff-aaaaaaaaaaaa','Private Appointment Person','councillor','2026-01-01','2027-12-31',0,1,NOW(),0);"
+          cd joomla
+          php -S 127.0.0.1:8099 -t . >/tmp/organizations-site.log 2>&1 &
+          SERVER_PID=$!
+          cleanup() { kill "$SERVER_PID" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          for i in {1..20}; do
+            if curl -fsS 'http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organizations' >/tmp/organizations-list.html; then
+              break
+            fi
+            sleep 1
+          done
+          grep -Fq 'Frontend Test Organization' /tmp/organizations-list.html
+          grep -Fq 'Default Language Organization' /tmp/organizations-list.html
+          ! grep -Fq 'Italian Only Organization' /tmp/organizations-list.html
+          test "$("${MYSQL[@]}" -e "SELECT language FROM org_xdecaroorganizations_organizations WHERE uuid='eeeeeeee-ffff-4000-8aaa-cccccccccccc' LIMIT 1;")" = '*'
+          ! grep -Fq 'Inactive Frontend Organization' /tmp/organizations-list.html
+          curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&id=${ORG_ID}" >/tmp/organization-profile-private.html
+          grep -Fq 'Frontend Test Organization' /tmp/organization-profile-private.html
+          curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&organization_id=${ORG_ID}" >/tmp/organization-profile-menu-param.html
+          grep -Fq 'Frontend Test Organization' /tmp/organization-profile-menu-param.html
+          ! grep -Fq 'Private Appointment Person' /tmp/organization-profile-private.html
+          "${MYSQL[@]}" -e "UPDATE org_xdecaroorganizations_appointments SET show_on_frontend=1 WHERE uuid='bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';"
+          curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&id=${ORG_ID}" >/tmp/organization-profile-public.html
+          grep -Fq 'Private Appointment Person' /tmp/organization-profile-public.html

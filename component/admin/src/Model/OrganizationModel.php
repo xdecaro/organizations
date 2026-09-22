@@ -39,7 +39,7 @@ final class OrganizationModel extends AdminModel
             && !$user->authorise('core.admin', 'com_xdecaroorganizations')
         ) {
             foreach (
-                ['vat_id', 'tax_identifier', 'pec_email', 'address_line', 'postal_code', 'city', 'region', 'country_code', 'notes']
+                ['vat_id', 'tax_identifier', 'pec_email', 'address_line', 'postal_code', 'city', 'province', 'region', 'country_code', 'notes']
                 as $name
             ) {
                 $form->removeField($name);

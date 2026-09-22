@@ -55,7 +55,7 @@ $bodyJson = static function ($body): string {
                             <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_BODY_PARENT'); ?></th>
                             <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_BODY_STATUS'); ?></th>
                             <th class="d-none d-md-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_BODY_PERIOD'); ?></th>
-                            <?php if ($this->canEditBodies) : ?>
+                            <?php if ($this->canEditBodies || $this->canDeleteBodies) : ?>
                                 <th class="text-end"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ACTIONS'); ?></th>
                             <?php endif; ?>
                         </tr>
@@ -79,16 +79,31 @@ $bodyJson = static function ($body): string {
                                     echo $this->escape(trim($from . ($from !== '' || $to !== '' ? ' → ' : '') . $to));
                                     ?>
                                 </td>
-                                <?php if ($this->canEditBodies) : ?>
+                                <?php if ($this->canEditBodies || $this->canDeleteBodies) : ?>
                                     <td class="text-end">
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm btn-outline-primary"
-                                            data-body-edit
-                                            data-body="<?php echo $bodyJson($body); ?>"
-                                        >
-                                            <?php echo Text::_('JACTION_EDIT'); ?>
-                                        </button>
+                                        <div class="btn-group btn-group-sm" role="group" aria-label="<?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ACTIONS'); ?>">
+                                            <?php if ($this->canEditBodies) : ?>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-primary"
+                                                    data-body-edit
+                                                    data-body="<?php echo $bodyJson($body); ?>"
+                                                >
+                                                    <?php echo Text::_('JACTION_EDIT'); ?>
+                                                </button>
+                                            <?php endif; ?>
+                                            <?php if ($this->canDeleteBodies) : ?>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-danger"
+                                                    data-body-delete
+                                                    data-body-id="<?php echo (int) $body->id; ?>"
+                                                    data-confirm="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_BODY_DELETE_CONFIRM')); ?>"
+                                                >
+                                                    <?php echo Text::_('JACTION_DELETE'); ?>
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 <?php endif; ?>
                             </tr>

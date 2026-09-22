@@ -1,16 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const country = document.getElementById('jform_country_code');
-  const language = document.getElementById('jform_language');
-
-  if (country && language) {
-    country.addEventListener('change', () => {
-      if (country.value === 'IT') {
-        language.value = 'it-IT';
-        language.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    });
-  }
-
   const members = document.querySelector('.xdecaro-members[data-organization-id]');
   const bodies = document.querySelector('.xdecaro-bodies[data-organization-id]');
   const delegations = document.querySelector('.xdecaro-delegations[data-organization-id]');
@@ -28,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     end: 'index.php?option=com_xdecaroorganizations&task=appointment.end&format=json',
     delete: 'index.php?option=com_xdecaroorganizations&task=appointment.delete&format=json',
     bodySave: 'index.php?option=com_xdecaroorganizations&task=body.save&format=json',
+    bodyDelete: 'index.php?option=com_xdecaroorganizations&task=body.delete&format=json',
     delegationSave: 'index.php?option=com_xdecaroorganizations&task=delegation.save&format=json',
   };
 
@@ -62,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const duration = document.querySelector('[data-duration-years]');
   const plannedEndsOn = document.getElementById('appointment-planned-ends-on');
   const notes = document.getElementById('appointment-notes');
+  const showOnFrontend = document.getElementById('appointment-show-on-frontend');
 
   const endId = document.getElementById('appointment-end-id');
   const endReason = document.getElementById('appointment-end-reason');
@@ -275,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (duration) duration.value = '1';
     if (plannedEndsOn) plannedEndsOn.value = '';
     if (notes) notes.value = '';
+    if (showOnFrontend) showOnFrontend.checked = false;
     clearResults();
     clearMembershipEligibility();
     updateCustomRole();
@@ -291,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (plannedEndsOn) plannedEndsOn.value = appointment.planned_ends_on || '';
     if (duration) duration.value = detectDuration(appointment.starts_on || '', appointment.planned_ends_on || '');
     if (notes) notes.value = appointment.notes || '';
+    if (showOnFrontend) showOnFrontend.checked = Number(appointment.show_on_frontend || 0) === 1;
     clearResults();
     clearMembershipEligibility();
     updateCustomRole();
@@ -381,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         duration_years: selectedDuration === 'custom' ? '' : selectedDuration,
         planned_ends_on: plannedEndsOn?.value || '',
         notes: notes?.value || '',
+        show_on_frontend: showOnFrontend?.checked ? '1' : '0',
       });
       reloadMembersTab();
     } catch (error) {
@@ -516,6 +509,22 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       window.alert(error.message || String(error));
     }
+  });
+
+
+  document.querySelectorAll('[data-body-delete]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (!window.confirm(button.dataset.confirm || 'Delete this body permanently?')) {
+        return;
+      }
+
+      try {
+        await post(endpoints.bodyDelete, { id: button.dataset.bodyId || '0' });
+        reloadOrganizationTab('bodies');
+      } catch (error) {
+        window.alert(error.message || String(error));
+      }
+    });
   });
 
 

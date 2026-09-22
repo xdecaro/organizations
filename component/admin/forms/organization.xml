@@ -53,20 +53,20 @@
       <option value="merged">COM_XDECAROORGANIZATIONS_OPERATIONAL_MERGED</option>
       <option value="dissolved">COM_XDECAROORGANIZATIONS_OPERATIONAL_DISSOLVED</option>
     </field>
-    <field name="status_since" type="calendar" label="COM_XDECAROORGANIZATIONS_FIELD_STATUS_SINCE" format="%Y-%m-%d" filter="user_utc"/>
-    <field name="autonomy_legal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL" default="0">
+    <field name="status_since" type="calendar" label="COM_XDECAROORGANIZATIONS_FIELD_STATUS_SINCE" format="%Y-%m-%d" hint="COM_XDECAROORGANIZATIONS_DATE_PLACEHOLDER" filter="user_utc"/>
+    <field name="autonomy_legal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL_DESC" default="0">
       <option value="0">JNO</option><option value="1">JYES</option>
     </field>
-    <field name="autonomy_management" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_MANAGEMENT" default="0">
+    <field name="autonomy_management" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_MANAGEMENT" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_MANAGEMENT_DESC" default="0">
       <option value="0">JNO</option><option value="1">JYES</option>
     </field>
-    <field name="autonomy_administrative" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_ADMINISTRATIVE" default="0">
+    <field name="autonomy_administrative" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_ADMINISTRATIVE" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_ADMINISTRATIVE_DESC" default="0">
       <option value="0">JNO</option><option value="1">JYES</option>
     </field>
-    <field name="autonomy_tax" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_TAX" default="0">
+    <field name="autonomy_tax" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_TAX" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_TAX_DESC" default="0">
       <option value="0">JNO</option><option value="1">JYES</option>
     </field>
-    <field name="autonomy_fiscal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_FISCAL" default="0">
+    <field name="autonomy_fiscal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_FISCAL" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_FISCAL_DESC" default="0">
       <option value="0">JNO</option><option value="1">JYES</option>
     </field>
     <field
@@ -91,11 +91,11 @@
     <field name="address_line" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_ADDRESS" maxlength="255"/>
     <field name="postal_code" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_POSTAL_CODE" maxlength="32"/>
     <field name="city" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_CITY" maxlength="190"/>
+    <field name="province" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_PROVINCE" maxlength="190"/>
     <field name="region" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_REGION" maxlength="190"/>
     <field name="country_code" type="Country" code="alpha2" label="COM_XDECAROORGANIZATIONS_FIELD_COUNTRY" filter="cmd" validate="options" layout="joomla.form.field.list-fancy-select">
       <option value="">COM_XDECAROORGANIZATIONS_SELECT_COUNTRY</option>
     </field>
-    <field name="language" type="contentlanguage" label="COM_XDECAROORGANIZATIONS_FIELD_LANGUAGE"/>
     <field name="logo" type="media" label="COM_XDECAROORGANIZATIONS_FIELD_LOGO"/>
   </fieldset>
 
@@ -106,6 +106,14 @@
       <option value="-2">JTRASHED</option>
     </field>
     <field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"/>
+    <field
+      name="language"
+      type="contentlanguage"
+      label="JFIELD_LANGUAGE_LABEL"
+      default="*"
+    >
+      <option value="*">JALL</option>
+    </field>
     <field name="notes" type="textarea" label="COM_XDECAROORGANIZATIONS_FIELD_PUBLISHING_NOTES" rows="5" filter="safehtml"/>
   </fieldset>
 

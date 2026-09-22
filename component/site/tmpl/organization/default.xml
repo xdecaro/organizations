@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <layout title="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_TITLE" option="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_OPTION">
+    <message key="COM_XDECAROORGANIZATIONS_VIEW_ORGANIZATION_DEFAULT_DESC"/>
+  </layout>
+  <fields name="request" addfieldprefix="xdecaro\Component\Organizations\Site\Field">
+    <fieldset name="request">
+      <field
+        name="organization_id"
+        type="OrganizationMenu"
+        required="true"
+        label="COM_XDECAROORGANIZATIONS_SITE_MENU_ORGANIZATION"
+      />
+    </fieldset>
+  </fields>
+</metadata>
