@@ -315,3 +315,8 @@
   background: var(--secondary-bg, var(--body-bg)) !important;
   color: var(--body-color, inherit) !important;
 }
+
+.xo-badges .text-bg-secondary {
+  background: var(--secondary-bg, var(--body-bg)) !important;
+  color: var(--body-color, inherit) !important;
+}
