@@ -142,7 +142,7 @@ jobs:
           set -euo pipefail
           cd joomla
           php cli/joomla.php extension:install --path=/tmp/organizations-old.zip -vvv
-          mysql --protocol=TCP -h127.0.0.1 -uroot joomla -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,state,access,created,created_by) VALUES ('11111111-2222-4333-8444-555555555555','Legacy Organization','organization',1,1,NOW(),0);"
+          mysql --protocol=TCP -h127.0.0.1 -uroot joomla -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,region,state,access,created,created_by) VALUES ('11111111-2222-4333-8444-555555555555','Legacy Organization','organization','Legacy Region',1,1,NOW(),0);"
           test "$(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla -e "SELECT COUNT(*) FROM org_extensions WHERE type='package' AND element='pkg_xdecaroorganizations';")" = 1
       - name: Install current canonical Organizations
         shell: bash
