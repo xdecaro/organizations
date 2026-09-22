@@ -59,6 +59,7 @@ jobs:
           php tests/frontend-menu-selector-contract.php
           php tests/publishing-language-contract.php
           php tests/organization-editor-1.2.4-contract.php
+          php tests/affiliations-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
