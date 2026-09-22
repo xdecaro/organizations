@@ -13,6 +13,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Throwable;
 use xdecaro\Component\Organizations\Administrator\Extension\OrganizationsComponent;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationAppointmentsModel;
+use xdecaro\Component\Organizations\Administrator\Model\OrganizationAffiliationsModel;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationBodiesModel;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationDelegationsModel;
 use xdecaro\Component\Organizations\Administrator\Model\OrganizationModel;
@@ -22,6 +23,8 @@ final class HtmlView extends BaseHtmlView
     public $form;
     public $item;
     public array $appointments = [];
+    public array $affiliations = [];
+    public array $affiliationTargets = [];
     public array $bodies = [];
     public array $delegations = [];
     public array $hierarchyPath = [];
@@ -29,6 +32,9 @@ final class HtmlView extends BaseHtmlView
     public string $appointmentMembershipRequirement = 'none';
     public bool $peopleAvailable = false;
     public bool $canCreateAppointments = false;
+    public bool $canCreateAffiliations = false;
+    public bool $canEditAffiliations = false;
+    public bool $canDeleteAffiliations = false;
     public bool $canEditAppointments = false;
     public bool $canDeleteAppointments = false;
     public bool $canCreateBodies = false;
@@ -58,10 +64,17 @@ final class HtmlView extends BaseHtmlView
         if ($component instanceof OrganizationsComponent) {
             $component->getCoreIntegrationService()->enableUi($this->document->getWebAssetManager());
             $this->loadAppointments($component);
+            $this->loadAffiliations($component);
             $this->loadBodies($component);
             $this->loadDelegations($component);
         }
 
+        $this->canCreateAffiliations = $user->authorise('core.create', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canEditAffiliations = $user->authorise('core.edit', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canDeleteAffiliations = $user->authorise('core.delete', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
         $this->canCreateAppointments = $user->authorise('core.create', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
         $this->canEditAppointments = $user->authorise('core.edit', 'com_xdecaroorganizations')
@@ -219,6 +232,47 @@ final class HtmlView extends BaseHtmlView
             $this->bodies = [];
             Log::add(
                 'Organizations bodies load failed: ' . $exception->getMessage(),
+                Log::ERROR,
+                'com_xdecaroorganizations'
+            );
+            Factory::getApplication()->enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+        }
+    }
+
+    private function loadAffiliations(OrganizationsComponent $component): void
+    {
+        $organizationId = (int) ($this->item->id ?? 0);
+        if ($organizationId < 1) {
+            return;
+        }
+
+        try {
+            $model = $component->getMVCFactory()->createModel(
+                'OrganizationAffiliations',
+                'Administrator',
+                ['ignore_request' => true]
+            );
+
+            if (!$model instanceof OrganizationAffiliationsModel) {
+                throw new \\RuntimeException('Unable to create OrganizationAffiliations model.');
+            }
+
+            $model->setOrganizationId($organizationId);
+            $items = $model->getItems();
+            if ($items === false) {
+                throw new \\RuntimeException((string) ($model->getError() ?: 'Unable to load organization affiliations.'));
+            }
+
+            $this->affiliations = $items;
+            $organizationModel = $this->getModel();
+            if ($organizationModel instanceof OrganizationModel) {
+                $this->affiliationTargets = $organizationModel->getAffiliationTargets($organizationId);
+            }
+        } catch (Throwable $exception) {
+            $this->affiliations = [];
+            $this->affiliationTargets = [];
+            Log::add(
+                'Organizations affiliations load failed: ' . $exception->getMessage(),
                 Log::ERROR,
                 'com_xdecaroorganizations'
             );
