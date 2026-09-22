@@ -254,13 +254,13 @@ final class HtmlView extends BaseHtmlView
             );
 
             if (!$model instanceof OrganizationAffiliationsModel) {
-                throw new \\RuntimeException('Unable to create OrganizationAffiliations model.');
+                throw new \RuntimeException('Unable to create OrganizationAffiliations model.');
             }
 
             $model->setOrganizationId($organizationId);
             $items = $model->getItems();
             if ($items === false) {
-                throw new \\RuntimeException((string) ($model->getError() ?: 'Unable to load organization affiliations.'));
+                throw new \RuntimeException((string) ($model->getError() ?: 'Unable to load organization affiliations.'));
             }
 
             $this->affiliations = $items;
