@@ -14,8 +14,7 @@ $siteCss = (string) file_get_contents($root . '/component/media/css/site.css');
 
 $checks = [
     [$form, 'name="status_since" type="calendar"', 'Status since must remain a Joomla calendar field.'],
-    [$form, 'format="%d/%m/%Y"', 'Status since must use day/month/year presentation.'],
-    [$form, 'hint="COM_XDECAROORGANIZATIONS_DATE_PLACEHOLDER"', 'Status since must expose an explicit date placeholder.'],
+    [$form, 'hint="COM_XDECAROORGANIZATIONS_DATE_PLACEHOLDER"', 'Status since must expose an explicit day/month/year placeholder without changing Joomla date storage.'],
     [$form, 'name="province" type="text"', 'Contacts must expose a separate province field.'],
     [$form, 'name="region" type="text"', 'Contacts must retain a separate region field.'],
     [$install, '`province` VARCHAR(190) DEFAULT NULL', 'Fresh installs must include the province column.'],
