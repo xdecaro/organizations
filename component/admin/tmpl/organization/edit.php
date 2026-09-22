@@ -13,7 +13,7 @@ $organizationName = trim((string) ($this->item->name ?? ''));
 $organizationHeading = $organizationName !== ''
     ? $this->escape($organizationName)
     : Text::_('COM_XDECAROORGANIZATIONS_ORGANIZATION_NEW');
-$allowedTabs = ['identity', 'structure', 'hierarchy', 'contacts', 'bodies', 'members', 'delegations', 'publishing', 'system'];
+$allowedTabs = ['identity', 'structure', 'hierarchy', 'affiliations', 'contacts', 'bodies', 'members', 'delegations', 'publishing', 'system'];
 $requestedTab = Factory::getApplication()->getInput()->getCmd('activeTab', 'identity');
 $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'identity';
 ?>
@@ -35,6 +35,10 @@ $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'iden
 
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'hierarchy', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_HIERARCHY'));
         echo $this->loadTemplate('hierarchy');
+        echo HTMLHelper::_('uitab.endTab');
+
+        echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'affiliations', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_AFFILIATIONS'));
+        echo $this->loadTemplate('affiliations');
         echo HTMLHelper::_('uitab.endTab');
 
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'contacts', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS'));

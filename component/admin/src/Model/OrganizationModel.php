@@ -118,6 +118,29 @@ final class OrganizationModel extends AdminModel
         ];
     }
 
+    public function getAffiliationTargets(int $organizationId): array
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('name'),
+                $db->quoteName('code'),
+                $db->quoteName('type'),
+                $db->quoteName('structure_level'),
+            ])
+            ->from($db->quoteName('#__xdecaroorganizations_organizations'))
+            ->where($db->quoteName('state') . ' = 1')
+            ->order($db->quoteName('name') . ' ASC');
+
+        if ($organizationId > 0) {
+            $query->where($db->quoteName('id') . ' != :organizationId')
+                ->bind(':organizationId', $organizationId, ParameterType::INTEGER);
+        }
+
+        return array_values((array) $db->setQuery($query)->loadObjectList());
+    }
+
     protected function canDelete($record): bool
     {
         return Factory::getApplication()->getIdentity()->authorise('core.delete', 'com_xdecaroorganizations');
