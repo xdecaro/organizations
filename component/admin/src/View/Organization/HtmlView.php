@@ -33,6 +33,7 @@ final class HtmlView extends BaseHtmlView
     public bool $canDeleteAppointments = false;
     public bool $canCreateBodies = false;
     public bool $canEditBodies = false;
+    public bool $canDeleteBodies = false;
     public bool $canCreateDelegations = false;
     public bool $canEditDelegations = false;
     public string $auditCreatedByName = '';
@@ -70,6 +71,8 @@ final class HtmlView extends BaseHtmlView
         $this->canCreateBodies = $user->authorise('core.create', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
         $this->canEditBodies = $user->authorise('core.edit', 'com_xdecaroorganizations')
+            || $user->authorise('core.admin', 'com_xdecaroorganizations');
+        $this->canDeleteBodies = $user->authorise('core.delete', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
         $this->canCreateDelegations = $user->authorise('core.create', 'com_xdecaroorganizations')
             || $user->authorise('core.admin', 'com_xdecaroorganizations');
