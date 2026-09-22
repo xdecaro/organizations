@@ -100,17 +100,13 @@ final class OrganizationBodyModel extends AdminModel
         $db->transactionStart();
 
         try {
-            $query = $db->getQuery(true)
-                ->select([
-                    $db->quoteName('id'),
-                    $db->quoteName('name'),
-                ])
-                ->from($db->quoteName('#__xdecaroorganizations_bodies'))
-                ->where($db->quoteName('id') . ' = :id')
-                ->bind(':id', $id, ParameterType::INTEGER)
-                ->forUpdate();
+            $lockSql = 'SELECT '
+                . $db->quoteName('id') . ', ' . $db->quoteName('name')
+                . ' FROM ' . $db->quoteName('#__xdecaroorganizations_bodies')
+                . ' WHERE ' . $db->quoteName('id') . ' = ' . $id
+                . ' FOR UPDATE';
 
-            $body = $db->setQuery($query, 0, 1)->loadObject();
+            $body = $db->setQuery($lockSql, 0, 1)->loadObject();
             if (!$body) {
                 throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_BODY_DELETE_NOT_FOUND'));
             }
