@@ -76,6 +76,7 @@ final class OrganizationTable extends Table
                 'address_line',
                 'postal_code',
                 'city',
+                'province',
                 'region',
                 'logo',
                 'notes',
