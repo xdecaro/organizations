@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     end: 'index.php?option=com_xdecaroorganizations&task=appointment.end&format=json',
     delete: 'index.php?option=com_xdecaroorganizations&task=appointment.delete&format=json',
     bodySave: 'index.php?option=com_xdecaroorganizations&task=body.save&format=json',
+    bodyDelete: 'index.php?option=com_xdecaroorganizations&task=body.delete&format=json',
     delegationSave: 'index.php?option=com_xdecaroorganizations&task=delegation.save&format=json',
   };
 
@@ -508,6 +509,22 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       window.alert(error.message || String(error));
     }
+  });
+
+
+  document.querySelectorAll('[data-body-delete]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (!window.confirm(button.dataset.confirm || 'Delete this body permanently?')) {
+        return;
+      }
+
+      try {
+        await post(endpoints.bodyDelete, { id: button.dataset.bodyId || '0' });
+        reloadOrganizationTab('bodies');
+      } catch (error) {
+        window.alert(error.message || String(error));
+      }
+    });
   });
 
 
