@@ -53,7 +53,7 @@
       <option value="merged">COM_XDECAROORGANIZATIONS_OPERATIONAL_MERGED</option>
       <option value="dissolved">COM_XDECAROORGANIZATIONS_OPERATIONAL_DISSOLVED</option>
     </field>
-    <field name="status_since" type="calendar" label="COM_XDECAROORGANIZATIONS_FIELD_STATUS_SINCE" format="%d/%m/%Y" hint="COM_XDECAROORGANIZATIONS_DATE_PLACEHOLDER" filter="user_utc"/>
+    <field name="status_since" type="calendar" label="COM_XDECAROORGANIZATIONS_FIELD_STATUS_SINCE" format="%Y-%m-%d" hint="COM_XDECAROORGANIZATIONS_DATE_PLACEHOLDER" filter="user_utc"/>
     <field name="autonomy_legal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL_DESC" default="0">
       <option value="0">JNO</option><option value="1">JYES</option>
     </field>
