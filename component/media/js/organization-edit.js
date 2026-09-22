@@ -2,10 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const members = document.querySelector('.xdecaro-members[data-organization-id]');
   const bodies = document.querySelector('.xdecaro-bodies[data-organization-id]');
   const delegations = document.querySelector('.xdecaro-delegations[data-organization-id]');
+  const affiliations = document.querySelector('.xdecaro-affiliations[data-organization-id]');
   const membersOrganizationId = Number(members?.dataset.organizationId || 0);
   const bodiesOrganizationId = Number(bodies?.dataset.organizationId || 0);
   const delegationsOrganizationId = Number(delegations?.dataset.organizationId || 0);
-  if (membersOrganizationId < 1 && bodiesOrganizationId < 1 && delegationsOrganizationId < 1) {
+  const affiliationsOrganizationId = Number(affiliations?.dataset.organizationId || 0);
+  if (membersOrganizationId < 1 && bodiesOrganizationId < 1 && delegationsOrganizationId < 1 && affiliationsOrganizationId < 1) {
     return;
   }
 
@@ -18,12 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
     bodySave: 'index.php?option=com_xdecaroorganizations&task=body.save&format=json',
     bodyDelete: 'index.php?option=com_xdecaroorganizations&task=body.delete&format=json',
     delegationSave: 'index.php?option=com_xdecaroorganizations&task=delegation.save&format=json',
+    affiliationSave: 'index.php?option=com_xdecaroorganizations&task=affiliation.save&format=json',
+    affiliationDelete: 'index.php?option=com_xdecaroorganizations&task=affiliation.delete&format=json',
   };
 
   const editModalElement = document.getElementById('appointment-edit-modal');
   const endModalElement = document.getElementById('appointment-end-modal');
   const bodyModalElement = document.getElementById('body-edit-modal');
   const delegationModalElement = document.getElementById('delegation-edit-modal');
+  const affiliationModalElement = document.getElementById('affiliation-edit-modal');
   const editModal = editModalElement && window.bootstrap?.Modal
     ? window.bootstrap.Modal.getOrCreateInstance(editModalElement)
     : null;
@@ -35,6 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
     : null;
   const delegationModal = delegationModalElement && window.bootstrap?.Modal
     ? window.bootstrap.Modal.getOrCreateInstance(delegationModalElement)
+    : null;
+  const affiliationModal = affiliationModalElement && window.bootstrap?.Modal
+    ? window.bootstrap.Modal.getOrCreateInstance(affiliationModalElement)
     : null;
 
   const idField = document.getElementById('appointment-id');
@@ -646,6 +654,94 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       window.alert(error.message || String(error));
     }
+  });
+
+  const affiliationId = document.getElementById('affiliation-id');
+  const affiliationTarget = document.getElementById('affiliation-target');
+  const affiliationType = document.getElementById('affiliation-type');
+  const affiliationCode = document.getElementById('affiliation-code');
+  const affiliationStartsOn = document.getElementById('affiliation-starts-on');
+  const affiliationEndsOn = document.getElementById('affiliation-ends-on');
+  const affiliationStatus = document.getElementById('affiliation-status');
+  const affiliationNotes = document.getElementById('affiliation-notes');
+
+  const resetAffiliation = () => {
+    if (affiliationId) affiliationId.value = '0';
+    if (affiliationTarget) affiliationTarget.value = '0';
+    if (affiliationType) affiliationType.value = 'sports_affiliation';
+    if (affiliationCode) affiliationCode.value = '';
+    if (affiliationStartsOn) affiliationStartsOn.value = '';
+    if (affiliationEndsOn) affiliationEndsOn.value = '';
+    if (affiliationStatus) affiliationStatus.value = 'active';
+    if (affiliationNotes) affiliationNotes.value = '';
+  };
+
+  const parseAffiliation = (button) => {
+    try {
+      return JSON.parse(button.dataset.affiliation || '{}');
+    } catch (error) {
+      console.error(error);
+      return {};
+    }
+  };
+
+  const fillAffiliation = (item) => {
+    if (affiliationId) affiliationId.value = String(item.id || 0);
+    if (affiliationTarget) affiliationTarget.value = String(item.target_organization_id || 0);
+    if (affiliationType) affiliationType.value = item.relation_type || 'sports_affiliation';
+    if (affiliationCode) affiliationCode.value = item.relation_code || '';
+    if (affiliationStartsOn) affiliationStartsOn.value = item.starts_on || '';
+    if (affiliationEndsOn) affiliationEndsOn.value = item.ends_on || '';
+    if (affiliationStatus) affiliationStatus.value = item.status || 'active';
+    if (affiliationNotes) affiliationNotes.value = item.notes || '';
+  };
+
+  document.querySelectorAll('[data-affiliation-add]').forEach((button) => {
+    button.addEventListener('click', () => {
+      resetAffiliation();
+      affiliationModal?.show();
+    });
+  });
+
+  document.querySelectorAll('[data-affiliation-edit]').forEach((button) => {
+    button.addEventListener('click', () => {
+      fillAffiliation(parseAffiliation(button));
+      affiliationModal?.show();
+    });
+  });
+
+  document.querySelector('[data-affiliation-save]')?.addEventListener('click', async () => {
+    try {
+      await post(endpoints.affiliationSave, {
+        id: affiliationId?.value || '0',
+        organization_id: affiliationsOrganizationId,
+        target_organization_id: affiliationTarget?.value || '0',
+        relation_type: affiliationType?.value || 'sports_affiliation',
+        relation_code: affiliationCode?.value || '',
+        starts_on: affiliationStartsOn?.value || '',
+        ends_on: affiliationEndsOn?.value || '',
+        status: affiliationStatus?.value || 'active',
+        notes: affiliationNotes?.value || '',
+        state: '1',
+      });
+      reloadOrganizationTab('affiliations');
+    } catch (error) {
+      window.alert(error.message || String(error));
+    }
+  });
+
+  document.querySelectorAll('[data-affiliation-delete]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (!window.confirm(button.dataset.confirm || 'Delete this affiliation permanently?')) {
+        return;
+      }
+      try {
+        await post(endpoints.affiliationDelete, { id: button.dataset.affiliationId || '0' });
+        reloadOrganizationTab('affiliations');
+      } catch (error) {
+        window.alert(error.message || String(error));
+      }
+    });
   });
 
   updateCustomRole();
