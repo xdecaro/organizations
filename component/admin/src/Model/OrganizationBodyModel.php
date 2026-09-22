@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
@@ -87,6 +88,63 @@ final class OrganizationBodyModel extends AdminModel
         }
 
         return (int) $table->id;
+    }
+
+    public function deleteBody(int $id): void
+    {
+        if ($id < 1) {
+            throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_BODY_DELETE_NOT_FOUND'));
+        }
+
+        $db = $this->getDatabase();
+        $db->transactionStart();
+
+        try {
+            $query = $db->getQuery(true)
+                ->select([
+                    $db->quoteName('id'),
+                    $db->quoteName('name'),
+                ])
+                ->from($db->quoteName('#__xdecaroorganizations_bodies'))
+                ->where($db->quoteName('id') . ' = :id')
+                ->bind(':id', $id, ParameterType::INTEGER)
+                ->forUpdate();
+
+            $body = $db->setQuery($query, 0, 1)->loadObject();
+            if (!$body) {
+                throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_BODY_DELETE_NOT_FOUND'));
+            }
+
+            $childCount = $this->dependencyCount('#__xdecaroorganizations_bodies', 'parent_id', $id);
+            $appointmentCount = $this->dependencyCount('#__xdecaroorganizations_appointments', 'body_id', $id);
+
+            if ($childCount > 0 || $appointmentCount > 0) {
+                throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_BODY_DELETE_BLOCKED'));
+            }
+
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__xdecaroorganizations_bodies'))
+                ->where($db->quoteName('id') . ' = :id')
+                ->bind(':id', $id, ParameterType::INTEGER);
+            $db->setQuery($query)->execute();
+
+            $db->transactionCommit();
+        } catch (\Throwable $e) {
+            $db->transactionRollback();
+            throw $e;
+        }
+    }
+
+    private function dependencyCount(string $table, string $field, int $id): int
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName($table))
+            ->where($db->quoteName($field) . ' = :id')
+            ->bind(':id', $id, ParameterType::INTEGER);
+
+        return (int) $db->setQuery($query)->loadResult();
     }
 
     private function organizationExists(int $organizationId): bool
