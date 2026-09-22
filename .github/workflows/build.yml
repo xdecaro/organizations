@@ -40,6 +40,7 @@ jobs:
           php tests/members-tab-persistence-contract.php
           php tests/institutional-profile-contract.php
           php tests/bodies-contract.php
+          php tests/body-delete-contract.php
           php tests/organization-body-domain.php
           php tests/appointment-bodies-roles-contract.php
           php tests/delegations-contract.php
@@ -57,6 +58,7 @@ jobs:
           php tests/public-frontend-privacy-contract.php
           php tests/frontend-menu-selector-contract.php
           php tests/publishing-language-contract.php
+          php tests/organization-editor-1.2.4-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
