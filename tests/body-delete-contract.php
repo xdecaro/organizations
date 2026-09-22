@@ -17,7 +17,7 @@ foreach ([
     [$model, "dependencyCount('#__xdecaroorganizations_bodies', 'parent_id'", 'Body deletion must detect child bodies.'],
     [$model, "dependencyCount('#__xdecaroorganizations_appointments', 'body_id'", 'Body deletion must detect linked appointments.'],
     [$model, 'transactionStart()', 'Body deletion must be transactional.'],
-    [$model, 'forUpdate()', 'Body deletion must lock the body before dependency checks.'],
+    [$model, "' FOR UPDATE'", 'Body deletion must lock the body before dependency checks.'],
     [$view, 'public bool $canDeleteBodies = false;', 'Organization view must expose body delete permission.'],
     [$template, 'data-body-delete', 'Bodies UI must expose delete only through the guarded action.'],
     [$js, "task=body.delete&format=json", 'Admin JS must call the body delete endpoint.'],
