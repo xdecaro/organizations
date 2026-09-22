@@ -166,6 +166,7 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments' AND column_name='show_on_frontend' AND column_default='0';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations' AND column_name='language' AND is_nullable='NO' AND column_default='*';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations' AND column_name='province' AND is_nullable='YES';")" = 1
           test -f joomla/components/com_xdecaroorganizations/src/Controller/DisplayController.php
           test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationsModel.php
           test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationModel.php
@@ -176,6 +177,7 @@ jobs:
           if [ '${{ matrix.mode }}' = 'upgrade-1.0.25' ]; then
             test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND name='Legacy Organization';")" = 1
             test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND language='*';")" = 1
+            test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM org_xdecaroorganizations_organizations WHERE uuid='11111111-2222-4333-8444-555555555555' AND region='Legacy Region' AND province IS NULL;")" = 1
           fi
       - name: Smoke test public frontend and private-by-default appointments
         shell: bash
