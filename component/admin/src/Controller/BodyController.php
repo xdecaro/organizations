@@ -55,6 +55,33 @@ final class BodyController extends BaseController
         }
     }
 
+    public function delete(): void
+    {
+        if (!Session::checkToken('post')) {
+            $this->respond(null, Text::_('JINVALID_TOKEN'), true);
+            return;
+        }
+
+        $app = Factory::getApplication();
+        $user = $app->getIdentity();
+
+        if (!$user->authorise('core.delete', 'com_xdecaroorganizations')
+            && !$user->authorise('core.admin', 'com_xdecaroorganizations')) {
+            $this->respond(null, Text::_('JERROR_ALERTNOAUTHOR'), true);
+            return;
+        }
+
+        $id = $app->getInput()->post->getInt('id', 0);
+
+        try {
+            $model = $this->getModel('OrganizationBody', 'Administrator', ['ignore_request' => true]);
+            $model->deleteBody($id);
+            $this->respond(['id' => $id], Text::_('COM_XDECAROORGANIZATIONS_BODY_DELETED'));
+        } catch (Throwable $e) {
+            $this->respond(null, $e->getMessage(), true);
+        }
+    }
+
     private function respond(mixed $data = null, string $message = '', bool $error = false): void
     {
         echo new JsonResponse($data, $message, $error, true);
