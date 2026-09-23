@@ -8,6 +8,7 @@ use Joomla\CMS\Extension\MVCComponent;
 use RuntimeException;
 use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;
+use xdecaro\Component\Organizations\Administrator\Service\ImportService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationBodiesService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationDelegationsService;
@@ -21,6 +22,7 @@ final class OrganizationsComponent extends MVCComponent
     private ?CoreIntegrationService $core = null;
     private ?OrganizationProviderService $provider = null;
     private ?DuplicateService $duplicates = null;
+    private ?ImportService $import = null;
     private ?PeopleIntegrationService $people = null;
     private ?PersonAppointmentsService $personAppointments = null;
     private ?OrganizationBodiesService $bodies = null;
@@ -64,6 +66,20 @@ final class OrganizationsComponent extends MVCComponent
         }
 
         return $this->duplicates;
+    }
+
+    public function setImportService(ImportService $service): void
+    {
+        $this->import = $service;
+    }
+
+    public function getImportService(): ImportService
+    {
+        if (!$this->import) {
+            throw new RuntimeException('Organizations import service not initialized.');
+        }
+
+        return $this->import;
     }
 
     public function setPeopleIntegrationService(PeopleIntegrationService $service): void

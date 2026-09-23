@@ -1,0 +1,3 @@
+-- Organizations 1.3.0
+-- CSV import uses the existing Organizations and affiliations schema.
+-- No destructive schema changes are required.

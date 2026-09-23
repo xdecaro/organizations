@@ -61,6 +61,8 @@ jobs:
           php tests/organization-editor-1.2.4-contract.php
           php tests/affiliations-contract.php
           php tests/organization-1.2.6-nullable-spacing-contract.php
+          php tests/organizations-1.3.0-import-contract.php
+          node --check component/media/js/import.js
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
           import pathlib,xml.etree.ElementTree as ET
