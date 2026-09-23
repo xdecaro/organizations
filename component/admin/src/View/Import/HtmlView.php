@@ -64,6 +64,7 @@ final class HtmlView extends BaseHtmlView
                 'statusExisting' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_STATUS_EXISTING'),
                 'statusInvalid' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_STATUS_INVALID'),
                 'statusError' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_STATUS_ERROR'),
+                'statusDuplicate' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_STATUS_DUPLICATE'),
                 'sourceColumn' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_SOURCE_COLUMN'),
                 'notMapped' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_NOT_MAPPED'),
                 'encodingCp1252' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_ENCODING_CP1252'),
@@ -99,6 +100,7 @@ final class HtmlView extends BaseHtmlView
                 'possible_existing_organization' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_CODE_POSSIBLE_EXISTING'),
                 'organization_imported' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_CODE_IMPORTED'),
                 'duplicate_conflict' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_CODE_DUPLICATE_CONFLICT'),
+                'duplicate_consolidated' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_CODE_DUPLICATE_CONSOLIDATED'),
                 'database_error' => Text::_('COM_XDECAROORGANIZATIONS_IMPORT_CODE_DATABASE_ERROR'),
             ],
             'targets' => [
