@@ -52,6 +52,16 @@ final class OrganizationTable extends Table
         $this->setColumnAlias('published', 'state');
     }
 
+    /**
+     * Persist nullable organization fields as NULL when they are explicitly cleared.
+     * Joomla Table::store() defaults to skipping NULL values on UPDATE, which would
+     * otherwise leave the previous parent_id (and other nullable values) in place.
+     */
+    public function store($updateNulls = true)
+    {
+        return parent::store($updateNulls);
+    }
+
     public function check(): bool
     {
         $this->name = trim((string) $this->name);
