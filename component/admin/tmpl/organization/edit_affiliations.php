@@ -104,9 +104,9 @@ $affiliationJson = static function ($item): string {
                             <h3 class="modal-title fs-5" id="affiliation-edit-title"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_EDIT_TITLE'); ?></h3>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo Text::_('JCLOSE'); ?>"></button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body p-4">
                             <input type="hidden" id="affiliation-id" value="0">
-                            <div class="row g-3">
+                            <div class="row gx-3 gy-4">
                                 <div class="col-12">
                                     <label class="form-label" for="affiliation-target"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET'); ?> *</label>
                                     <select class="form-select" id="affiliation-target">
