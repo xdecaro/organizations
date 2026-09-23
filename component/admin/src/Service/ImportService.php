@@ -51,7 +51,6 @@ final class ImportService
             $validRows[] = $record;
         }
 
-        $validCount = count($validRows);
         [$deduplicated, $duplicateRows, $duplicateGroups, $duplicateConflicts] = $this->consolidateFileDuplicates($validRows);
         $invalid = array_merge($invalid, $duplicateConflicts);
 
@@ -109,7 +108,7 @@ final class ImportService
         return [
             'summary' => [
                 'total' => count($rows),
-                'valid' => $validCount,
+                'valid' => max(0, count($rows) - count($invalid)),
                 'duplicate_groups' => $duplicateGroups,
                 'invalid' => count($invalid),
                 'existing' => count($existing),
