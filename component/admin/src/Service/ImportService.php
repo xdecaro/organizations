@@ -146,7 +146,7 @@ final class ImportService
             }
 
             $record['_row'] = $rowNumber;
-            $match = $this->matchExisting($record, true);
+            $match = $this->matchExisting($record);
 
             if ($match['status'] === 'existing') {
                 $summary['existing']++;
@@ -166,7 +166,7 @@ final class ImportService
                 continue;
             }
 
-            $affiliation = $this->resolveAffiliation($record, true);
+            $affiliation = $this->resolveAffiliation($record);
             if ($affiliation['status'] === 'error') {
                 $summary['invalid']++;
                 $summary['results'][] = $this->resultRow(
@@ -245,7 +245,18 @@ final class ImportService
 
                 $this->db->transactionCommit();
                 $transaction = false;
-                $this->existingRows = null;
+
+                if ($this->existingRows !== null) {
+                    $this->existingRows[] = [
+                        'id' => $organizationId,
+                        'name' => (string) $record['name'],
+                        'legal_name' => $record['legal_name'],
+                        'code' => $record['code'],
+                        'vat_id' => $record['vat_id'],
+                        'tax_identifier' => $record['tax_identifier'],
+                        'country_code' => $record['country_code'],
+                    ];
+                }
 
                 $summary['inserted']++;
                 $summary['results'][] = $this->resultRow(
@@ -828,7 +839,7 @@ final class ImportService
     private function normalizeIdentifier(mixed $value): ?string
     {
         $value = mb_strtoupper(trim((string) $value), 'UTF-8');
-        $value = preg_replace('/\s+/u', '', $value) ?? '';
+        $value = preg_replace('/[^A-Z0-9]+/u', '', $value) ?? '';
         return $value !== '' ? $value : null;
     }
 
