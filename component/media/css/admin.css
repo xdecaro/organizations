@@ -216,3 +216,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+.xdecaro-column-picker {
+  min-width: 16rem;
+}
+
+.xdecaro-column-picker .form-check + .form-check {
+  margin-top: .4rem;
+}
+
+.xdecaro-scope [data-org-column="affiliations"] .badge {
+  min-width: 2.25rem;
+  font-variant-numeric: tabular-nums;
+}
