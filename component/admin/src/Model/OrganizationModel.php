@@ -118,6 +118,60 @@ final class OrganizationModel extends AdminModel
         ];
     }
 
+    public function searchAffiliationTargets(
+        int $organizationId,
+        string $search,
+        int $limit = 12,
+        bool $federationsFirst = false
+    ): array {
+        $search = trim($search);
+        if ($organizationId < 1 || strlen($search) < 2) {
+            return [];
+        }
+
+        $limit = max(1, min(20, $limit));
+        $db = $this->getDatabase();
+        $like = '%' . $search . '%';
+
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('name'),
+                $db->quoteName('code'),
+                $db->quoteName('type'),
+                $db->quoteName('structure_level'),
+            ])
+            ->from($db->quoteName('#__xdecaroorganizations_organizations'))
+            ->where($db->quoteName('state') . ' = 1')
+            ->where($db->quoteName('id') . ' != :organizationId')
+            ->where(
+                '(' . $db->quoteName('name') . ' LIKE :nameSearch'
+                . ' OR ' . $db->quoteName('legal_name') . ' LIKE :legalNameSearch'
+                . ' OR ' . $db->quoteName('code') . ' LIKE :codeSearch)'
+            )
+            ->bind(':organizationId', $organizationId, ParameterType::INTEGER)
+            ->bind(':nameSearch', $like)
+            ->bind(':legalNameSearch', $like)
+            ->bind(':codeSearch', $like);
+
+        $query->order(
+            'CASE WHEN UPPER(' . $db->quoteName('code') . ') = '
+            . $db->quote(strtoupper($search))
+            . ' THEN 0 ELSE 1 END ASC'
+        );
+
+        if ($federationsFirst) {
+            $query->order(
+                'CASE WHEN ' . $db->quoteName('type') . ' = ' . $db->quote('federation')
+                . ' THEN 0 ELSE 1 END ASC'
+            );
+        }
+
+        $query->order($db->quoteName('name') . ' ASC');
+
+        return array_values((array) $db->setQuery($query, 0, $limit)->loadObjectList());
+    }
+
     public function getAffiliationTargets(int $organizationId): array
     {
         $db = $this->getDatabase();

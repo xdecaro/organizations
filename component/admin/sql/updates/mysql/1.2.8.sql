@@ -1,0 +1,3 @@
+-- Organizations 1.2.8
+-- No schema changes.
+-- Affiliation target autocomplete and organization-list acronym column only.

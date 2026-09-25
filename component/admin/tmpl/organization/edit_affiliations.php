@@ -11,6 +11,9 @@ $affiliationJson = static function ($item): string {
         'id' => (int) ($item->id ?? 0),
         'organization_id' => (int) ($item->organization_id ?? 0),
         'target_organization_id' => (int) ($item->target_organization_id ?? 0),
+        'target_name' => (string) ($item->target_name ?? ''),
+        'target_code' => (string) ($item->target_code ?? ''),
+        'target_type' => (string) ($item->target_type ?? ''),
         'relation_type' => (string) ($item->relation_type ?? 'sports_affiliation'),
         'relation_code' => (string) ($item->relation_code ?? ''),
         'starts_on' => (string) ($item->starts_on ?? ''),
@@ -108,15 +111,31 @@ $affiliationJson = static function ($item): string {
                             <input type="hidden" id="affiliation-id" value="0">
                             <div class="row gx-3 gy-4">
                                 <div class="col-12">
-                                    <label class="form-label" for="affiliation-target"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET'); ?> *</label>
-                                    <select class="form-select" id="affiliation-target">
-                                        <option value="0"><?php echo Text::_('JSELECT'); ?></option>
-                                        <?php foreach ($this->affiliationTargets as $target) : ?>
-                                            <option value="<?php echo (int) $target->id; ?>">
-                                                <?php echo $this->escape((string) $target->name . (!empty($target->code) ? ' — ' . (string) $target->code : '')); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <label class="form-label" for="affiliation-target-search"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET'); ?> *</label>
+                                    <div class="xdecaro-affiliation-target-picker">
+                                        <input type="hidden" id="affiliation-target" value="0">
+                                        <input
+                                            type="search"
+                                            class="form-control"
+                                            id="affiliation-target-search"
+                                            data-affiliation-target-search
+                                            data-required-label="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET_REQUIRED')); ?>"
+                                            autocomplete="off"
+                                            role="combobox"
+                                            aria-autocomplete="list"
+                                            aria-expanded="false"
+                                            aria-controls="affiliation-target-results"
+                                            placeholder="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET_SEARCH_PLACEHOLDER')); ?>"
+                                        >
+                                        <div
+                                            class="list-group xdecaro-affiliation-target-results d-none"
+                                            id="affiliation-target-results"
+                                            data-affiliation-target-results
+                                            data-empty-label="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET_SEARCH_EMPTY')); ?>"
+                                            role="listbox"
+                                        ></div>
+                                    </div>
+                                    <div class="form-text"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET_SEARCH_HELP'); ?></div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label class="form-label" for="affiliation-type"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TYPE'); ?> *</label>

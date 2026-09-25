@@ -41,6 +41,7 @@ jobs:
           php tests/members-tab-persistence-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           php tests/person-appointments-provider-contract.php
+          php tests/affiliations-contract.php
       - name: Build deterministic release
         shell: bash
         run: |
@@ -71,7 +72,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: reorganizes the organization editor by moving Country and Logo to Identity and splitting the Contacts tab into Contacts and Headquarters, without changing stored organization data. Joomla 6 only."
+            --notes "Organizations ${V}: replaces the long affiliation target dropdown with a server-side name/acronym search, prioritizes federations for sports affiliations, and adds a Sigla/Acronym column to the organizations list. No schema changes. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |

@@ -24,7 +24,6 @@ final class HtmlView extends BaseHtmlView
     public $item;
     public array $appointments = [];
     public array $affiliations = [];
-    public array $affiliationTargets = [];
     public array $bodies = [];
     public array $delegations = [];
     public array $hierarchyPath = [];
@@ -264,13 +263,8 @@ final class HtmlView extends BaseHtmlView
             }
 
             $this->affiliations = $items;
-            $organizationModel = $this->getModel();
-            if ($organizationModel instanceof OrganizationModel) {
-                $this->affiliationTargets = $organizationModel->getAffiliationTargets($organizationId);
-            }
         } catch (Throwable $exception) {
             $this->affiliations = [];
-            $this->affiliationTargets = [];
             Log::add(
                 'Organizations affiliations load failed: ' . $exception->getMessage(),
                 Log::ERROR,

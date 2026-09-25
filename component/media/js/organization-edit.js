@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bodySave: 'index.php?option=com_xdecaroorganizations&task=body.save&format=json',
     bodyDelete: 'index.php?option=com_xdecaroorganizations&task=body.delete&format=json',
     delegationSave: 'index.php?option=com_xdecaroorganizations&task=delegation.save&format=json',
+    affiliationSearch: 'index.php?option=com_xdecaroorganizations&task=affiliation.searchTargets&format=json',
     affiliationSave: 'index.php?option=com_xdecaroorganizations&task=affiliation.save&format=json',
     affiliationDelete: 'index.php?option=com_xdecaroorganizations&task=affiliation.delete&format=json',
   };
@@ -658,6 +659,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const affiliationId = document.getElementById('affiliation-id');
   const affiliationTarget = document.getElementById('affiliation-target');
+  const affiliationTargetSearch = document.querySelector('[data-affiliation-target-search]');
+  const affiliationTargetResults = document.querySelector('[data-affiliation-target-results]');
   const affiliationType = document.getElementById('affiliation-type');
   const affiliationCode = document.getElementById('affiliation-code');
   const affiliationStartsOn = document.getElementById('affiliation-starts-on');
@@ -665,9 +668,146 @@ document.addEventListener('DOMContentLoaded', () => {
   const affiliationStatus = document.getElementById('affiliation-status');
   const affiliationNotes = document.getElementById('affiliation-notes');
 
+  let affiliationTargetSearchTimer = 0;
+  let affiliationTargetSearchRequest = 0;
+
+  const affiliationTargetLabel = (item) => {
+    const name = String(item?.name || item?.target_name || '').trim();
+    const code = String(item?.code || item?.target_code || '').trim();
+
+    return code ? `${name} — ${code}` : name;
+  };
+
+  const clearAffiliationTargetResults = () => {
+    if (affiliationTargetResults) {
+      affiliationTargetResults.replaceChildren();
+      affiliationTargetResults.classList.add('d-none');
+    }
+
+    affiliationTargetSearch?.setAttribute('aria-expanded', 'false');
+  };
+
+  const selectAffiliationTarget = (item) => {
+    const id = Number(item?.id || item?.target_organization_id || 0);
+    const label = affiliationTargetLabel(item);
+
+    if (affiliationTarget) {
+      affiliationTarget.value = id > 0 ? String(id) : '0';
+    }
+
+    if (affiliationTargetSearch) {
+      affiliationTargetSearch.value = label;
+      affiliationTargetSearch.dataset.selectedLabel = label;
+      affiliationTargetSearch.removeAttribute('aria-invalid');
+    }
+
+    clearAffiliationTargetResults();
+  };
+
+  const renderAffiliationTargetResults = (items) => {
+    if (!affiliationTargetResults) {
+      return;
+    }
+
+    affiliationTargetResults.replaceChildren();
+
+    if (!Array.isArray(items) || items.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'list-group-item text-body-secondary';
+      empty.textContent = affiliationTargetResults.dataset.emptyLabel || 'No organizations found.';
+      affiliationTargetResults.appendChild(empty);
+    } else {
+      items.forEach((item) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'list-group-item list-group-item-action';
+
+        const top = document.createElement('div');
+        top.className = 'd-flex align-items-center justify-content-between gap-2';
+
+        const name = document.createElement('span');
+        name.className = 'fw-semibold text-start';
+        name.textContent = String(item?.name || '');
+        top.appendChild(name);
+
+        const code = String(item?.code || '').trim();
+        if (code) {
+          const badge = document.createElement('span');
+          badge.className = 'badge text-bg-light border flex-shrink-0';
+          badge.textContent = code;
+          top.appendChild(badge);
+        }
+
+        button.appendChild(top);
+
+        const metadata = [
+          String(item?.type_label || '').trim(),
+        ].filter(Boolean);
+
+        if (metadata.length > 0) {
+          const meta = document.createElement('div');
+          meta.className = 'small text-body-secondary text-start mt-1';
+          meta.textContent = metadata.join(' · ');
+          button.appendChild(meta);
+        }
+
+        button.addEventListener('click', () => selectAffiliationTarget(item));
+        affiliationTargetResults.appendChild(button);
+      });
+    }
+
+    affiliationTargetResults.classList.remove('d-none');
+    affiliationTargetSearch?.setAttribute('aria-expanded', 'true');
+  };
+
+  const searchAffiliationTargets = async () => {
+    if (!affiliationTargetSearch) {
+      return;
+    }
+
+    const query = affiliationTargetSearch.value.trim();
+    if (query.length < 2) {
+      clearAffiliationTargetResults();
+      return;
+    }
+
+    const requestId = ++affiliationTargetSearchRequest;
+
+    try {
+      const data = await post(endpoints.affiliationSearch, {
+        organization_id: affiliationsOrganizationId,
+        q: query,
+        relation_type: affiliationType?.value || 'sports_affiliation',
+      });
+
+      if (requestId !== affiliationTargetSearchRequest) {
+        return;
+      }
+
+      renderAffiliationTargetResults(data.items || []);
+    } catch (error) {
+      if (requestId === affiliationTargetSearchRequest) {
+        clearAffiliationTargetResults();
+      }
+      console.error(error);
+    }
+  };
+
+  const queueAffiliationTargetSearch = () => {
+    window.clearTimeout(affiliationTargetSearchTimer);
+    affiliationTargetSearchTimer = window.setTimeout(() => {
+      void searchAffiliationTargets();
+    }, 250);
+  };
+
   const resetAffiliation = () => {
     if (affiliationId) affiliationId.value = '0';
     if (affiliationTarget) affiliationTarget.value = '0';
+    if (affiliationTargetSearch) {
+      affiliationTargetSearch.value = '';
+      delete affiliationTargetSearch.dataset.selectedLabel;
+    }
+    clearAffiliationTargetResults();
     if (affiliationType) affiliationType.value = 'sports_affiliation';
     if (affiliationCode) affiliationCode.value = '';
     if (affiliationStartsOn) affiliationStartsOn.value = '';
@@ -687,7 +827,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const fillAffiliation = (item) => {
     if (affiliationId) affiliationId.value = String(item.id || 0);
-    if (affiliationTarget) affiliationTarget.value = String(item.target_organization_id || 0);
+    selectAffiliationTarget({
+      id: item.target_organization_id || 0,
+      name: item.target_name || '',
+      code: item.target_code || '',
+      type: item.target_type || '',
+    });
     if (affiliationType) affiliationType.value = item.relation_type || 'sports_affiliation';
     if (affiliationCode) affiliationCode.value = item.relation_code || '';
     if (affiliationStartsOn) affiliationStartsOn.value = item.starts_on || '';
@@ -695,6 +840,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (affiliationStatus) affiliationStatus.value = item.status || 'active';
     if (affiliationNotes) affiliationNotes.value = item.notes || '';
   };
+
+  affiliationTargetSearch?.addEventListener('input', () => {
+    const selectedLabel = affiliationTargetSearch.dataset.selectedLabel || '';
+    if (affiliationTargetSearch.value !== selectedLabel) {
+      if (affiliationTarget) {
+        affiliationTarget.value = '0';
+      }
+      delete affiliationTargetSearch.dataset.selectedLabel;
+      affiliationTargetSearch.removeAttribute('aria-invalid');
+    }
+
+    queueAffiliationTargetSearch();
+  });
+
+  affiliationTargetSearch?.addEventListener('focus', () => {
+    if (affiliationTargetSearch.value.trim().length >= 2 && Number(affiliationTarget?.value || 0) < 1) {
+      queueAffiliationTargetSearch();
+    }
+  });
+
+  affiliationTargetSearch?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      clearAffiliationTargetResults();
+    }
+  });
+
+  affiliationType?.addEventListener('change', () => {
+    if (Number(affiliationTarget?.value || 0) < 1 && (affiliationTargetSearch?.value.trim().length || 0) >= 2) {
+      queueAffiliationTargetSearch();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    const picker = affiliationTargetSearch?.closest('.xdecaro-affiliation-target-picker');
+    if (picker && !picker.contains(event.target)) {
+      clearAffiliationTargetResults();
+    }
+  });
 
   document.querySelectorAll('[data-affiliation-add]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -712,6 +895,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelector('[data-affiliation-save]')?.addEventListener('click', async () => {
     try {
+      if (Number(affiliationTarget?.value || 0) < 1) {
+        if (affiliationTargetSearch) {
+          affiliationTargetSearch.setAttribute('aria-invalid', 'true');
+          window.alert(affiliationTargetSearch.dataset.requiredLabel || 'Select an organization from the search results.');
+          affiliationTargetSearch.focus();
+        }
+        return;
+      }
+
       await post(endpoints.affiliationSave, {
         id: affiliationId?.value || '0',
         organization_id: affiliationsOrganizationId,
