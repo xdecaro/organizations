@@ -3,6 +3,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 
 $organizationId = (int) ($this->item->id ?? 0);
 
@@ -98,6 +99,53 @@ $affiliationJson = static function ($item): string {
                 </table>
             </div>
         <?php endif; ?>
+
+        <div class="mt-4 pt-4 border-top">
+            <h3 class="h5 mb-1"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_TITLE'); ?></h3>
+            <p class="text-body-secondary mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_DESC'); ?></p>
+
+            <?php if (!$this->affiliates) : ?>
+                <div class="alert alert-light border"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_NONE'); ?></div>
+            <?php else : ?>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATE_ORGANIZATION'); ?></th>
+                                <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TYPE'); ?></th>
+                                <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_STATUS'); ?></th>
+                                <th class="d-none d-md-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_PERIOD'); ?></th>
+                                <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_CODE'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($this->affiliates as $affiliate) : ?>
+                                <tr>
+                                    <td>
+                                        <a class="fw-semibold" href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) ($affiliate->organization_id ?? 0)); ?>">
+                                            <?php echo $this->escape((string) ($affiliate->source_name ?? '')); ?>
+                                        </a>
+                                        <?php if (!empty($affiliate->source_code)) : ?>
+                                            <span class="d-block small text-body-secondary"><?php echo $this->escape((string) $affiliate->source_code); ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo Text::_((string) ($affiliate->type_label_key ?? 'COM_XDECAROORGANIZATIONS_AFFILIATION_TYPE_OTHER')); ?></td>
+                                    <td><?php echo Text::_((string) ($affiliate->status_label_key ?? 'COM_XDECAROORGANIZATIONS_AFFILIATION_STATUS_INACTIVE')); ?></td>
+                                    <td class="d-none d-md-table-cell">
+                                        <?php
+                                        $from = trim((string) ($affiliate->starts_on ?? ''));
+                                        $to = trim((string) ($affiliate->ends_on ?? ''));
+                                        echo $this->escape(trim($from . ($from !== '' || $to !== '' ? ' → ' : '') . $to));
+                                        ?>
+                                    </td>
+                                    <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($affiliate->relation_code ?? '')); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
 
         <?php if ($this->canCreateAffiliations || $this->canEditAffiliations) : ?>
             <div class="modal fade" id="affiliation-edit-modal" tabindex="-1" aria-labelledby="affiliation-edit-title" aria-hidden="true">
