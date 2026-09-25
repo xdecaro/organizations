@@ -1,0 +1,3 @@
+-- Organizations 1.2.12
+-- No schema changes.
+-- Federation-side Add affiliate UX only.
