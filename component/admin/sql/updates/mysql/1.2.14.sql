@@ -1,0 +1,3 @@
+-- Organizations 1.2.14
+-- No schema changes.
+-- country_code is now exposed by the normal public provider payload for cross-component country mapping.

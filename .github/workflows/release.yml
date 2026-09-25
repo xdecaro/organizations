@@ -31,6 +31,7 @@ jobs:
           php tests/parent-self-option-contract.php
           php tests/edit-name-heading-contract.php
           php tests/contacts-ux-contract.php
+          php tests/public-country-code-provider-contract.php
           php tests/hierarchy-list-contract.php
           php tests/appointments-schema-contract.php
           php tests/appointments-domain.php
@@ -74,7 +75,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: adds organization social profile fields for Facebook, Instagram, YouTube, LinkedIn and TikTok, with dedicated administrator UI and public profile output. Existing data is preserved. Joomla 6 only."
+            --notes "Organizations ${V}: exposes organization country_code through the normal public provider so connected components can map canonical organizations to their own country records without sensitive-data access. No schema changes. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
