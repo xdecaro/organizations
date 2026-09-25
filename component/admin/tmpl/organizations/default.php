@@ -56,7 +56,7 @@ $columns = [
                     data-bs-auto-close="outside"
                     aria-expanded="false"
                 >
-                    <span class="icon-columns" aria-hidden="true"></span>
+                    <span class="icon-list" aria-hidden="true"></span>
                     <?php echo Text::_('COM_XDECAROORGANIZATIONS_COLUMNS'); ?>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end p-3 xdecaro-column-picker" data-org-column-picker>
