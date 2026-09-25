@@ -9,6 +9,9 @@ $listModel = (string) file_get_contents($root . '/component/admin/src/Model/Orga
 $affiliationsModel = (string) file_get_contents($root . '/component/admin/src/Model/OrganizationAffiliationsModel.php');
 $template = (string) file_get_contents($root . '/component/admin/tmpl/organization/edit_affiliations.php');
 $listTemplate = (string) file_get_contents($root . '/component/admin/tmpl/organizations/default.php');
+$js = (string) file_get_contents($root . '/component/media/js/organization-edit.js');
+$controller = (string) file_get_contents($root . '/component/admin/src/Controller/AffiliationController.php');
+$organizationModel = (string) file_get_contents($root . '/component/admin/src/Model/OrganizationModel.php');
 $it = (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.ini');
 
 $checks = [
@@ -22,10 +25,19 @@ $checks = [
     [$affiliationsModel, 'source_name', 'Incoming affiliate rows must expose the source organization.'],
     [$template, 'COM_XDECAROORGANIZATIONS_AFFILIATES_TITLE', 'Organization editor must show a separate affiliates section.'],
     [$template, 'source_name', 'Affiliates section must render the incoming organization.'],
+    [$template, 'data-affiliate-add', 'Federation editor must expose an Add affiliate action.'],
+    [$template, "\$isFederation && \$this->canCreateAffiliations", 'Add affiliate action must be limited to federation records with create permission.'],
+    [$template, 'COM_XDECAROORGANIZATIONS_AFFILIATE_SEARCH_PLACEHOLDER', 'Add affiliate mode must use a club-specific search placeholder.'],
+    [$js, "setAffiliationMode('affiliate')", 'Add affiliate action must switch the affiliation modal to affiliate mode.'],
+    [$js, 'organization_id: addingAffiliate ? selectedOrganizationId : affiliationsOrganizationId', 'Affiliate mode must save the selected club as the affiliation source.'],
+    [$js, 'target_organization_id: addingAffiliate ? affiliationsOrganizationId : selectedOrganizationId', 'Affiliate mode must save the current federation as the target.'],
+    [$controller, "\$mode === 'affiliate' ? 'club' : ''", 'Affiliate search must request club-only results.'],
+    [$organizationModel, "\$db->quoteName('type') . ' = :typeFilter'", 'Affiliation target search must support a bounded type filter.'],
     [$listModel, ') AS affiliation_count', 'Organizations list must count outgoing affiliations separately.'],
     [$listModel, ') AS affiliate_count', 'Organizations list must count incoming affiliates separately.'],
     [$listTemplate, 'data-org-column="affiliates"', 'Organizations list must expose the optional Affiliates column.'],
     [$it, 'COM_XDECAROORGANIZATIONS_COLUMN_AFFILIATES="Affiliati"', 'Italian Affiliati label is required.'],
+    [$it, 'COM_XDECAROORGANIZATIONS_AFFILIATE_ADD="Aggiungi affiliato"', 'Italian Add affiliate action label is required.'],
 ];
 
 foreach ($checks as [$haystack, $needle, $message]) {

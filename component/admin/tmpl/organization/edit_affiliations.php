@@ -6,6 +6,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
 $organizationId = (int) ($this->item->id ?? 0);
+$isFederation = strtolower(trim((string) ($this->item->type ?? ''))) === 'federation';
 
 $affiliationJson = static function ($item): string {
     return htmlspecialchars((string) json_encode([
@@ -101,8 +102,17 @@ $affiliationJson = static function ($item): string {
         <?php endif; ?>
 
         <div class="mt-4 pt-4 border-top">
-            <h3 class="h5 mb-1"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_TITLE'); ?></h3>
-            <p class="text-body-secondary mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_DESC'); ?></p>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div>
+                    <h3 class="h5 mb-1"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_TITLE'); ?></h3>
+                    <p class="text-body-secondary mb-0"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_DESC'); ?></p>
+                </div>
+                <?php if ($isFederation && $this->canCreateAffiliations) : ?>
+                    <button type="button" class="btn btn-primary" data-affiliate-add>
+                        <?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATE_ADD'); ?>
+                    </button>
+                <?php endif; ?>
+            </div>
 
             <?php if (!$this->affiliates) : ?>
                 <div class="alert alert-light border"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATES_NONE'); ?></div>
@@ -148,7 +158,15 @@ $affiliationJson = static function ($item): string {
         </div>
 
         <?php if ($this->canCreateAffiliations || $this->canEditAffiliations) : ?>
-            <div class="modal fade" id="affiliation-edit-modal" tabindex="-1" aria-labelledby="affiliation-edit-title" aria-hidden="true">
+            <div
+                class="modal fade"
+                id="affiliation-edit-modal"
+                tabindex="-1"
+                aria-labelledby="affiliation-edit-title"
+                aria-hidden="true"
+                data-title-affiliation="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_EDIT_TITLE')); ?>"
+                data-title-affiliate="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATE_ADD')); ?>"
+            >
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -157,9 +175,16 @@ $affiliationJson = static function ($item): string {
                         </div>
                         <div class="modal-body p-4">
                             <input type="hidden" id="affiliation-id" value="0">
+                            <input type="hidden" id="affiliation-mode" value="affiliation">
                             <div class="row gx-3 gy-4">
                                 <div class="col-12">
-                                    <label class="form-label" for="affiliation-target-search"><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET'); ?> *</label>
+                                    <label class="form-label" for="affiliation-target-search">
+                                        <span
+                                            data-affiliation-target-label
+                                            data-label-affiliation="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET')); ?>"
+                                            data-label-affiliate="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATE_ORGANIZATION')); ?>"
+                                        ><?php echo Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET'); ?></span> *
+                                    </label>
                                     <div class="xdecaro-affiliation-target-picker">
                                         <input type="hidden" id="affiliation-target" value="0">
                                         <input
@@ -173,6 +198,8 @@ $affiliationJson = static function ($item): string {
                                             aria-autocomplete="list"
                                             aria-expanded="false"
                                             aria-controls="affiliation-target-results"
+                                            data-placeholder-affiliation="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET_SEARCH_PLACEHOLDER')); ?>"
+                                            data-placeholder-affiliate="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATE_SEARCH_PLACEHOLDER')); ?>"
                                             placeholder="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET_SEARCH_PLACEHOLDER')); ?>"
                                         >
                                         <div

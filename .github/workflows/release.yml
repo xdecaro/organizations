@@ -74,7 +74,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: normalizes sports affiliation direction so clubs point to federations, separates Affiliazioni from Affiliati, and migrates existing active federation-to-club relationships safely. Joomla 6 only."
+            --notes "Organizations ${V}: adds a federation-side Add affiliate action that searches clubs by name or acronym and saves the canonical Club-to-Federation relationship. No schema changes. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
