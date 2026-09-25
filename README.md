@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.2.9`
+- Stable candidate version: `1.2.10`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -50,3 +50,5 @@ Organizations 1.2.4 refines the organization editor after real ENS Roma data-ent
 Organizations 1.2.8 improves affiliation selection for large organization datasets. The affiliation editor now searches organizations by name or acronym instead of loading a long dropdown, prioritizes federations for sports affiliations, and caps results for responsive use. The organizations list also shows a dedicated Acronym/Sigla column on desktop and tablet. No schema changes are required.
 
 Organizations 1.2.9 improves the administrator organizations list: publication state uses Joomla's compact icon control, active affiliation relationships are counted in a dedicated column, and a per-browser Columns menu lets users show or hide list columns while keeping Name fixed. No schema changes are required.
+
+Organizations 1.2.10 fixes malformed administrator language entries introduced in 1.2.9 so the Sigla, Affiliazioni and Colonne labels render as separate translations again. No schema changes are required.
