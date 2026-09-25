@@ -36,6 +36,7 @@ final class AffiliationController extends BaseController
         $organizationId = $input->post->getInt('organization_id', 0);
         $search = trim($input->post->getString('q', ''));
         $relationType = $input->post->getCmd('relation_type', 'sports_affiliation');
+        $mode = $input->post->getCmd('mode', 'affiliation');
 
         if ($organizationId < 1) {
             $this->respond(null, Text::_('COM_XDECAROORGANIZATIONS_AFFILIATIONS_SAVE_FIRST'), true);
@@ -53,7 +54,8 @@ final class AffiliationController extends BaseController
                 $organizationId,
                 $search,
                 12,
-                $relationType === 'sports_affiliation'
+                $relationType === 'sports_affiliation' && $mode !== 'affiliate',
+                $mode === 'affiliate' ? 'club' : ''
             );
 
             $payload = array_map(static function ($item): array {
