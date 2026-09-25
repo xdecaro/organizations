@@ -16,7 +16,7 @@ $checks = [
     [$sql, "target_org.type = 'club'", 'Migration must detect club as the incorrect target.'],
     [$sql, 'wrong.organization_id = target_org.id', 'Migration must move the club to organization_id.'],
     [$sql, 'wrong.target_organization_id = source_org.id', 'Migration must move the federation to target_organization_id.'],
-    [$model, "$sourceType === 'federation' && $targetType === 'club'", 'Future reverse club/federation sports affiliations must be rejected.'],
+    [$model, "\$sourceType === 'federation' && \$targetType === 'club'", 'Future reverse club/federation sports affiliations must be rejected.'],
     [$model, 'COM_XDECAROORGANIZATIONS_AFFILIATION_DIRECTION_CLUB_TO_FEDERATION', 'Direction validation must provide a translated explanation.'],
     [$affiliationsModel, 'setTargetOrganizationId', 'Affiliation list model must support incoming affiliates.'],
     [$affiliationsModel, 'source_name', 'Incoming affiliate rows must expose the source organization.'],
