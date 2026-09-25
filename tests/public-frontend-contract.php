@@ -3,6 +3,7 @@
 $root = dirname(__DIR__);
 
 $manifest = (string) file_get_contents($root . '/component/xdecaroorganizations.xml');
+$version = trim((string) file_get_contents($root . '/VERSION'));
 $assets = (string) file_get_contents($root . '/component/media/joomla.asset.json');
 $controller = (string) file_get_contents($root . '/component/site/src/Controller/DisplayController.php');
 $listModel = (string) file_get_contents($root . '/component/site/src/Model/OrganizationsModel.php');
@@ -19,7 +20,7 @@ foreach ([
     '<folder>language</folder>',
     '<folder>src</folder>',
     '<folder>tmpl</folder>',
-    '<version>1.2.6</version>',
+    '<version>' . $version . '</version>',
 ] as $needle) {
     if (!str_contains($manifest, $needle)) {
         fwrite(STDERR, "Frontend manifest contract missing {$needle}.\n");
