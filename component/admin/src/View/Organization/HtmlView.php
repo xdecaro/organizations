@@ -24,6 +24,7 @@ final class HtmlView extends BaseHtmlView
     public $item;
     public array $appointments = [];
     public array $affiliations = [];
+    public array $affiliates = [];
     public array $bodies = [];
     public array $delegations = [];
     public array $hierarchyPath = [];
@@ -263,8 +264,17 @@ final class HtmlView extends BaseHtmlView
             }
 
             $this->affiliations = $items;
+
+            $model->setTargetOrganizationId($organizationId);
+            $incoming = $model->getItems();
+            if ($incoming === false) {
+                throw new \RuntimeException((string) ($model->getError() ?: 'Unable to load organization affiliates.'));
+            }
+
+            $this->affiliates = $incoming;
         } catch (Throwable $exception) {
             $this->affiliations = [];
+            $this->affiliates = [];
             Log::add(
                 'Organizations affiliations load failed: ' . $exception->getMessage(),
                 Log::ERROR,
