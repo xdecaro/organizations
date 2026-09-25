@@ -71,7 +71,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: adds the read-only organizations.people_appointments public capability and narrow organizations.view_appointments ACL so authorised consumers can display a person's current and historical organization appointments without reading private tables or exposing appointment notes or sensitive organization fields. Canonical package remains pkg_organizations. Joomla 6 only."
+            --notes "Organizations ${V}: reorganizes the organization editor by moving Country and Logo to Identity and splitting the Contacts tab into Contacts and Headquarters, without changing stored organization data. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
