@@ -61,6 +61,7 @@ jobs:
           php tests/organization-editor-1.2.4-contract.php
           php tests/affiliations-contract.php
           php tests/organizations-list-columns-contract.php
+          php tests/affiliation-direction-contract.php
           php tests/organization-1.2.6-nullable-spacing-contract.php
           php tests/organizations-1.0.26-canonical-package-contract.php
           python3 - <<'PY'
