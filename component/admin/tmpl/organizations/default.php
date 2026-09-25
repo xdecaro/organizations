@@ -40,6 +40,7 @@ HTMLHelper::_('behavior.multiselect');
                     <tr>
                         <th><input type="checkbox" name="checkall-toggle" onclick="Joomla.checkAll(this)"></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_NAME'); ?></th>
+                        <th class="d-none d-md-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_COLUMN_ACRONYM'); ?></th>
                         <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_TYPE'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_STRUCTURE_LEVEL'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_OPERATIONAL_STATUS'); ?></th>
@@ -60,6 +61,7 @@ HTMLHelper::_('behavior.multiselect');
                                     <a href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $item->id); ?>"><?php echo $this->escape($item->name); ?></a>
                                 </div>
                             </td>
+                            <td class="d-none d-md-table-cell"><?php echo $this->escape((string) ($item->code ?? '')); ?></td>
                             <td class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_TYPE_' . strtoupper((string) $item->type)); ?></td>
                             <td><?php echo Text::_('COM_XDECAROORGANIZATIONS_STRUCTURE_' . strtoupper((string) ($item->structure_level ?: 'unspecified'))); ?></td>
                             <td><?php echo Text::_('COM_XDECAROORGANIZATIONS_OPERATIONAL_' . strtoupper((string) ($item->operational_status ?: 'active'))); ?></td>
