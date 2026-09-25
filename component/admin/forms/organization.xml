@@ -100,10 +100,6 @@
     <field name="city" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_CITY" maxlength="190"/>
     <field name="province" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_PROVINCE" maxlength="190"/>
     <field name="region" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_REGION" maxlength="190"/>
-    <field name="country_code" type="Country" code="alpha2" label="COM_XDECAROORGANIZATIONS_FIELD_COUNTRY" filter="cmd" validate="options" layout="joomla.form.field.list-fancy-select">
-      <option value="">COM_XDECAROORGANIZATIONS_SELECT_COUNTRY</option>
-    </field>
-    <field name="logo" type="media" label="COM_XDECAROORGANIZATIONS_FIELD_LOGO"/>
   </fieldset>
 
   <fieldset name="publishing" label="JGLOBAL_FIELDSET_PUBLISHING">
