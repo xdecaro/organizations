@@ -140,7 +140,6 @@ final class OrganizationModel extends AdminModel
                 $db->quoteName('code'),
                 $db->quoteName('type'),
                 $db->quoteName('structure_level'),
-                $db->quoteName('country_code'),
             ])
             ->from($db->quoteName('#__xdecaroorganizations_organizations'))
             ->where($db->quoteName('state') . ' = 1')
