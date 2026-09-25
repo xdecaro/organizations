@@ -42,6 +42,7 @@ jobs:
           php tests/organizations-1.0.26-canonical-package-contract.php
           php tests/person-appointments-provider-contract.php
           php tests/affiliations-contract.php
+          php tests/organizations-list-columns-contract.php
       - name: Build deterministic release
         shell: bash
         run: |
@@ -72,7 +73,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: replaces the long affiliation target dropdown with a server-side name/acronym search, prioritizes federations for sports affiliations, and adds a Sigla/Acronym column to the organizations list. No schema changes. Joomla 6 only."
+            --notes "Organizations ${V}: adds a configurable column chooser to the organizations list, shows active affiliation relationship counts, and replaces text publication status with Joomla icon-based state control. No schema changes. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |

@@ -60,6 +60,11 @@ final class OrganizationsModel extends ListModel
                 'a.access',
                 'a.created',
                 'p.name AS parent_name',
+                "(SELECT COUNT(*) FROM " . $db->quoteName('#__xdecaroorganizations_affiliations', 'af')
+                    . " WHERE " . $db->quoteName('af.state') . " = 1"
+                    . " AND " . $db->quoteName('af.status') . " = " . $db->quote('active')
+                    . " AND (" . $db->quoteName('af.organization_id') . " = " . $db->quoteName('a.id')
+                    . " OR " . $db->quoteName('af.target_organization_id') . " = " . $db->quoteName('a.id') . ")) AS affiliation_count",
             ])
             ->from($db->quoteName('#__xdecaroorganizations_organizations', 'a'))
             ->leftJoin($db->quoteName('#__xdecaroorganizations_organizations', 'p') . ' ON p.id=a.parent_id');

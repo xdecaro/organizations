@@ -1,0 +1,3 @@
+-- Organizations 1.2.9
+-- No schema changes.
+-- Administrator list column preferences, affiliation counts and icon publication status only.
