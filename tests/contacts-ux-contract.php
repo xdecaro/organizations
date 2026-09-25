@@ -9,10 +9,27 @@ $manifest = file_get_contents($root . '/component/xdecaroorganizations.xml');
 $jsPath = $root . '/component/media/js/organization-edit.js';
 $js = is_file($jsPath) ? file_get_contents($jsPath) : '';
 
+$formXml = simplexml_load_string($form);
+$identityCountry = $formXml !== false ? $formXml->xpath('./fieldset[@name="identity"]/field[@name="country_code"]') : [];
+$contactsCountry = $formXml !== false ? $formXml->xpath('./fieldset[@name="contacts"]/field[@name="country_code"]') : [];
+$headquartersCountry = $formXml !== false ? $formXml->xpath('./fieldset[@name="headquarters"]/field[@name="country_code"]') : [];
+$identityLogo = $formXml !== false ? $formXml->xpath('./fieldset[@name="identity"]/field[@name="logo"]') : [];
+$contactsLogo = $formXml !== false ? $formXml->xpath('./fieldset[@name="contacts"]/field[@name="logo"]') : [];
+$headquarters = $formXml !== false ? $formXml->xpath('./fieldset[@name="headquarters"]') : [];
+
 $countryField = str_contains($form, 'addfieldprefix="xdecaro\\Component\\Organizations\\Administrator\\Field"')
-    && str_contains($form, 'name="country_code" type="Country"')
+    && count($identityCountry) === 1
+    && count($contactsCountry) === 0
+    && count($headquartersCountry) === 0
     && str_contains($form, 'code="alpha2"')
     && str_contains($form, 'layout="joomla.form.field.list-fancy-select"');
+
+$identityLayout = count($identityLogo) === 1
+    && count($contactsLogo) === 0
+    && count($headquarters) === 1
+    && str_contains($template, "renderFieldset('contacts')")
+    && str_contains($template, "renderFieldset('headquarters')")
+    && str_contains($template, "COM_XDECAROORGANIZATIONS_FIELDSET_HEADQUARTERS");
 
 $peopleStyleHeading = str_contains($template, 'xdecaro-organizations-organization-edit')
     && str_contains($template, 'xdecaro-organization-heading')
@@ -30,8 +47,8 @@ $languageIndependent = str_contains($assets, 'com_xdecaroorganizations.organizat
     && !str_contains($js, "country.value === 'IT'")
     && !str_contains($js, "language.value = 'it-IT'");
 
-if (!$countryField || !$peopleStyleHeading || !$countryClass || !$countryMetadata || !$languageIndependent) {
-    fwrite(STDERR, "Organizations contacts UX must match People heading style, use a searchable Country field, and keep country independent from publishing language.\n");
+if (!$countryField || !$identityLayout || !$peopleStyleHeading || !$countryClass || !$countryMetadata || !$languageIndependent) {
+    fwrite(STDERR, "Organizations contacts UX must keep Country and Logo in Identity, split Contacts from Headquarters, use a searchable Country field, and keep country independent from publishing language.\n");
     exit(1);
 }
 
