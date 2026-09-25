@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <updates>
   <update>
     <name>Organizations</name>
@@ -10,8 +10,10 @@
     <downloads>
       <downloadurl type="full" format="zip">https://github.com/xdecaro/organizations/releases/download/v1.2.7/pkg_organizations_1.2.7.zip</downloadurl>
     </downloads>
-    <tags><tag>stable</tag></tags>
-    <sha256>0000000000000000000000000000000000000000000000000000000000000000</sha256>
+    <tags>
+      <tag>stable</tag>
+    </tags>
+    <sha256>76707a6deeac0abd2297e2e4f1012fe1a1ce2f6aad353dd19d57b8222585d8f8</sha256>
     <maintainer>Luca De Caro</maintainer>
     <maintainerurl>https://github.com/xdecaro/organizations</maintainerurl>
     <targetplatform name="joomla" version="6\.[0-9]+" />
