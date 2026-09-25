@@ -698,6 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (affiliationTargetSearch) {
       affiliationTargetSearch.value = label;
       affiliationTargetSearch.dataset.selectedLabel = label;
+      affiliationTargetSearch.removeAttribute('aria-invalid');
     }
 
     clearAffiliationTargetResults();
@@ -847,6 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
         affiliationTarget.value = '0';
       }
       delete affiliationTargetSearch.dataset.selectedLabel;
+      affiliationTargetSearch.removeAttribute('aria-invalid');
     }
 
     queueAffiliationTargetSearch();
@@ -894,7 +896,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('[data-affiliation-save]')?.addEventListener('click', async () => {
     try {
       if (Number(affiliationTarget?.value || 0) < 1) {
-        affiliationTargetSearch?.focus();
+        if (affiliationTargetSearch) {
+          affiliationTargetSearch.setAttribute('aria-invalid', 'true');
+          window.alert(affiliationTargetSearch.dataset.requiredLabel || 'Select an organization from the search results.');
+          affiliationTargetSearch.focus();
+        }
         return;
       }
 
