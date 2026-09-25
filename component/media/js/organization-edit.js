@@ -658,9 +658,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const affiliationId = document.getElementById('affiliation-id');
+  const affiliationMode = document.getElementById('affiliation-mode');
   const affiliationTarget = document.getElementById('affiliation-target');
   const affiliationTargetSearch = document.querySelector('[data-affiliation-target-search]');
   const affiliationTargetResults = document.querySelector('[data-affiliation-target-results]');
+  const affiliationTargetLabelElement = document.querySelector('[data-affiliation-target-label]');
+  const affiliationModalTitle = document.getElementById('affiliation-edit-title');
   const affiliationType = document.getElementById('affiliation-type');
   const affiliationCode = document.getElementById('affiliation-code');
   const affiliationStartsOn = document.getElementById('affiliation-starts-on');
@@ -670,6 +673,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let affiliationTargetSearchTimer = 0;
   let affiliationTargetSearchRequest = 0;
+
+  const setAffiliationMode = (mode) => {
+    const normalized = mode === 'affiliate' ? 'affiliate' : 'affiliation';
+
+    if (affiliationMode) {
+      affiliationMode.value = normalized;
+    }
+
+    if (affiliationModalTitle && affiliationModalElement) {
+      affiliationModalTitle.textContent = normalized === 'affiliate'
+        ? (affiliationModalElement.dataset.titleAffiliate || affiliationModalTitle.textContent)
+        : (affiliationModalElement.dataset.titleAffiliation || affiliationModalTitle.textContent);
+    }
+
+    if (affiliationTargetLabelElement) {
+      affiliationTargetLabelElement.textContent = normalized === 'affiliate'
+        ? (affiliationTargetLabelElement.dataset.labelAffiliate || affiliationTargetLabelElement.textContent)
+        : (affiliationTargetLabelElement.dataset.labelAffiliation || affiliationTargetLabelElement.textContent);
+    }
+
+    if (affiliationTargetSearch) {
+      affiliationTargetSearch.placeholder = normalized === 'affiliate'
+        ? (affiliationTargetSearch.dataset.placeholderAffiliate || affiliationTargetSearch.placeholder)
+        : (affiliationTargetSearch.dataset.placeholderAffiliation || affiliationTargetSearch.placeholder);
+    }
+  };
 
   const affiliationTargetLabel = (item) => {
     const name = String(item?.name || item?.target_name || '').trim();
@@ -778,6 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
         organization_id: affiliationsOrganizationId,
         q: query,
         relation_type: affiliationType?.value || 'sports_affiliation',
+        mode: affiliationMode?.value || 'affiliation',
       });
 
       if (requestId !== affiliationTargetSearchRequest) {
@@ -802,6 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const resetAffiliation = () => {
     if (affiliationId) affiliationId.value = '0';
+    setAffiliationMode('affiliation');
     if (affiliationTarget) affiliationTarget.value = '0';
     if (affiliationTargetSearch) {
       affiliationTargetSearch.value = '';
@@ -826,6 +857,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const fillAffiliation = (item) => {
+    setAffiliationMode('affiliation');
     if (affiliationId) affiliationId.value = String(item.id || 0);
     selectAffiliationTarget({
       id: item.target_organization_id || 0,
@@ -882,6 +914,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-affiliation-add]').forEach((button) => {
     button.addEventListener('click', () => {
       resetAffiliation();
+      setAffiliationMode('affiliation');
+      affiliationModal?.show();
+    });
+  });
+
+  document.querySelectorAll('[data-affiliate-add]').forEach((button) => {
+    button.addEventListener('click', () => {
+      resetAffiliation();
+      setAffiliationMode('affiliate');
       affiliationModal?.show();
     });
   });
@@ -904,10 +945,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const selectedOrganizationId = Number(affiliationTarget?.value || 0);
+      const addingAffiliate = (affiliationMode?.value || 'affiliation') === 'affiliate';
+
       await post(endpoints.affiliationSave, {
         id: affiliationId?.value || '0',
-        organization_id: affiliationsOrganizationId,
-        target_organization_id: affiliationTarget?.value || '0',
+        organization_id: addingAffiliate ? selectedOrganizationId : affiliationsOrganizationId,
+        target_organization_id: addingAffiliate ? affiliationsOrganizationId : selectedOrganizationId,
         relation_type: affiliationType?.value || 'sports_affiliation',
         relation_code: affiliationCode?.value || '',
         starts_on: affiliationStartsOn?.value || '',
