@@ -17,6 +17,14 @@
       }
     },
     {
+      "name": "com_xdecaroorganizations.organizations-list",
+      "type": "script",
+      "uri": "com_xdecaroorganizations/organizations-list.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
       "name": "com_xdecaroorganizations.site",
       "type": "style",
       "uri": "com_xdecaroorganizations/site.css"
