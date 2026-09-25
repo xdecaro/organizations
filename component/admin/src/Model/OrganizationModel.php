@@ -122,7 +122,8 @@ final class OrganizationModel extends AdminModel
         int $organizationId,
         string $search,
         int $limit = 12,
-        bool $federationsFirst = false
+        bool $federationsFirst = false,
+        string $typeFilter = ''
     ): array {
         $search = trim($search);
         if ($organizationId < 1 || strlen($search) < 2) {
@@ -153,6 +154,12 @@ final class OrganizationModel extends AdminModel
             ->bind(':nameSearch', $like)
             ->bind(':legalNameSearch', $like)
             ->bind(':codeSearch', $like);
+
+        $typeFilter = strtolower(trim($typeFilter));
+        if (in_array($typeFilter, ['organization', 'association', 'club', 'federation', 'company', 'public_body', 'school', 'sponsor', 'supplier'], true)) {
+            $query->where($db->quoteName('type') . ' = :typeFilter')
+                ->bind(':typeFilter', $typeFilter);
+        }
 
         $query->order(
             'CASE WHEN UPPER(' . $db->quoteName('code') . ') = '
