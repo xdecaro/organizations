@@ -73,7 +73,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: adds a configurable column chooser to the organizations list, shows active affiliation relationship counts, and replaces text publication status with Joomla icon-based state control. No schema changes. Joomla 6 only."
+            --notes "Organizations ${V}: fixes malformed administrator language line breaks so Sigla, Affiliazioni and Colonne render correctly after the 1.2.9 list improvements. No schema changes. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
