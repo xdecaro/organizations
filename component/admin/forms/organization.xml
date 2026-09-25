@@ -16,11 +16,15 @@
       <option value="sponsor">COM_XDECAROORGANIZATIONS_TYPE_SPONSOR</option>
       <option value="supplier">COM_XDECAROORGANIZATIONS_TYPE_SUPPLIER</option>
     </field>
+    <field name="country_code" type="Country" code="alpha2" label="COM_XDECAROORGANIZATIONS_FIELD_COUNTRY" filter="cmd" validate="options" layout="joomla.form.field.list-fancy-select">
+      <option value="">COM_XDECAROORGANIZATIONS_SELECT_COUNTRY</option>
+    </field>
     <field name="parent_id" type="OrganizationParent" label="COM_XDECAROORGANIZATIONS_FIELD_PARENT" description="COM_XDECAROORGANIZATIONS_FIELD_PARENT_DESC">
       <option value="0">JNONE</option>
     </field>
     <field name="vat_id" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_VAT_ID" maxlength="64"/>
     <field name="tax_identifier" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_TAX_IDENTIFIER" maxlength="64"/>
+    <field name="logo" type="media" label="COM_XDECAROORGANIZATIONS_FIELD_LOGO"/>
   </fieldset>
 
   <fieldset name="structure" label="COM_XDECAROORGANIZATIONS_FIELDSET_STRUCTURE">
@@ -88,6 +92,9 @@
     <field name="pec_email" type="email" label="COM_XDECAROORGANIZATIONS_FIELD_PEC" maxlength="254"/>
     <field name="phone" type="tel" label="COM_XDECAROORGANIZATIONS_FIELD_PHONE" maxlength="50"/>
     <field name="website" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_WEBSITE" maxlength="512"/>
+  </fieldset>
+
+  <fieldset name="headquarters" label="COM_XDECAROORGANIZATIONS_FIELDSET_HEADQUARTERS">
     <field name="address_line" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_ADDRESS" maxlength="255"/>
     <field name="postal_code" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_POSTAL_CODE" maxlength="32"/>
     <field name="city" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_CITY" maxlength="190"/>
