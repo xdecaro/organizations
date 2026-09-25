@@ -43,6 +43,7 @@ jobs:
           php tests/person-appointments-provider-contract.php
           php tests/affiliations-contract.php
           php tests/organizations-list-columns-contract.php
+          php tests/affiliation-direction-contract.php
       - name: Build deterministic release
         shell: bash
         run: |
@@ -73,7 +74,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: fixes malformed administrator language line breaks so Sigla, Affiliazioni and Colonne render correctly after the 1.2.9 list improvements. No schema changes. Joomla 6 only."
+            --notes "Organizations ${V}: normalizes sports affiliation direction so clubs point to federations, separates Affiliazioni from Affiliati, and migrates existing active federation-to-club relationships safely. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |

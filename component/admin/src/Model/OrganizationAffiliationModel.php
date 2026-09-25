@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
@@ -59,6 +60,15 @@ final class OrganizationAffiliationModel extends AdminModel
 
         if (!$this->organizationExists($payload['organization_id']) || !$this->organizationExists($payload['target_organization_id'])) {
             throw new RuntimeException('Organization not found.');
+        }
+
+        if ($payload['relation_type'] === 'sports_affiliation') {
+            $sourceType = $this->organizationType($payload['organization_id']);
+            $targetType = $this->organizationType($payload['target_organization_id']);
+
+            if ($sourceType === 'federation' && $targetType === 'club') {
+                throw new RuntimeException(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_DIRECTION_CLUB_TO_FEDERATION'));
+            }
         }
 
         $this->assertNotDuplicate($payload, $id);
@@ -125,6 +135,22 @@ final class OrganizationAffiliationModel extends AdminModel
         if ((int) $db->setQuery($query)->loadResult() > 0) {
             throw new RuntimeException('An active affiliation of the same type already exists.');
         }
+    }
+
+    private function organizationType(int $id): string
+    {
+        if ($id < 1) {
+            return '';
+        }
+
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('type'))
+            ->from($db->quoteName('#__xdecaroorganizations_organizations'))
+            ->where($db->quoteName('id') . ' = :id')
+            ->bind(':id', $id, ParameterType::INTEGER);
+
+        return strtolower(trim((string) $db->setQuery($query)->loadResult()));
     }
 
     private function organizationExists(int $id): bool

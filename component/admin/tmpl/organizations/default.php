@@ -16,6 +16,7 @@ $columns = [
     'structure' => Text::_('COM_XDECAROORGANIZATIONS_FIELD_STRUCTURE_LEVEL'),
     'operational' => Text::_('COM_XDECAROORGANIZATIONS_FIELD_OPERATIONAL_STATUS'),
     'affiliations' => Text::_('COM_XDECAROORGANIZATIONS_COLUMN_AFFILIATIONS'),
+    'affiliates' => Text::_('COM_XDECAROORGANIZATIONS_COLUMN_AFFILIATES'),
     'parent' => Text::_('COM_XDECAROORGANIZATIONS_FIELD_PARENT'),
     'state' => Text::_('JSTATUS'),
 ];
@@ -69,7 +70,7 @@ $columns = [
                                 value="<?php echo $this->escape($column); ?>"
                                 id="org-column-<?php echo $this->escape($column); ?>"
                                 data-org-column-toggle
-                                <?php echo $column === 'name' ? 'checked disabled' : 'checked'; ?>
+                                <?php echo $column === 'name' ? 'checked disabled' : ($column === 'affiliates' ? '' : 'checked'); ?>
                             >
                             <label class="form-check-label" for="org-column-<?php echo $this->escape($column); ?>">
                                 <?php echo $this->escape($label); ?>
@@ -94,6 +95,7 @@ $columns = [
                         <th data-org-column="structure"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_STRUCTURE_LEVEL'); ?></th>
                         <th data-org-column="operational"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_OPERATIONAL_STATUS'); ?></th>
                         <th class="text-center" data-org-column="affiliations"><?php echo Text::_('COM_XDECAROORGANIZATIONS_COLUMN_AFFILIATIONS'); ?></th>
+                        <th class="text-center" data-org-column="affiliates"><?php echo Text::_('COM_XDECAROORGANIZATIONS_COLUMN_AFFILIATES'); ?></th>
                         <th class="d-none d-xl-table-cell" data-org-column="parent"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_PARENT'); ?></th>
                         <th class="text-center" data-org-column="state"><?php echo Text::_('JSTATUS'); ?></th>
                     </tr>
@@ -117,6 +119,9 @@ $columns = [
                             <td data-org-column="operational"><?php echo Text::_('COM_XDECAROORGANIZATIONS_OPERATIONAL_' . strtoupper((string) ($item->operational_status ?: 'active'))); ?></td>
                             <td class="text-center" data-org-column="affiliations">
                                 <span class="badge text-bg-light border"><?php echo (int) ($item->affiliation_count ?? 0); ?></span>
+                            </td>
+                            <td class="text-center" data-org-column="affiliates">
+                                <span class="badge text-bg-light border"><?php echo (int) ($item->affiliate_count ?? 0); ?></span>
                             </td>
                             <td class="d-none d-xl-table-cell" data-org-column="parent"><?php echo $this->escape((string) $item->parent_name); ?></td>
                             <td class="text-center" data-org-column="state">
