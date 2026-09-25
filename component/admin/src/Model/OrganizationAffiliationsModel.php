@@ -25,6 +25,13 @@ final class OrganizationAffiliationsModel extends ListModel
         $this->organizationId = 0;
     }
 
+    protected function getStoreId($id = ''): string
+    {
+        return parent::getStoreId(
+            $id . ':organization=' . $this->organizationId . ':target=' . $this->targetOrganizationId
+        );
+    }
+
     protected function getListQuery()
     {
         $db = $this->getDatabase();
