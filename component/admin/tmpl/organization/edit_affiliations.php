@@ -119,6 +119,7 @@ $affiliationJson = static function ($item): string {
                                             class="form-control"
                                             id="affiliation-target-search"
                                             data-affiliation-target-search
+                                            data-required-label="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_AFFILIATION_TARGET_REQUIRED')); ?>"
                                             autocomplete="off"
                                             role="combobox"
                                             aria-autocomplete="list"
