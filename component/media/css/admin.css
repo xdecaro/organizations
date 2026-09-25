@@ -226,7 +226,8 @@
   margin-top: .4rem;
 }
 
-.xdecaro-scope [data-org-column="affiliations"] .badge {
+.xdecaro-scope [data-org-column="affiliations"] .badge,
+.xdecaro-scope [data-org-column="affiliates"] .badge {
   min-width: 2.25rem;
   font-variant-numeric: tabular-nums;
 }
