@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const reset = picker.querySelector('[data-org-columns-reset]');
   const storageKey = 'com_xdecaroorganizations.organizations.columns.v1';
   const configurable = toggles.filter((toggle) => !toggle.disabled);
-  const defaultColumns = configurable.map((toggle) => toggle.value);
+  const defaultColumns = configurable.filter((toggle) => toggle.checked).map((toggle) => toggle.value);
 
   const apply = () => {
     toggles.forEach((toggle) => {
