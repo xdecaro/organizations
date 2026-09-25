@@ -741,7 +741,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const metadata = [
           String(item?.type_label || '').trim(),
-          String(item?.country_code || '').trim().toUpperCase(),
         ].filter(Boolean);
 
         if (metadata.length > 0) {
