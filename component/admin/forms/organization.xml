@@ -94,6 +94,14 @@
     <field name="website" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_WEBSITE" maxlength="512"/>
   </fieldset>
 
+  <fieldset name="social" label="COM_XDECAROORGANIZATIONS_FIELDSET_SOCIAL">
+    <field name="facebook_url" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_FACEBOOK_URL" maxlength="512"/>
+    <field name="instagram_url" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_INSTAGRAM_URL" maxlength="512"/>
+    <field name="youtube_url" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_YOUTUBE_URL" maxlength="512"/>
+    <field name="linkedin_url" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_LINKEDIN_URL" maxlength="512"/>
+    <field name="tiktok_url" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_TIKTOK_URL" maxlength="512"/>
+  </fieldset>
+
   <fieldset name="headquarters" label="COM_XDECAROORGANIZATIONS_FIELDSET_HEADQUARTERS">
     <field name="address_line" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_ADDRESS" maxlength="255"/>
     <field name="postal_code" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_POSTAL_CODE" maxlength="32"/>

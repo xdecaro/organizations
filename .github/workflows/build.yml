@@ -171,6 +171,7 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_appointments' AND column_name='show_on_frontend' AND column_default='0';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations' AND column_name='language' AND is_nullable='NO' AND column_default='*';")" = 1
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations' AND column_name='province' AND is_nullable='YES';")" = 1
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='org_xdecaroorganizations_organizations' AND column_name IN ('facebook_url','instagram_url','youtube_url','linkedin_url','tiktok_url') AND data_type='varchar' AND character_maximum_length=512;")" = 5
           test -f joomla/components/com_xdecaroorganizations/src/Controller/DisplayController.php
           test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationsModel.php
           test -f joomla/components/com_xdecaroorganizations/src/Model/OrganizationModel.php
@@ -188,7 +189,7 @@ jobs:
         run: |
           set -euo pipefail
           MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
-          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,state,access,language,created,created_by) VALUES ('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee','Frontend Test Organization','association','national',1,1,'*',NOW(),0);"
+          "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,facebook_url,state,access,language,created,created_by) VALUES ('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee','Frontend Test Organization','association','national','https://www.facebook.com/example.organization/',1,1,'*',NOW(),0);"
           "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,state,access,created,created_by) VALUES ('eeeeeeee-ffff-4000-8aaa-cccccccccccc','Default Language Organization','association','local',1,1,NOW(),0);"
           "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,state,access,language,created,created_by) VALUES ('ffffffff-aaaa-4111-8bbb-dddddddddddd','Italian Only Organization','association','local',1,1,'it-IT',NOW(),0);"
           "${MYSQL[@]}" -e "INSERT INTO org_xdecaroorganizations_organizations (uuid,name,type,structure_level,operational_status,state,access,language,created,created_by) VALUES ('dddddddd-eeee-4fff-8aaa-bbbbbbbbbbbb','Inactive Frontend Organization','association','local','inactive',1,1,'*',NOW(),0);"
@@ -213,6 +214,8 @@ jobs:
           ! grep -Fq 'Inactive Frontend Organization' /tmp/organizations-list.html
           curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&id=${ORG_ID}" >/tmp/organization-profile-private.html
           grep -Fq 'Frontend Test Organization' /tmp/organization-profile-private.html
+          grep -Fq 'https://www.facebook.com/example.organization/' /tmp/organization-profile-private.html
+          grep -Fq 'Facebook' /tmp/organization-profile-private.html
           curl -fsS "http://127.0.0.1:8099/index.php?option=com_xdecaroorganizations&view=organization&organization_id=${ORG_ID}" >/tmp/organization-profile-menu-param.html
           grep -Fq 'Frontend Test Organization' /tmp/organization-profile-menu-param.html
           ! grep -Fq 'Private Appointment Person' /tmp/organization-profile-private.html

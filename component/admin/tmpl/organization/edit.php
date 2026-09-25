@@ -55,6 +55,14 @@ $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'iden
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
+                        <h3 class="h5 mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_SOCIAL'); ?></h3>
+                        <?php echo $this->form->renderFieldset('social'); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
                         <h3 class="h5 mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_HEADQUARTERS'); ?></h3>
                         <?php echo $this->form->renderFieldset('headquarters'); ?>
                     </div>

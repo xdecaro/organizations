@@ -85,9 +85,27 @@ foreach ($this->appointments as $appointment) {
     $appointmentsByBody[(int) ($appointment->body_id ?? 0)][] = $appointment;
 }
 
+$socialLinks = [
+    ['field' => 'facebook_url', 'label' => 'Facebook'],
+    ['field' => 'instagram_url', 'label' => 'Instagram'],
+    ['field' => 'youtube_url', 'label' => 'YouTube'],
+    ['field' => 'linkedin_url', 'label' => 'LinkedIn'],
+    ['field' => 'tiktok_url', 'label' => 'TikTok'],
+];
+
+$socialLinks = array_values(array_filter(
+    $socialLinks,
+    static function (array $social) use ($item): bool {
+        $url = trim((string) ($item->{$social['field']} ?? ''));
+
+        return preg_match('#^https?://#i', $url) === 1;
+    }
+));
+
 $hasContacts = trim((string) ($item->email ?? '')) !== ''
     || trim((string) ($item->phone ?? '')) !== ''
-    || trim((string) ($item->website ?? '')) !== '';
+    || trim((string) ($item->website ?? '')) !== ''
+    || $socialLinks !== [];
 
 $structureKey = $structureLabels[(string) ($item->structure_level ?? '')] ?? '';
 $typeKey = $typeLabels[(string) ($item->type ?? '')] ?? 'COM_XDECAROORGANIZATIONS_SITE_TYPE_ORGANIZATION';
@@ -149,6 +167,13 @@ $typeKey = $typeLabels[(string) ($item->type ?? '')] ?? 'COM_XDECAROORGANIZATION
                         <strong><?php echo $this->escape((string) $item->website); ?></strong>
                     </a>
                 <?php endif; ?>
+                <?php foreach ($socialLinks as $social) : ?>
+                    <?php $socialUrl = trim((string) ($item->{$social['field']} ?? '')); ?>
+                    <a class="xo-contact" href="<?php echo $this->escape($socialUrl); ?>" rel="me noopener">
+                        <span><?php echo $this->escape($social['label']); ?></span>
+                        <strong><?php echo Text::_('COM_XDECAROORGANIZATIONS_SITE_SOCIAL_PROFILE'); ?></strong>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </section>
     <?php endif; ?>

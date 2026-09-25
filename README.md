@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.2.12`
+- Stable candidate version: `1.2.13`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -56,3 +56,5 @@ Organizations 1.2.10 fixes malformed administrator language entries introduced i
 Organizations 1.2.11 defines sports-affiliation direction explicitly: the affiliated organization is the source and the reference federation is the target. Existing active Federation → Club records are normalized during upgrade, reverse duplicates are deactivated, the organization editor shows outgoing Affiliazioni separately from incoming Affiliati, and the administrator list counts the two directions separately. No table schema changes are required.
 
 Organizations 1.2.12 adds a federation-side “Add affiliate” action. On federation records, administrators can search club organizations by name or acronym and create the canonical Club → Federation sports-affiliation relationship without opening each club first. The existing Add affiliation flow remains available for the federation's own outgoing relationships. No schema changes are required.
+
+Organizations 1.2.13 adds first-class social profile URLs for Facebook, Instagram, YouTube, LinkedIn and TikTok. The administrator Contacts tab now separates Contacts, Social and Headquarters, while public organization profiles can expose valid HTTP(S) social links alongside the website and other public contacts. Existing data is preserved and the upgrade adds five nullable URL columns.
