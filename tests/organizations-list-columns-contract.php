@@ -9,6 +9,7 @@ $view = (string) file_get_contents($root . '/component/admin/src/View/Organizati
 $asset = (string) file_get_contents($root . '/component/media/joomla.asset.json');
 $script = (string) file_get_contents($root . '/component/media/js/organizations-list.js');
 $it = (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.ini');
+$en = (string) file_get_contents($root . '/component/admin/language/en-GB/com_xdecaroorganizations.ini');
 
 $checks = [
     [$template, "HTMLHelper::_('jgrid.published'", 'Organizations list must use Joomla icon-based published state control.'],
@@ -27,7 +28,13 @@ $checks = [
     [$script, 'data-org-column', 'Column script must control table cells by column key.'],
     [$it, 'COM_XDECAROORGANIZATIONS_COLUMN_AFFILIATIONS="Affiliazioni"', 'Italian affiliations column label is required.'],
     [$it, 'COM_XDECAROORGANIZATIONS_COLUMNS="Colonne"', 'Italian columns chooser label is required.'],
+    [$en, 'COM_XDECAROORGANIZATIONS_COLUMNS="Columns"', 'English columns chooser label is required.'],
 ];
+
+if (str_contains($it, '\\nCOM_XDECAROORGANIZATIONS_') || str_contains($en, '\\nCOM_XDECAROORGANIZATIONS_')) {
+    fwrite(STDERR, "Language files must contain real line breaks, not literal \\n sequences.\n");
+    exit(1);
+}
 
 foreach ($checks as [$haystack, $needle, $message]) {
     if (!str_contains($haystack, $needle)) {
