@@ -31,6 +31,7 @@ jobs:
           php tests/parent-self-option-contract.php
           php tests/edit-name-heading-contract.php
           php tests/contacts-ux-contract.php
+          php tests/public-country-code-provider-contract.php
           php tests/hierarchy-list-contract.php
           php tests/appointments-schema-contract.php
           php tests/appointments-domain.php
