@@ -42,7 +42,26 @@ $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'iden
         echo HTMLHelper::_('uitab.endTab');
 
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'contacts', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS'));
-        echo $this->form->renderFieldset('contacts');
+        ?>
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="h5 mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS'); ?></h3>
+                        <?php echo $this->form->renderFieldset('contacts'); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="h5 mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_HEADQUARTERS'); ?></h3>
+                        <?php echo $this->form->renderFieldset('headquarters'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
         echo HTMLHelper::_('uitab.endTab');
 
         echo HTMLHelper::_('uitab.addTab', 'organizationTabs', 'bodies', Text::_('COM_XDECAROORGANIZATIONS_FIELDSET_BODIES'));
