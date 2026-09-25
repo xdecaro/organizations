@@ -8,6 +8,7 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationHierarchy;
 
 final class OrganizationModel extends AdminModel
 {
@@ -38,7 +39,7 @@ final class OrganizationModel extends AdminModel
             && !$user->authorise('core.admin', 'com_xdecaroorganizations')
         ) {
             foreach (
-                ['vat_id', 'tax_identifier', 'pec_email', 'address_line', 'postal_code', 'city', 'region', 'country_code', 'notes']
+                ['vat_id', 'tax_identifier', 'pec_email', 'address_line', 'postal_code', 'city', 'province', 'region', 'country_code', 'notes']
                 as $name
             ) {
                 $form->removeField($name);
@@ -83,6 +84,61 @@ final class OrganizationModel extends AdminModel
         }
 
         return parent::save($data);
+    }
+
+    /**
+     * @return array{path: array<int, object>, descendants: array<int, object>}
+     */
+    public function getHierarchyContext(int $id): array
+    {
+        if ($id < 1) {
+            return ['path' => [], 'descendants' => []];
+        }
+
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('parent_id'),
+                $db->quoteName('name'),
+                $db->quoteName('type'),
+                $db->quoteName('structure_level'),
+                $db->quoteName('territory_name'),
+                $db->quoteName('operational_status'),
+                $db->quoteName('state'),
+            ])
+            ->from($db->quoteName('#__xdecaroorganizations_organizations'))
+            ->where($db->quoteName('state') . ' >= 0');
+
+        $items = $db->setQuery($query)->loadObjectList() ?: [];
+
+        return [
+            'path' => OrganizationHierarchy::path($items, $id),
+            'descendants' => OrganizationHierarchy::descendants($items, $id),
+        ];
+    }
+
+    public function getAffiliationTargets(int $organizationId): array
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('name'),
+                $db->quoteName('code'),
+                $db->quoteName('type'),
+                $db->quoteName('structure_level'),
+            ])
+            ->from($db->quoteName('#__xdecaroorganizations_organizations'))
+            ->where($db->quoteName('state') . ' = 1')
+            ->order($db->quoteName('name') . ' ASC');
+
+        if ($organizationId > 0) {
+            $query->where($db->quoteName('id') . ' != :organizationId')
+                ->bind(':organizationId', $organizationId, ParameterType::INTEGER);
+        }
+
+        return array_values((array) $db->setQuery($query)->loadObjectList());
     }
 
     protected function canDelete($record): bool

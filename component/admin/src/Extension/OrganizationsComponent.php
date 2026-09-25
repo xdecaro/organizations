@@ -9,7 +9,12 @@ use RuntimeException;
 use xdecaro\Component\Organizations\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;
 use xdecaro\Component\Organizations\Administrator\Service\OrganizationProviderService;
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationBodiesService;
+use xdecaro\Component\Organizations\Administrator\Service\OrganizationDelegationsService;
 use xdecaro\Component\Organizations\Administrator\Service\PeopleIntegrationService;
+use xdecaro\Component\Organizations\Administrator\Service\PersonAppointmentsService;
+use xdecaro\Component\Organizations\Administrator\Service\MembershipIntegrationService;
+use xdecaro\Component\Organizations\Administrator\Service\AppointmentMembershipPolicyService;
 
 final class OrganizationsComponent extends MVCComponent
 {
@@ -17,6 +22,11 @@ final class OrganizationsComponent extends MVCComponent
     private ?OrganizationProviderService $provider = null;
     private ?DuplicateService $duplicates = null;
     private ?PeopleIntegrationService $people = null;
+    private ?PersonAppointmentsService $personAppointments = null;
+    private ?OrganizationBodiesService $bodies = null;
+    private ?OrganizationDelegationsService $delegations = null;
+    private ?MembershipIntegrationService $membership = null;
+    private ?AppointmentMembershipPolicyService $appointmentMembershipPolicy = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void
     {
@@ -68,5 +78,75 @@ final class OrganizationsComponent extends MVCComponent
         }
 
         return $this->people;
+    }
+
+    public function setPersonAppointmentsService(PersonAppointmentsService $service): void
+    {
+        $this->personAppointments = $service;
+    }
+
+    public function getPersonAppointmentsService(): PersonAppointmentsService
+    {
+        if (!$this->personAppointments) {
+            throw new RuntimeException('Organizations person appointments service not initialized.');
+        }
+
+        return $this->personAppointments;
+    }
+
+    public function setOrganizationBodiesService(OrganizationBodiesService $service): void
+    {
+        $this->bodies = $service;
+    }
+
+    public function getOrganizationBodiesService(): OrganizationBodiesService
+    {
+        if (!$this->bodies) {
+            throw new RuntimeException('Organizations bodies service not initialized.');
+        }
+
+        return $this->bodies;
+    }
+
+    public function setOrganizationDelegationsService(OrganizationDelegationsService $service): void
+    {
+        $this->delegations = $service;
+    }
+
+    public function getOrganizationDelegationsService(): OrganizationDelegationsService
+    {
+        if (!$this->delegations) {
+            throw new RuntimeException('Organizations delegations service not initialized.');
+        }
+
+        return $this->delegations;
+    }
+
+    public function setMembershipIntegrationService(MembershipIntegrationService $service): void
+    {
+        $this->membership = $service;
+    }
+
+    public function getMembershipIntegrationService(): MembershipIntegrationService
+    {
+        if (!$this->membership) {
+            throw new RuntimeException('Organizations Membership integration service not initialized.');
+        }
+
+        return $this->membership;
+    }
+
+    public function setAppointmentMembershipPolicyService(AppointmentMembershipPolicyService $service): void
+    {
+        $this->appointmentMembershipPolicy = $service;
+    }
+
+    public function getAppointmentMembershipPolicyService(): AppointmentMembershipPolicyService
+    {
+        if (!$this->appointmentMembershipPolicy) {
+            throw new RuntimeException('Organizations appointment membership policy service not initialized.');
+        }
+
+        return $this->appointmentMembershipPolicy;
     }
 }

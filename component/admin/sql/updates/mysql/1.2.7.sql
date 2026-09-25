@@ -1,0 +1,3 @@
+-- Organizations 1.2.7
+-- No schema changes.
+-- Editor-only reorganization: Country and Logo move to Identity; Contacts and Headquarters are visually separated.

@@ -1,12 +1,40 @@
 CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_organizations` (
- `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, `uuid` CHAR(36) NOT NULL, `name` VARCHAR(255) NOT NULL, `legal_name` VARCHAR(255) DEFAULT NULL, `code` VARCHAR(100) DEFAULT NULL, `type` VARCHAR(50) NOT NULL DEFAULT 'organization', `parent_id` INT UNSIGNED DEFAULT NULL, `vat_id` VARCHAR(64) DEFAULT NULL, `tax_identifier` VARCHAR(64) DEFAULT NULL, `email` VARCHAR(254) DEFAULT NULL, `pec_email` VARCHAR(254) DEFAULT NULL, `phone` VARCHAR(50) DEFAULT NULL, `website` VARCHAR(512) DEFAULT NULL, `address_line` VARCHAR(255) DEFAULT NULL, `postal_code` VARCHAR(32) DEFAULT NULL, `city` VARCHAR(190) DEFAULT NULL, `region` VARCHAR(190) DEFAULT NULL, `country_code` CHAR(2) DEFAULT NULL, `language` VARCHAR(16) DEFAULT NULL, `logo` VARCHAR(512) DEFAULT NULL, `notes` TEXT DEFAULT NULL, `state` TINYINT NOT NULL DEFAULT 1, `access` INT UNSIGNED NOT NULL DEFAULT 1, `created` DATETIME NOT NULL, `created_by` INT UNSIGNED NOT NULL DEFAULT 0, `modified` DATETIME DEFAULT NULL, `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
- PRIMARY KEY (`id`), UNIQUE KEY `idx_org_uuid` (`uuid`), KEY `idx_org_parent` (`parent_id`), KEY `idx_org_name` (`name`), KEY `idx_org_code` (`code`), KEY `idx_org_vat` (`vat_id`), KEY `idx_org_tax` (`tax_identifier`), KEY `idx_org_type` (`type`), KEY `idx_org_state_access` (`state`,`access`), CONSTRAINT `fk_xdecaroorganizations_parent` FOREIGN KEY (`parent_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE SET NULL
+ `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, `uuid` CHAR(36) NOT NULL, `name` VARCHAR(255) NOT NULL, `legal_name` VARCHAR(255) DEFAULT NULL, `code` VARCHAR(100) DEFAULT NULL, `type` VARCHAR(50) NOT NULL DEFAULT 'organization', `structure_level` VARCHAR(32) NOT NULL DEFAULT 'unspecified', `territory_type` VARCHAR(32) DEFAULT NULL, `territory_name` VARCHAR(190) DEFAULT NULL, `operational_status` VARCHAR(32) NOT NULL DEFAULT 'active', `status_since` DATE DEFAULT NULL, `autonomy_legal` TINYINT(1) NOT NULL DEFAULT 0, `autonomy_management` TINYINT(1) NOT NULL DEFAULT 0, `autonomy_administrative` TINYINT(1) NOT NULL DEFAULT 0, `autonomy_tax` TINYINT(1) NOT NULL DEFAULT 0, `autonomy_fiscal` TINYINT(1) NOT NULL DEFAULT 0, `appointment_membership_requirement` VARCHAR(32) NOT NULL DEFAULT 'inherit', `parent_id` INT UNSIGNED DEFAULT NULL, `vat_id` VARCHAR(64) DEFAULT NULL, `tax_identifier` VARCHAR(64) DEFAULT NULL, `email` VARCHAR(254) DEFAULT NULL, `pec_email` VARCHAR(254) DEFAULT NULL, `phone` VARCHAR(50) DEFAULT NULL, `website` VARCHAR(512) DEFAULT NULL, `address_line` VARCHAR(255) DEFAULT NULL, `postal_code` VARCHAR(32) DEFAULT NULL, `city` VARCHAR(190) DEFAULT NULL, `province` VARCHAR(190) DEFAULT NULL, `region` VARCHAR(190) DEFAULT NULL, `country_code` CHAR(2) DEFAULT NULL, `language` VARCHAR(16) NOT NULL DEFAULT '*', `logo` VARCHAR(512) DEFAULT NULL, `notes` TEXT DEFAULT NULL, `state` TINYINT NOT NULL DEFAULT 1, `access` INT UNSIGNED NOT NULL DEFAULT 1, `created` DATETIME NOT NULL, `created_by` INT UNSIGNED NOT NULL DEFAULT 0, `modified` DATETIME DEFAULT NULL, `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
+ PRIMARY KEY (`id`), UNIQUE KEY `idx_org_uuid` (`uuid`), KEY `idx_org_parent` (`parent_id`), KEY `idx_org_name` (`name`), KEY `idx_org_code` (`code`), KEY `idx_org_vat` (`vat_id`), KEY `idx_org_tax` (`tax_identifier`), KEY `idx_org_type` (`type`), KEY `idx_org_structure_level` (`structure_level`), KEY `idx_org_operational_status` (`operational_status`), KEY `idx_org_state_access` (`state`,`access`), CONSTRAINT `fk_xdecaroorganizations_parent` FOREIGN KEY (`parent_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_bodies` (
+ `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+ `uuid` CHAR(36) NOT NULL,
+ `organization_id` INT UNSIGNED NOT NULL,
+ `parent_id` INT UNSIGNED DEFAULT NULL,
+ `name` VARCHAR(190) NOT NULL,
+ `code` VARCHAR(100) DEFAULT NULL,
+ `body_type` VARCHAR(50) NOT NULL DEFAULT 'other',
+ `starts_on` DATE DEFAULT NULL,
+ `ends_on` DATE DEFAULT NULL,
+ `notes` TEXT DEFAULT NULL,
+ `state` TINYINT NOT NULL DEFAULT 1,
+ `created` DATETIME NOT NULL,
+ `created_by` INT UNSIGNED NOT NULL DEFAULT 0,
+ `modified` DATETIME DEFAULT NULL,
+ `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `idx_body_uuid` (`uuid`),
+ KEY `idx_body_org` (`organization_id`),
+ KEY `idx_body_parent` (`parent_id`),
+ KEY `idx_body_type` (`body_type`),
+ KEY `idx_body_org_state` (`organization_id`,`state`),
+ CONSTRAINT `fk_xdecaroorganizations_body_org` FOREIGN KEY (`organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE,
+ CONSTRAINT `fk_xdecaroorganizations_body_parent` FOREIGN KEY (`parent_id`) REFERENCES `#__xdecaroorganizations_bodies` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_appointments` (
  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
  `uuid` CHAR(36) NOT NULL,
  `organization_id` INT UNSIGNED NOT NULL,
+ `body_id` INT UNSIGNED DEFAULT NULL,
  `person_uuid` CHAR(36) NOT NULL,
  `person_name_snapshot` VARCHAR(255) NOT NULL,
  `role_code` VARCHAR(50) NOT NULL,
@@ -17,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_appointments` (
  `end_reason` VARCHAR(50) DEFAULT NULL,
  `end_note` TEXT DEFAULT NULL,
  `notes` TEXT DEFAULT NULL,
+ `show_on_frontend` TINYINT(1) NOT NULL DEFAULT 0,
  `state` TINYINT NOT NULL DEFAULT 1,
  `created` DATETIME NOT NULL,
  `created_by` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -25,8 +54,64 @@ CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_appointments` (
  PRIMARY KEY (`id`),
  UNIQUE KEY `idx_appointment_uuid` (`uuid`),
  KEY `idx_appointment_org` (`organization_id`),
+ KEY `idx_appointment_body` (`body_id`),
  KEY `idx_appointment_person` (`person_uuid`),
  KEY `idx_appointment_org_dates` (`organization_id`,`starts_on`,`planned_ends_on`),
  KEY `idx_appointment_state` (`state`),
- CONSTRAINT `fk_xdecaroorganizations_appointment_org` FOREIGN KEY (`organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE
+ CONSTRAINT `fk_xdecaroorganizations_appointment_org` FOREIGN KEY (`organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE,
+ CONSTRAINT `fk_xdecaroorganizations_appointment_body` FOREIGN KEY (`body_id`) REFERENCES `#__xdecaroorganizations_bodies` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_delegations` (
+ `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+ `uuid` CHAR(36) NOT NULL,
+ `organization_id` INT UNSIGNED NOT NULL,
+ `appointment_id` INT UNSIGNED NOT NULL,
+ `title` VARCHAR(190) NOT NULL,
+ `scope` TEXT DEFAULT NULL,
+ `starts_on` DATE NOT NULL,
+ `ends_on` DATE DEFAULT NULL,
+ `notes` TEXT DEFAULT NULL,
+ `state` TINYINT NOT NULL DEFAULT 1,
+ `created` DATETIME NOT NULL,
+ `created_by` INT UNSIGNED NOT NULL DEFAULT 0,
+ `modified` DATETIME DEFAULT NULL,
+ `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `idx_delegation_uuid` (`uuid`),
+ KEY `idx_delegation_org` (`organization_id`),
+ KEY `idx_delegation_appointment` (`appointment_id`),
+ KEY `idx_delegation_org_dates` (`organization_id`,`starts_on`,`ends_on`),
+ KEY `idx_delegation_state` (`state`),
+ CONSTRAINT `fk_xdecaroorganizations_delegation_org` FOREIGN KEY (`organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE,
+ CONSTRAINT `fk_xdecaroorganizations_delegation_appointment` FOREIGN KEY (`appointment_id`) REFERENCES `#__xdecaroorganizations_appointments` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `#__xdecaroorganizations_affiliations` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uuid` CHAR(36) NOT NULL,
+  `organization_id` INT UNSIGNED NOT NULL,
+  `target_organization_id` INT UNSIGNED NOT NULL,
+  `relation_type` VARCHAR(50) NOT NULL DEFAULT 'sports_affiliation',
+  `relation_code` VARCHAR(100) DEFAULT NULL,
+  `starts_on` DATE DEFAULT NULL,
+  `ends_on` DATE DEFAULT NULL,
+  `status` VARCHAR(32) NOT NULL DEFAULT 'active',
+  `notes` TEXT DEFAULT NULL,
+  `state` TINYINT NOT NULL DEFAULT 1,
+  `created` DATETIME NOT NULL,
+  `created_by` INT UNSIGNED NOT NULL DEFAULT 0,
+  `modified` DATETIME DEFAULT NULL,
+  `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_affiliation_uuid` (`uuid`),
+  KEY `idx_affiliation_org` (`organization_id`),
+  KEY `idx_affiliation_target` (`target_organization_id`),
+  KEY `idx_affiliation_type` (`relation_type`),
+  KEY `idx_affiliation_status` (`status`),
+  KEY `idx_affiliation_org_state` (`organization_id`,`state`),
+  CONSTRAINT `fk_xdecaroorganizations_affiliation_org`
+    FOREIGN KEY (`organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_xdecaroorganizations_affiliation_target`
+    FOREIGN KEY (`target_organization_id`) REFERENCES `#__xdecaroorganizations_organizations` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

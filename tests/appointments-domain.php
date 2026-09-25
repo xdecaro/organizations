@@ -25,6 +25,7 @@ $assert(AppointmentDomain::plannedEnd('2026-09-16', null, '2028-03-16') === '202
 
 $today = new DateTimeImmutable('2026-09-16');
 $assert(AppointmentDomain::status(['planned_ends_on' => '2026-09-16', 'ended_on' => null, 'end_reason' => null], $today) === 'active', 'appointment ending today is active');
+$assert(AppointmentDomain::status(['starts_on' => '2026-09-17', 'planned_ends_on' => '2027-09-17', 'ended_on' => null, 'end_reason' => null], $today) === 'scheduled', 'future appointment must be scheduled');
 $assert(AppointmentDomain::status(['planned_ends_on' => '2026-09-15', 'ended_on' => null, 'end_reason' => null], $today) === 'expired', 'past appointment must expire');
 $assert(AppointmentDomain::status(['end_reason' => 'term_end', 'ended_on' => '2026-09-10'], $today) === 'ended', 'term_end mapping failed');
 $assert(AppointmentDomain::status(['end_reason' => 'resignation', 'ended_on' => '2026-09-10'], $today) === 'resigned', 'resignation mapping failed');
@@ -63,6 +64,9 @@ $assert($endedBeforeStart !== [], 'termination before start must fail');
 
 $roles = AppointmentDomain::roles();
 $assert(in_array('president', $roles, true) && in_array('custom', $roles, true), 'role catalog incomplete');
-$assert(count($roles) === 9, 'role catalog must contain exactly the approved first-version roles');
+foreach (['representative', 'commissioner', 'vice_commissioner', 'delegate', 'control_member', 'administrative_secretary'] as $role) {
+    $assert(in_array($role, $roles, true), "missing generic organization role {$role}");
+}
+$assert(count($roles) === 15, 'role catalog must contain the approved generic organization roles');
 
 echo "appointments domain OK\n";

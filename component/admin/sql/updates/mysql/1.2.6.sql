@@ -1,0 +1,2 @@
+-- Organizations 1.2.6
+-- No schema changes. This migration advances Joomla's schema version for the bug-fix release.

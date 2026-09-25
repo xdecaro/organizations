@@ -16,11 +16,75 @@
       <option value="sponsor">COM_XDECAROORGANIZATIONS_TYPE_SPONSOR</option>
       <option value="supplier">COM_XDECAROORGANIZATIONS_TYPE_SUPPLIER</option>
     </field>
-    <field name="parent_id" type="OrganizationParent" label="COM_XDECAROORGANIZATIONS_FIELD_PARENT">
+    <field name="country_code" type="Country" code="alpha2" label="COM_XDECAROORGANIZATIONS_FIELD_COUNTRY" filter="cmd" validate="options" layout="joomla.form.field.list-fancy-select">
+      <option value="">COM_XDECAROORGANIZATIONS_SELECT_COUNTRY</option>
+    </field>
+    <field name="parent_id" type="OrganizationParent" label="COM_XDECAROORGANIZATIONS_FIELD_PARENT" description="COM_XDECAROORGANIZATIONS_FIELD_PARENT_DESC">
       <option value="0">JNONE</option>
     </field>
     <field name="vat_id" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_VAT_ID" maxlength="64"/>
     <field name="tax_identifier" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_TAX_IDENTIFIER" maxlength="64"/>
+    <field name="logo" type="media" label="COM_XDECAROORGANIZATIONS_FIELD_LOGO"/>
+  </fieldset>
+
+  <fieldset name="structure" label="COM_XDECAROORGANIZATIONS_FIELDSET_STRUCTURE">
+    <field name="structure_level" type="list" label="COM_XDECAROORGANIZATIONS_FIELD_STRUCTURE_LEVEL" default="unspecified">
+      <option value="unspecified">COM_XDECAROORGANIZATIONS_STRUCTURE_UNSPECIFIED</option>
+      <option value="international">COM_XDECAROORGANIZATIONS_STRUCTURE_INTERNATIONAL</option>
+      <option value="national">COM_XDECAROORGANIZATIONS_STRUCTURE_NATIONAL</option>
+      <option value="regional">COM_XDECAROORGANIZATIONS_STRUCTURE_REGIONAL</option>
+      <option value="provincial">COM_XDECAROORGANIZATIONS_STRUCTURE_PROVINCIAL</option>
+      <option value="local">COM_XDECAROORGANIZATIONS_STRUCTURE_LOCAL</option>
+      <option value="branch">COM_XDECAROORGANIZATIONS_STRUCTURE_BRANCH</option>
+      <option value="other">COM_XDECAROORGANIZATIONS_STRUCTURE_OTHER</option>
+    </field>
+    <field name="territory_type" type="list" label="COM_XDECAROORGANIZATIONS_FIELD_TERRITORY_TYPE" default="">
+      <option value="">JNONE</option>
+      <option value="international">COM_XDECAROORGANIZATIONS_TERRITORY_INTERNATIONAL</option>
+      <option value="country">COM_XDECAROORGANIZATIONS_TERRITORY_COUNTRY</option>
+      <option value="region">COM_XDECAROORGANIZATIONS_TERRITORY_REGION</option>
+      <option value="province">COM_XDECAROORGANIZATIONS_TERRITORY_PROVINCE</option>
+      <option value="metropolitan_city">COM_XDECAROORGANIZATIONS_TERRITORY_METROPOLITAN_CITY</option>
+      <option value="municipality">COM_XDECAROORGANIZATIONS_TERRITORY_MUNICIPALITY</option>
+      <option value="custom">COM_XDECAROORGANIZATIONS_TERRITORY_CUSTOM</option>
+    </field>
+    <field name="territory_name" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_TERRITORY_NAME" maxlength="190"/>
+    <field name="operational_status" type="list" label="COM_XDECAROORGANIZATIONS_FIELD_OPERATIONAL_STATUS" default="active">
+      <option value="active">COM_XDECAROORGANIZATIONS_OPERATIONAL_ACTIVE</option>
+      <option value="inactive">COM_XDECAROORGANIZATIONS_OPERATIONAL_INACTIVE</option>
+      <option value="represented">COM_XDECAROORGANIZATIONS_OPERATIONAL_REPRESENTED</option>
+      <option value="commissaried">COM_XDECAROORGANIZATIONS_OPERATIONAL_COMMISSARIED</option>
+      <option value="merged">COM_XDECAROORGANIZATIONS_OPERATIONAL_MERGED</option>
+      <option value="dissolved">COM_XDECAROORGANIZATIONS_OPERATIONAL_DISSOLVED</option>
+    </field>
+    <field name="status_since" type="calendar" label="COM_XDECAROORGANIZATIONS_FIELD_STATUS_SINCE" format="%Y-%m-%d" hint="COM_XDECAROORGANIZATIONS_DATE_PLACEHOLDER" filter="user_utc"/>
+    <field name="autonomy_legal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_LEGAL_DESC" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_management" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_MANAGEMENT" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_MANAGEMENT_DESC" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_administrative" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_ADMINISTRATIVE" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_ADMINISTRATIVE_DESC" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_tax" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_TAX" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_TAX_DESC" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field name="autonomy_fiscal" type="radio" layout="joomla.form.field.radio.switcher" label="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_FISCAL" description="COM_XDECAROORGANIZATIONS_FIELD_AUTONOMY_FISCAL_DESC" default="0">
+      <option value="0">JNO</option><option value="1">JYES</option>
+    </field>
+    <field
+      name="appointment_membership_requirement"
+      type="list"
+      label="COM_XDECAROORGANIZATIONS_FIELD_APPOINTMENT_MEMBERSHIP_REQUIREMENT"
+      description="COM_XDECAROORGANIZATIONS_FIELD_APPOINTMENT_MEMBERSHIP_REQUIREMENT_DESC"
+      default="inherit"
+    >
+      <option value="inherit">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_INHERIT</option>
+      <option value="none">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_NONE</option>
+      <option value="active_member">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_ACTIVE_MEMBER</option>
+      <option value="active_member_fee_current">COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_ACTIVE_MEMBER_FEE_CURRENT</option>
+    </field>
   </fieldset>
 
   <fieldset name="contacts" label="COM_XDECAROORGANIZATIONS_FIELDSET_CONTACTS">
@@ -28,15 +92,14 @@
     <field name="pec_email" type="email" label="COM_XDECAROORGANIZATIONS_FIELD_PEC" maxlength="254"/>
     <field name="phone" type="tel" label="COM_XDECAROORGANIZATIONS_FIELD_PHONE" maxlength="50"/>
     <field name="website" type="url" label="COM_XDECAROORGANIZATIONS_FIELD_WEBSITE" maxlength="512"/>
+  </fieldset>
+
+  <fieldset name="headquarters" label="COM_XDECAROORGANIZATIONS_FIELDSET_HEADQUARTERS">
     <field name="address_line" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_ADDRESS" maxlength="255"/>
     <field name="postal_code" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_POSTAL_CODE" maxlength="32"/>
     <field name="city" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_CITY" maxlength="190"/>
+    <field name="province" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_PROVINCE" maxlength="190"/>
     <field name="region" type="text" label="COM_XDECAROORGANIZATIONS_FIELD_REGION" maxlength="190"/>
-    <field name="country_code" type="Country" code="alpha2" label="COM_XDECAROORGANIZATIONS_FIELD_COUNTRY" filter="cmd" validate="options" layout="joomla.form.field.list-fancy-select">
-      <option value="">COM_XDECAROORGANIZATIONS_SELECT_COUNTRY</option>
-    </field>
-    <field name="language" type="contentlanguage" label="COM_XDECAROORGANIZATIONS_FIELD_LANGUAGE"/>
-    <field name="logo" type="media" label="COM_XDECAROORGANIZATIONS_FIELD_LOGO"/>
   </fieldset>
 
   <fieldset name="publishing" label="JGLOBAL_FIELDSET_PUBLISHING">
@@ -46,7 +109,15 @@
       <option value="-2">JTRASHED</option>
     </field>
     <field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"/>
-    <field name="notes" type="textarea" label="COM_XDECAROORGANIZATIONS_FIELD_NOTES" rows="5" filter="safehtml"/>
+    <field
+      name="language"
+      type="contentlanguage"
+      label="JFIELD_LANGUAGE_LABEL"
+      default="*"
+    >
+      <option value="*">JALL</option>
+    </field>
+    <field name="notes" type="textarea" label="COM_XDECAROORGANIZATIONS_FIELD_PUBLISHING_NOTES" rows="5" filter="safehtml"/>
   </fieldset>
 
   <fieldset name="system" label="COM_XDECAROORGANIZATIONS_FIELDSET_SYSTEM">

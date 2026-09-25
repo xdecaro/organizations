@@ -1,0 +1,90 @@
+<?php
+
+namespace xdecaro\Component\Organizations\Administrator\Controller;
+
+defined('_JEXEC') or die;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Response\JsonResponse;
+use Joomla\CMS\Session\Session;
+use Throwable;
+
+final class BodyController extends BaseController
+{
+    protected $option = 'com_xdecaroorganizations';
+
+    public function save(): void
+    {
+        if (!Session::checkToken('post')) {
+            $this->respond(null, Text::_('JINVALID_TOKEN'), true);
+            return;
+        }
+
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $id = $input->post->getInt('id', 0);
+        $user = $app->getIdentity();
+        $allowed = $id > 0
+            ? $user->authorise('core.edit', 'com_xdecaroorganizations')
+            : $user->authorise('core.create', 'com_xdecaroorganizations');
+
+        if (!$allowed && !$user->authorise('core.admin', 'com_xdecaroorganizations')) {
+            $this->respond(null, Text::_('JERROR_ALERTNOAUTHOR'), true);
+            return;
+        }
+
+        try {
+            $model = $this->getModel('OrganizationBody', 'Administrator', ['ignore_request' => true]);
+            $bodyId = $model->saveBody([
+                'id' => $id,
+                'organization_id' => $input->post->getInt('organization_id', 0),
+                'parent_id' => $input->post->getInt('parent_id', 0),
+                'name' => $input->post->getString('name', ''),
+                'code' => $input->post->getString('code', ''),
+                'body_type' => $input->post->getCmd('body_type', 'other'),
+                'starts_on' => $input->post->getString('starts_on', ''),
+                'ends_on' => $input->post->getString('ends_on', ''),
+                'notes' => $input->post->getString('notes', ''),
+                'state' => $input->post->getInt('state', 1),
+            ]);
+            $this->respond(['id' => $bodyId], Text::_('COM_XDECAROORGANIZATIONS_BODY_SAVED'));
+        } catch (Throwable $e) {
+            $this->respond(null, $e->getMessage(), true);
+        }
+    }
+
+    public function delete(): void
+    {
+        if (!Session::checkToken('post')) {
+            $this->respond(null, Text::_('JINVALID_TOKEN'), true);
+            return;
+        }
+
+        $app = Factory::getApplication();
+        $user = $app->getIdentity();
+
+        if (!$user->authorise('core.delete', 'com_xdecaroorganizations')
+            && !$user->authorise('core.admin', 'com_xdecaroorganizations')) {
+            $this->respond(null, Text::_('JERROR_ALERTNOAUTHOR'), true);
+            return;
+        }
+
+        $id = $app->getInput()->post->getInt('id', 0);
+
+        try {
+            $model = $this->getModel('OrganizationBody', 'Administrator', ['ignore_request' => true]);
+            $model->deleteBody($id);
+            $this->respond(['id' => $id], Text::_('COM_XDECAROORGANIZATIONS_BODY_DELETED'));
+        } catch (Throwable $e) {
+            $this->respond(null, $e->getMessage(), true);
+        }
+    }
+
+    private function respond(mixed $data = null, string $message = '', bool $error = false): void
+    {
+        echo new JsonResponse($data, $message, $error, true);
+        Factory::getApplication()->close();
+    }
+}

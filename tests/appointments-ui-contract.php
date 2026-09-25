@@ -79,7 +79,7 @@ foreach (['Log::add(', "enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 
     }
 }
 
-foreach (["task=appointment.searchPeople", "task=appointment.save", "task=appointment.end", "task=appointment.delete", 'data-duration-years', 'data-appointment-delete', 'window.confirm', 'window.location.reload()', 'setUTCFullYear'] as $needle) {
+foreach (["task=appointment.searchPeople", "task=appointment.save", "task=appointment.end", "task=appointment.delete", 'data-duration-years', 'data-appointment-delete', 'window.confirm', 'reloadMembersTab', 'setUTCFullYear'] as $needle) {
     if (!str_contains($js, $needle)) {
         fwrite(STDERR, "Organization edit JS is missing members behavior: {$needle}.\n");
         exit(1);

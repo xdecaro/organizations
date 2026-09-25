@@ -44,11 +44,50 @@ final class AppointmentController extends BaseController
                 $uuid = strtolower(trim((string) ($row['uuid'] ?? '')));
                 $name = $this->personName($row);
                 if ($uuid !== '' && $name !== '') {
-                    $items[] = ['uuid' => $uuid, 'name' => $name];
+                    $items[] = [
+                        'uuid' => $uuid,
+                        'name' => $name,
+                        'birth_date' => trim((string) ($row['birth_date'] ?? '')),
+                        'birth_place' => trim((string) ($row['birth_place'] ?? '')),
+                    ];
                 }
             }
 
             $this->respond(['items' => $items]);
+        } catch (Throwable $e) {
+            $this->respond(null, $e->getMessage(), true);
+        }
+    }
+
+    public function eligibility(): void
+    {
+        if (!$this->checkPostToken()) {
+            return;
+        }
+
+        $user = Factory::getApplication()->getIdentity();
+        if (!$user->authorise('core.create', 'com_xdecaroorganizations')
+            && !$user->authorise('core.edit', 'com_xdecaroorganizations')
+            && !$user->authorise('core.manage', 'com_xdecaroorganizations')
+            && !$user->authorise('core.admin', 'com_xdecaroorganizations')) {
+            $this->respond(null, Text::_('JERROR_ALERTNOAUTHOR'), true);
+            return;
+        }
+
+        try {
+            $input = Factory::getApplication()->getInput();
+            $organizationId = $input->post->getInt('organization_id', 0);
+            $personUuid = strtolower(trim($input->post->getString('person_uuid', '')));
+
+            $component = Factory::getApplication()->bootComponent('com_xdecaroorganizations');
+            $result = $component->getAppointmentMembershipPolicyService()->evaluate($organizationId, $personUuid);
+
+            $this->respond([
+                'requirement' => (string) ($result['requirement'] ?? 'none'),
+                'available' => (bool) ($result['available'] ?? false),
+                'eligible' => $result['eligible'] ?? null,
+                'status' => (string) ($result['status'] ?? 'unavailable'),
+            ]);
         } catch (Throwable $e) {
             $this->respond(null, $e->getMessage(), true);
         }
@@ -78,6 +117,7 @@ final class AppointmentController extends BaseController
             $data = [
                 'id' => $id,
                 'organization_id' => $input->post->getInt('organization_id', 0),
+                'body_id' => $input->post->getInt('body_id', 0),
                 'person_uuid' => $input->post->getString('person_uuid', ''),
                 'role_code' => $input->post->getCmd('role_code', ''),
                 'role_custom' => $input->post->getString('role_custom', ''),
@@ -85,6 +125,7 @@ final class AppointmentController extends BaseController
                 'planned_ends_on' => $input->post->getString('planned_ends_on', ''),
                 'duration_years' => $duration !== '' ? (int) $duration : null,
                 'notes' => $input->post->getString('notes', ''),
+                'show_on_frontend' => $input->post->getInt('show_on_frontend', 0) === 1 ? 1 : 0,
             ];
 
             $model = $this->getModel('OrganizationAppointment', 'Administrator', ['ignore_request' => true]);

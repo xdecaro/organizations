@@ -42,6 +42,35 @@ return new class implements ServiceProviderInterface
             PeopleIntegrationService::class,
             static fn(): PeopleIntegrationService => new PeopleIntegrationService()
         );
+        $container->share(
+            PersonAppointmentsService::class,
+            static fn(Container $container): PersonAppointmentsService => new PersonAppointmentsService(
+                $container->get(DatabaseInterface::class)
+            )
+        );
+        $container->share(
+            OrganizationBodiesService::class,
+            static fn(Container $container): OrganizationBodiesService => new OrganizationBodiesService(
+                $container->get(DatabaseInterface::class)
+            )
+        );
+        $container->share(
+            OrganizationDelegationsService::class,
+            static fn(Container $container): OrganizationDelegationsService => new OrganizationDelegationsService(
+                $container->get(DatabaseInterface::class)
+            )
+        );
+        $container->share(
+            MembershipIntegrationService::class,
+            static fn(): MembershipIntegrationService => new MembershipIntegrationService()
+        );
+        $container->share(
+            AppointmentMembershipPolicyService::class,
+            static fn(Container $container): AppointmentMembershipPolicyService => new AppointmentMembershipPolicyService(
+                $container->get(DatabaseInterface::class),
+                $container->get(MembershipIntegrationService::class)
+            )
+        );
 
         $container->set(
             ComponentInterface::class,
@@ -54,6 +83,11 @@ return new class implements ServiceProviderInterface
                 $component->setOrganizationProviderService($container->get(OrganizationProviderService::class));
                 $component->setDuplicateService($container->get(DuplicateService::class));
                 $component->setPeopleIntegrationService($container->get(PeopleIntegrationService::class));
+                $component->setPersonAppointmentsService($container->get(PersonAppointmentsService::class));
+                $component->setOrganizationBodiesService($container->get(OrganizationBodiesService::class));
+                $component->setOrganizationDelegationsService($container->get(OrganizationDelegationsService::class));
+                $component->setMembershipIntegrationService($container->get(MembershipIntegrationService::class));
+                $component->setAppointmentMembershipPolicyService($container->get(AppointmentMembershipPolicyService::class));
 
                 return $component;
             }

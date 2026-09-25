@@ -6,11 +6,16 @@ use Joomla\CMS\Language\Text;
 
 $organizationId = (int) ($this->item->id ?? 0);
 $active = [];
+$scheduled = [];
 $history = [];
 
 foreach ($this->appointments as $appointment) {
-    if (($appointment->visual_status ?? '') === 'active') {
+    $visualStatus = (string) ($appointment->visual_status ?? '');
+
+    if ($visualStatus === 'active') {
         $active[] = $appointment;
+    } elseif ($visualStatus === 'scheduled') {
+        $scheduled[] = $appointment;
     } else {
         $history[] = $appointment;
     }
@@ -18,12 +23,33 @@ foreach ($this->appointments as $appointment) {
 
 $statusKeys = [
     'active' => 'COM_XDECAROORGANIZATIONS_STATUS_ACTIVE',
+    'scheduled' => 'COM_XDECAROORGANIZATIONS_STATUS_SCHEDULED',
     'expired' => 'COM_XDECAROORGANIZATIONS_STATUS_EXPIRED',
     'ended' => 'COM_XDECAROORGANIZATIONS_STATUS_ENDED',
     'resigned' => 'COM_XDECAROORGANIZATIONS_STATUS_RESIGNED',
     'revoked' => 'COM_XDECAROORGANIZATIONS_STATUS_REVOKED',
     'forfeited' => 'COM_XDECAROORGANIZATIONS_STATUS_FORFEITED',
 ];
+
+$membershipStatusKeys = [
+    'eligible' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_ELIGIBLE',
+    'not_member' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_NOT_MEMBER',
+    'inactive_member' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_INACTIVE',
+    'fee_not_current' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_FEE_NOT_CURRENT',
+    'unavailable' => 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE',
+];
+
+$membershipBadgeClasses = [
+    'eligible' => 'text-bg-success',
+    'not_member' => 'text-bg-danger',
+    'inactive_member' => 'text-bg-warning',
+    'fee_not_current' => 'text-bg-warning',
+    'unavailable' => 'text-bg-secondary',
+];
+
+$membershipRequirementKey = 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT_' . strtoupper(
+    (string) ($this->appointmentMembershipRequirement ?: 'none')
+);
 
 $roleText = static function ($appointment): string {
     if (($appointment->role_code ?? '') === 'custom') {
@@ -36,6 +62,7 @@ $roleText = static function ($appointment): string {
 $appointmentJson = static function ($appointment): string {
     return htmlspecialchars((string) json_encode([
         'id' => (int) ($appointment->id ?? 0),
+        'body_id' => (int) ($appointment->body_id ?? 0),
         'person_uuid' => (string) ($appointment->person_uuid ?? ''),
         'person_name_snapshot' => (string) ($appointment->person_name_snapshot ?? ''),
         'role_code' => (string) ($appointment->role_code ?? ''),
@@ -43,10 +70,15 @@ $appointmentJson = static function ($appointment): string {
         'starts_on' => (string) ($appointment->starts_on ?? ''),
         'planned_ends_on' => (string) ($appointment->planned_ends_on ?? ''),
         'notes' => (string) ($appointment->notes ?? ''),
+        'show_on_frontend' => (int) ($appointment->show_on_frontend ?? 0),
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
 };
 ?>
-<div class="xdecaro-members" data-organization-id="<?php echo $organizationId; ?>">
+<div
+    class="xdecaro-members"
+    data-organization-id="<?php echo $organizationId; ?>"
+    data-membership-requirement="<?php echo $this->escape((string) $this->appointmentMembershipRequirement); ?>"
+>
     <?php if ($organizationId < 1) : ?>
         <div class="alert alert-info mb-0">
             <?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_SAVE_FIRST'); ?>
@@ -75,12 +107,20 @@ $appointmentJson = static function ($appointment): string {
             </div>
         <?php endif; ?>
 
+        <?php if ($this->appointmentMembershipRequirement !== 'none') : ?>
+            <div class="alert alert-info">
+                <strong><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_REQUIREMENT'); ?>:</strong>
+                <?php echo Text::_($membershipRequirementKey); ?>
+            </div>
+        <?php endif; ?>
+
         <div class="table-responsive mb-4">
             <table class="table table-striped align-middle mb-0">
                 <thead>
                     <tr>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?></th>
+                        <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_MANDATE'); ?></th>
                         <th><?php echo Text::_('JSTATUS'); ?></th>
                         <th class="text-end"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ACTIONS'); ?></th>
@@ -88,12 +128,34 @@ $appointmentJson = static function ($appointment): string {
                 </thead>
                 <tbody>
                     <?php if ($active === []) : ?>
-                        <tr><td colspan="5" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_ACTIVE_NONE'); ?></td></tr>
+                        <tr><td colspan="6" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_ACTIVE_NONE'); ?></td></tr>
                     <?php endif; ?>
                     <?php foreach ($active as $appointment) : ?>
                         <tr>
-                            <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
-                            <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td>
+                                <?php echo $this->escape((string) $appointment->person_name_snapshot); ?>
+                                <?php if ($this->appointmentMembershipRequirement !== 'none') : ?>
+                                    <?php
+                                    $eligibility = is_array($appointment->membership_eligibility ?? null)
+                                        ? $appointment->membership_eligibility
+                                        : ['status' => 'unavailable'];
+                                    $eligibilityStatus = (string) ($eligibility['status'] ?? 'unavailable');
+                                    ?>
+                                    <span
+                                        class="badge <?php echo $membershipBadgeClasses[$eligibilityStatus] ?? 'text-bg-secondary'; ?> d-block mt-1 text-wrap"
+                                        data-membership-status="<?php echo $this->escape($eligibilityStatus); ?>"
+                                    >
+                                        <?php echo Text::_($membershipStatusKeys[$eligibilityStatus] ?? 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE'); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php echo $this->escape($roleText($appointment)); ?>
+                                <?php if (!empty($appointment->show_on_frontend)) : ?>
+                                    <span class="badge text-bg-info d-block mt-1 text-wrap"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PUBLIC_BADGE'); ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
                                 <?php echo $this->escape((string) $appointment->starts_on); ?>
                                 →
@@ -140,6 +202,83 @@ $appointmentJson = static function ($appointment): string {
             </table>
         </div>
 
+        <h3 class="h5 mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_SCHEDULED'); ?></h3>
+        <div class="table-responsive mb-4">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?></th>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?></th>
+                        <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></th>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_MANDATE'); ?></th>
+                        <th><?php echo Text::_('JSTATUS'); ?></th>
+                        <th class="text-end"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ACTIONS'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($scheduled === []) : ?>
+                        <tr><td colspan="6" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_SCHEDULED_NONE'); ?></td></tr>
+                    <?php endif; ?>
+                    <?php foreach ($scheduled as $appointment) : ?>
+                        <tr>
+                            <td>
+                                <?php echo $this->escape((string) $appointment->person_name_snapshot); ?>
+                                <?php if ($this->appointmentMembershipRequirement !== 'none') : ?>
+                                    <?php
+                                    $eligibility = is_array($appointment->membership_eligibility ?? null)
+                                        ? $appointment->membership_eligibility
+                                        : ['status' => 'unavailable'];
+                                    $eligibilityStatus = (string) ($eligibility['status'] ?? 'unavailable');
+                                    ?>
+                                    <span
+                                        class="badge <?php echo $membershipBadgeClasses[$eligibilityStatus] ?? 'text-bg-secondary'; ?> d-block mt-1 text-wrap"
+                                        data-membership-status="<?php echo $this->escape($eligibilityStatus); ?>"
+                                    >
+                                        <?php echo Text::_($membershipStatusKeys[$eligibilityStatus] ?? 'COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE'); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php echo $this->escape($roleText($appointment)); ?>
+                                <?php if (!empty($appointment->show_on_frontend)) : ?>
+                                    <span class="badge text-bg-info d-block mt-1 text-wrap"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PUBLIC_BADGE'); ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
+                            <td>
+                                <?php echo $this->escape((string) $appointment->starts_on); ?>
+                                →
+                                <?php echo $this->escape((string) ($appointment->planned_ends_on ?: Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_OPEN_END'))); ?>
+                            </td>
+                            <td><?php echo Text::_($statusKeys[$appointment->visual_status] ?? 'COM_XDECAROORGANIZATIONS_STATUS_SCHEDULED'); ?></td>
+                            <td class="text-end">
+                                <?php if ($this->canEditAppointments || $this->canDeleteAppointments) : ?>
+                                    <div class="btn-group btn-group-sm flex-wrap" role="group">
+                                        <?php if ($this->canEditAppointments) : ?>
+                                            <button type="button" class="btn btn-outline-secondary" data-appointment-edit data-appointment="<?php echo $appointmentJson($appointment); ?>">
+                                                <?php echo Text::_('JACTION_EDIT'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if ($this->canDeleteAppointments) : ?>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-danger"
+                                                data-appointment-delete
+                                                data-appointment-id="<?php echo (int) $appointment->id; ?>"
+                                                data-confirm="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE_CONFIRM'), ENT_QUOTES, 'UTF-8'); ?>"
+                                            >
+                                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_DELETE'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
         <h3 class="h5 mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_HISTORY'); ?></h3>
         <div class="table-responsive">
             <table class="table table-striped align-middle mb-0">
@@ -147,6 +286,7 @@ $appointmentJson = static function ($appointment): string {
                     <tr>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?></th>
+                        <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_MANDATE'); ?></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ENDED_ON'); ?></th>
                         <th><?php echo Text::_('JSTATUS'); ?></th>
@@ -155,12 +295,18 @@ $appointmentJson = static function ($appointment): string {
                 </thead>
                 <tbody>
                     <?php if ($history === []) : ?>
-                        <tr><td colspan="6" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_HISTORY_NONE'); ?></td></tr>
+                        <tr><td colspan="7" class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_MEMBERS_HISTORY_NONE'); ?></td></tr>
                     <?php endif; ?>
                     <?php foreach ($history as $appointment) : ?>
                         <tr>
                             <td><?php echo $this->escape((string) $appointment->person_name_snapshot); ?></td>
-                            <td><?php echo $this->escape($roleText($appointment)); ?></td>
+                            <td>
+                                <?php echo $this->escape($roleText($appointment)); ?>
+                                <?php if (!empty($appointment->show_on_frontend)) : ?>
+                                    <span class="badge text-bg-info d-block mt-1 text-wrap"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PUBLIC_BADGE'); ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="d-none d-lg-table-cell"><?php echo $this->escape((string) ($appointment->body_name ?? '')); ?></td>
                             <td>
                                 <?php echo $this->escape((string) $appointment->starts_on); ?>
                                 →
@@ -196,9 +342,27 @@ $appointmentJson = static function ($appointment): string {
                             <label class="form-label" for="appointment-person-search"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_PERSON'); ?> *</label>
                             <input type="search" class="form-control" id="appointment-person-search" data-people-search autocomplete="off">
                             <div class="xdecaro-people-results list-group mt-1" data-people-results role="listbox"></div>
+                            <div
+                                class="alert mt-2 mb-0 d-none"
+                                data-membership-eligibility
+                                data-label-eligible="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_ELIGIBLE'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-not-member="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_NOT_MEMBER'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-inactive-member="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_INACTIVE'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-fee-not-current="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_FEE_NOT_CURRENT'), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-label-unavailable="<?php echo htmlspecialchars(Text::_('COM_XDECAROORGANIZATIONS_MEMBERSHIP_ELIGIBILITY_UNAVAILABLE'), ENT_QUOTES, 'UTF-8'); ?>"
+                            ></div>
                         </div>
 
                         <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" for="appointment-body-id"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY'); ?></label>
+                                <select class="form-select" id="appointment-body-id">
+                                    <option value="0"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_BODY_NONE'); ?></option>
+                                    <?php foreach ($this->bodies as $body) : ?>
+                                        <option value="<?php echo (int) $body->id; ?>"><?php echo $this->escape((string) $body->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="appointment-role-code"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_ROLE'); ?> *</label>
                                 <select class="form-select" id="appointment-role-code">
@@ -210,6 +374,12 @@ $appointmentJson = static function ($appointment): string {
                                     <option value="auditor"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_AUDITOR'); ?></option>
                                     <option value="director"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_DIRECTOR'); ?></option>
                                     <option value="coordinator"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_COORDINATOR'); ?></option>
+                                    <option value="representative"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_REPRESENTATIVE'); ?></option>
+                                    <option value="commissioner"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_COMMISSIONER'); ?></option>
+                                    <option value="vice_commissioner"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_VICE_COMMISSIONER'); ?></option>
+                                    <option value="delegate"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_DELEGATE'); ?></option>
+                                    <option value="control_member"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_CONTROL_MEMBER'); ?></option>
+                                    <option value="administrative_secretary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_ADMINISTRATIVE_SECRETARY'); ?></option>
                                     <option value="custom"><?php echo Text::_('COM_XDECAROORGANIZATIONS_ROLE_CUSTOM'); ?></option>
                                 </select>
                             </div>
@@ -241,6 +411,16 @@ $appointmentJson = static function ($appointment): string {
                         <div class="mt-3">
                             <label class="form-label" for="appointment-notes"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_NOTES'); ?></label>
                             <textarea class="form-control" id="appointment-notes" rows="3"></textarea>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="appointment-show-on-frontend">
+                                <label class="form-check-label" for="appointment-show-on-frontend">
+                                    <?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_SHOW_ON_FRONTEND'); ?>
+                                </label>
+                            </div>
+                            <div class="form-text"><?php echo Text::_('COM_XDECAROORGANIZATIONS_APPOINTMENT_SHOW_ON_FRONTEND_DESC'); ?></div>
                         </div>
                     </div>
                     <div class="modal-footer">

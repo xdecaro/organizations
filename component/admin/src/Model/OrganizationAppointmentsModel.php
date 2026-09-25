@@ -21,8 +21,9 @@ final class OrganizationAppointmentsModel extends ListModel
     {
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
-            ->select($db->quoteName('a') . '.*')
+            ->select([$db->quoteName('a') . '.*', 'b.name AS body_name'])
             ->from($db->quoteName('#__xdecaroorganizations_appointments', 'a'))
+            ->leftJoin($db->quoteName('#__xdecaroorganizations_bodies', 'b') . ' ON b.id = a.body_id')
             ->where($db->quoteName('a.state') . ' >= 0')
             ->order($db->quoteName('a.role_code') . ' ASC, ' . $db->quoteName('a.person_name_snapshot') . ' ASC, ' . $db->quoteName('a.starts_on') . ' ASC');
 

@@ -1,0 +1,27 @@
+name: Organizations 1.0.26 canonical package
+
+on:
+  pull_request:
+    paths:
+      - 'VERSION'
+      - 'package/**'
+      - 'updates/**'
+      - 'build/**'
+      - 'tests/organizations-1.0.26-canonical-package-contract.php'
+      - '.github/workflows/organizations-1.0.26-package-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Canonical package contract
+        run: php tests/organizations-1.0.26-canonical-package-contract.php

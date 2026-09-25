@@ -18,10 +18,12 @@ final class OrganizationAppointmentTable extends Table
     public function check(): bool
     {
         $this->organization_id = (int) ($this->organization_id ?? 0);
+        $this->body_id = !empty($this->body_id) ? (int) $this->body_id : null;
         $this->person_uuid = strtolower(trim((string) ($this->person_uuid ?? '')));
         $this->person_name_snapshot = trim((string) ($this->person_name_snapshot ?? ''));
         $this->role_code = trim((string) ($this->role_code ?? ''));
         $this->starts_on = trim((string) ($this->starts_on ?? ''));
+        $this->show_on_frontend = !empty($this->show_on_frontend) ? 1 : 0;
 
         foreach (['role_custom', 'planned_ends_on', 'ended_on', 'end_reason', 'end_note', 'notes', 'modified'] as $field) {
             if (property_exists($this, $field) && $this->{$field} !== null) {

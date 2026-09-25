@@ -40,8 +40,10 @@ HTMLHelper::_('behavior.multiselect');
                     <tr>
                         <th><input type="checkbox" name="checkall-toggle" onclick="Joomla.checkAll(this)"></th>
                         <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_NAME'); ?></th>
-                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_TYPE'); ?></th>
-                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_PARENT'); ?></th>
+                        <th class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_TYPE'); ?></th>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_STRUCTURE_LEVEL'); ?></th>
+                        <th><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_OPERATIONAL_STATUS'); ?></th>
+                        <th class="d-none d-xl-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_FIELD_PARENT'); ?></th>
                         <th><?php echo Text::_('JSTATUS'); ?></th>
                     </tr>
                 </thead>
@@ -58,8 +60,10 @@ HTMLHelper::_('behavior.multiselect');
                                     <a href="<?php echo Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $item->id); ?>"><?php echo $this->escape($item->name); ?></a>
                                 </div>
                             </td>
-                            <td><?php echo Text::_('COM_XDECAROORGANIZATIONS_TYPE_' . strtoupper((string) $item->type)); ?></td>
-                            <td><?php echo $this->escape((string) $item->parent_name); ?></td>
+                            <td class="d-none d-lg-table-cell"><?php echo Text::_('COM_XDECAROORGANIZATIONS_TYPE_' . strtoupper((string) $item->type)); ?></td>
+                            <td><?php echo Text::_('COM_XDECAROORGANIZATIONS_STRUCTURE_' . strtoupper((string) ($item->structure_level ?: 'unspecified'))); ?></td>
+                            <td><?php echo Text::_('COM_XDECAROORGANIZATIONS_OPERATIONAL_' . strtoupper((string) ($item->operational_status ?: 'active'))); ?></td>
+                            <td class="d-none d-xl-table-cell"><?php echo $this->escape((string) $item->parent_name); ?></td>
                             <td><?php echo (int) $item->state === 1 ? Text::_('JPUBLISHED') : ((int) $item->state === -2 ? Text::_('JTRASHED') : Text::_('JUNPUBLISHED')); ?></td>
                         </tr>
                     <?php endforeach; ?>
