@@ -65,7 +65,6 @@ final class AffiliationController extends BaseController
                     'code' => (string) ($item->code ?? ''),
                     'type' => $type,
                     'type_label' => Text::_('COM_XDECAROORGANIZATIONS_TYPE_' . strtoupper($type)),
-                    'country_code' => (string) ($item->country_code ?? ''),
                     'structure_level' => (string) ($item->structure_level ?? ''),
                 ];
             }, $items);
