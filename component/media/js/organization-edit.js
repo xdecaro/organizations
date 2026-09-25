@@ -698,6 +698,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ? (affiliationTargetSearch.dataset.placeholderAffiliate || affiliationTargetSearch.placeholder)
         : (affiliationTargetSearch.dataset.placeholderAffiliation || affiliationTargetSearch.placeholder);
     }
+
+    if (affiliationType) {
+      if (normalized === 'affiliate') {
+        affiliationType.value = 'sports_affiliation';
+        affiliationType.disabled = true;
+      } else {
+        affiliationType.disabled = false;
+      }
+    }
   };
 
   const affiliationTargetLabel = (item) => {
