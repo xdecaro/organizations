@@ -6,7 +6,7 @@ Stable Joomla component for reusable organization master data in the xdecaro eco
 - Package: `pkg_organizations` (`pkg_xdecaroorganizations` is migrated as a legacy package identity)
 - Namespace: `xdecaro\Component\Organizations`
 - Tables: `#__xdecaroorganizations_*`
-- Stable candidate version: `1.2.7`
+- Stable candidate version: `1.2.8`
 - Requires Core by xdecaro `1.4.0+`
 - Platform: Joomla 6 only
 
@@ -46,3 +46,5 @@ Organizations 1.2.3 fixes publishing-language handling. The language selector no
 Organizations 1.2.7 reorganizes the organization editor without changing stored data: Country and Logo now belong to Identity, while the Contacts tab is visually split into Contacts and Headquarters. Address, postal code, city, province and region remain the same canonical database fields; Country is shown only once, in Identity.
 
 Organizations 1.2.4 refines the organization editor after real ENS Roma data-entry testing. It separates Province and Region without rewriting existing geography data, shows the status date as day/month/year, adds concise help for the five autonomy flags, renames the ambiguous Members tab to Appointments/Incarichi, and allows permanent deletion of an internal body only when no child bodies or appointments reference it. Public organization type badges also use theme-aware contrast in light and dark mode.
+
+Organizations 1.2.8 improves affiliation selection for large organization datasets. The affiliation editor now searches organizations by name or acronym instead of loading a long dropdown, prioritizes federations for sports affiliations, and caps results for responsive use. The organizations list also shows a dedicated Acronym/Sigla column on desktop and tablet. No schema changes are required.
