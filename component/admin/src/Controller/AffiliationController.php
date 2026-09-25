@@ -15,6 +15,67 @@ final class AffiliationController extends BaseController
 {
     protected $option = 'com_xdecaroorganizations';
 
+    public function searchTargets(): void
+    {
+        if (!Session::checkToken('post')) {
+            $this->respond(null, Text::_('JINVALID_TOKEN'), true);
+            return;
+        }
+
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $user = $app->getIdentity();
+
+        if (!$user->authorise('core.edit', 'com_xdecaroorganizations')
+            && !$user->authorise('core.create', 'com_xdecaroorganizations')
+            && !$user->authorise('core.admin', 'com_xdecaroorganizations')) {
+            $this->respond(null, Text::_('JERROR_ALERTNOAUTHOR'), true);
+            return;
+        }
+
+        $organizationId = $input->post->getInt('organization_id', 0);
+        $search = trim($input->post->getString('q', ''));
+        $relationType = $input->post->getCmd('relation_type', 'sports_affiliation');
+
+        if ($organizationId < 1) {
+            $this->respond(null, Text::_('COM_XDECAROORGANIZATIONS_AFFILIATIONS_SAVE_FIRST'), true);
+            return;
+        }
+
+        if (strlen($search) < 2) {
+            $this->respond(['items' => []]);
+            return;
+        }
+
+        try {
+            $model = $this->getModel('Organization', 'Administrator', ['ignore_request' => true]);
+            $items = $model->searchAffiliationTargets(
+                $organizationId,
+                $search,
+                12,
+                $relationType === 'sports_affiliation'
+            );
+
+            $payload = array_map(static function ($item): array {
+                $type = strtolower(trim((string) ($item->type ?? 'organization')));
+
+                return [
+                    'id' => (int) ($item->id ?? 0),
+                    'name' => (string) ($item->name ?? ''),
+                    'code' => (string) ($item->code ?? ''),
+                    'type' => $type,
+                    'type_label' => Text::_('COM_XDECAROORGANIZATIONS_TYPE_' . strtoupper($type)),
+                    'country_code' => (string) ($item->country_code ?? ''),
+                    'structure_level' => (string) ($item->structure_level ?? ''),
+                ];
+            }, $items);
+
+            $this->respond(['items' => $payload]);
+        } catch (Throwable $e) {
+            $this->respond(null, $e->getMessage(), true);
+        }
+    }
+
     public function save(): void
     {
         if (!Session::checkToken('post')) {
