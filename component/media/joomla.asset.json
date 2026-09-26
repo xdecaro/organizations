@@ -9,6 +9,11 @@
       "uri": "com_xdecaroorganizations/admin.css"
     },
     {
+      "name": "com_xdecaroorganizations.maintenance",
+      "type": "style",
+      "uri": "com_xdecaroorganizations/maintenance.css"
+    },
+    {
       "name": "com_xdecaroorganizations.organization-edit",
       "type": "script",
       "uri": "com_xdecaroorganizations/organization-edit.js",
