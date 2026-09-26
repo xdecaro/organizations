@@ -125,6 +125,8 @@ final class InformationModel extends BaseDatabaseModel
             'update_site_url' => self::UPDATE_SITE_URL,
             'last_check_timestamp' => (int) ($update['last_check_timestamp'] ?? 0),
             'latest_version' => (string) ($update['latest_version'] ?? ''),
+            'effective_latest_version' => (string) ($update['effective_latest_version'] ?? ''),
+            'update_checked' => (bool) ($update['update_checked'] ?? false),
             'update_available' => (bool) ($update['update_available'] ?? false),
             'update_state' => (string) ($update['update_state'] ?? 'inactive'),
         ];
@@ -342,11 +344,18 @@ final class InformationModel extends BaseDatabaseModel
             && $installedVersion !== '0.0.0'
             && version_compare($latestVersion, $installedVersion, 'gt');
         $updateSiteEnabled = $updateSite !== null && (int) ($updateSite->enabled ?? 0) === 1;
+        $lastCheckTimestamp = $updateSite !== null ? max(0, (int) ($updateSite->last_check_timestamp ?? 0)) : 0;
+        $updateChecked = $updateSiteEnabled && $lastCheckTimestamp > 0;
+        $effectiveLatestVersion = $latestVersion !== ''
+            ? $latestVersion
+            : ($updateChecked && $installedVersion !== '0.0.0' ? $installedVersion : '');
 
         return [
             'update_site_enabled' => $updateSiteEnabled,
-            'last_check_timestamp' => $updateSite !== null ? max(0, (int) ($updateSite->last_check_timestamp ?? 0)) : 0,
+            'last_check_timestamp' => $lastCheckTimestamp,
             'latest_version' => $latestVersion,
+            'effective_latest_version' => $effectiveLatestVersion,
+            'update_checked' => $updateChecked,
             'update_available' => $updateAvailable,
             'update_state' => $updateAvailable ? 'available' : ($updateSiteEnabled ? 'current' : 'inactive'),
         ];
