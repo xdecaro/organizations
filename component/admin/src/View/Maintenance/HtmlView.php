@@ -50,6 +50,7 @@ final class HtmlView extends BaseHtmlView
         $wa = $this->document->getWebAssetManager();
         $component->getCoreIntegrationService()->enableUi($wa);
         $wa->useStyle('com_xdecaroorganizations.admin');
+        $wa->useStyle('com_xdecaroorganizations.maintenance');
         $wa->useScript('com_xdecaroorganizations.database-maintenance');
 
         ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_MAINTENANCE'), 'database');
