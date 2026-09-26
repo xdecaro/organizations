@@ -148,7 +148,7 @@ $metric = static function (array $source, string $key): int {
 
     <div class="row g-3">
         <div class="col-12 col-xl-6">
-            <section class="card h-100 xdecaro-dashboard-quality" aria-labelledby="organizations-dashboard-quality-title">
+            <section class="card xdecaro-dashboard-quality" aria-labelledby="organizations-dashboard-quality-title">
                 <div class="card-body">
                     <h2 id="organizations-dashboard-quality-title" class="h5"><?php echo Text::_('COM_XDECAROORGANIZATIONS_DASHBOARD_DATA_QUALITY'); ?></h2>
                     <p class="text-body-secondary mb-3"><?php echo Text::_('COM_XDECAROORGANIZATIONS_DASHBOARD_DATA_QUALITY_DESC'); ?></p>

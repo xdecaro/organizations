@@ -12,6 +12,7 @@ on:
       - 'component/media/css/admin.css'
       - 'component/admin/language/**'
       - 'tests/dashboard-information-1.2.15-contract.php'
+      - 'tests/dashboard-information-1.2.16-polish-contract.php'
       - '.github/workflows/dashboard-information-contract.yml'
   workflow_dispatch:
 
@@ -28,3 +29,4 @@ jobs:
           php-version: '8.3'
           coverage: none
       - run: php tests/dashboard-information-1.2.15-contract.php
+      - run: php tests/dashboard-information-1.2.16-polish-contract.php

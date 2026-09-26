@@ -20,8 +20,10 @@ $warnings = (array) ($info['warnings'] ?? []);
 $systemOk = $criticalIssues === [];
 $updateSiteEnabled = !empty($info['update_site_enabled']);
 $updateAvailable = !empty($info['update_available']);
+$updateChecked = !empty($info['update_checked']);
 $updateState = (string) ($info['update_state'] ?? 'inactive');
 $latestVersion = (string) ($info['latest_version'] ?? '');
+$effectiveLatestVersion = (string) ($info['effective_latest_version'] ?? $latestVersion);
 $lastCheck = (int) ($info['last_check_timestamp'] ?? 0);
 
 $updateLabel = match ($updateState) {
@@ -35,6 +37,14 @@ $updateClass = match ($updateState) {
     default => 'is-muted',
 };
 
+$tableLabels = [
+    '#__xdecaroorganizations_organizations' => 'COM_XDECAROORGANIZATIONS_INFO_TABLE_ORGANIZATIONS',
+    '#__xdecaroorganizations_bodies' => 'COM_XDECAROORGANIZATIONS_INFO_TABLE_BODIES',
+    '#__xdecaroorganizations_appointments' => 'COM_XDECAROORGANIZATIONS_INFO_TABLE_APPOINTMENTS',
+    '#__xdecaroorganizations_delegations' => 'COM_XDECAROORGANIZATIONS_INFO_TABLE_DELEGATIONS',
+    '#__xdecaroorganizations_affiliations' => 'COM_XDECAROORGANIZATIONS_INFO_TABLE_AFFILIATIONS',
+];
+
 $diagnosticLines = [
     'Organizations ' . $installedVersion,
     'Joomla: ' . (string) ($info['joomla_version'] ?? '—'),
@@ -46,6 +56,7 @@ $diagnosticLines = [
     'Core API: ' . (!empty($core['api_available']) ? 'OK' : 'non disponibile'),
     'Tabelle: ' . (int) ($tableHealth['present_count'] ?? 0) . '/' . (int) ($tableHealth['expected_count'] ?? 0),
     'Update server: ' . ($updateSiteEnabled ? 'attivo' : 'non attivo'),
+    'Versione update nota: ' . ($effectiveLatestVersion !== '' ? $effectiveLatestVersion : '—'),
     'Problemi critici: ' . count($criticalIssues),
     'Avvisi: ' . count($warnings),
 ];
@@ -139,7 +150,21 @@ $diagnosticText = implode("\n", $diagnosticLines);
                 <dl class="xdecaro-information-list">
                     <div><dt><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_CHANNEL'); ?></dt><dd><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_STABLE'); ?></dd></div>
                     <div><dt><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_INSTALLED_VERSION'); ?></dt><dd><?php echo $this->escape($installedVersion); ?></dd></div>
-                    <div><dt><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_LATEST_VERSION'); ?></dt><dd><?php echo $latestVersion !== '' ? $this->escape($latestVersion) : Text::_('COM_XDECAROORGANIZATIONS_INFO_NOT_DETECTED'); ?></dd></div>
+                    <div>
+                        <dt><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_LATEST_VERSION'); ?></dt>
+                        <dd>
+                            <?php if ($effectiveLatestVersion !== '') : ?>
+                                <span class="d-grid gap-1">
+                                    <span><?php echo $this->escape($effectiveLatestVersion); ?></span>
+                                    <?php if ($updateChecked && !$updateAvailable && $latestVersion === '') : ?>
+                                        <small class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_NO_UPDATE_AVAILABLE'); ?></small>
+                                    <?php endif; ?>
+                                </span>
+                            <?php else : ?>
+                                <?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_NOT_DETECTED'); ?>
+                            <?php endif; ?>
+                        </dd>
+                    </div>
                     <div><dt><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_LAST_CHECK'); ?></dt><dd><?php echo $lastCheck > 0 ? $this->escape(date('d/m/Y H:i', $lastCheck)) : Text::_('COM_XDECAROORGANIZATIONS_INFO_NEVER'); ?></dd></div>
                     <div><dt><?php echo Text::_('JSTATUS'); ?></dt><dd><span class="xdecaro-status-badge <?php echo $updateClass; ?>"><?php echo $updateLabel; ?></span></dd></div>
                 </dl>
@@ -246,8 +271,12 @@ $diagnosticText = implode("\n", $diagnosticLines);
                     </div>
                 <?php endforeach; ?>
                 <?php foreach ((array) ($tableHealth['tables'] ?? []) as $table => $present) : ?>
+                    <?php $tableLabel = $tableLabels[(string) $table] ?? 'COM_XDECAROORGANIZATIONS_INFO_TABLE_UNKNOWN'; ?>
                     <div class="xdecaro-diagnostic-row is-detail">
-                        <code><?php echo $this->escape((string) $table); ?></code>
+                        <span class="xdecaro-diagnostic-table d-grid gap-1 min-w-0">
+                            <strong><?php echo Text::_($tableLabel); ?></strong>
+                            <code class="text-break small"><?php echo $this->escape((string) $table); ?></code>
+                        </span>
                         <span class="xdecaro-status-badge <?php echo $present ? 'is-success' : 'is-danger'; ?>"><?php echo Text::_($present ? 'COM_XDECAROORGANIZATIONS_INFO_PRESENT' : 'COM_XDECAROORGANIZATIONS_INFO_MISSING'); ?></span>
                     </div>
                 <?php endforeach; ?>

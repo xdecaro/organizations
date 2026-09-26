@@ -1,0 +1,3 @@
+-- Organizations 1.2.16
+-- No schema changes.
+-- Dashboard and information diagnostics polish only.
