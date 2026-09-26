@@ -132,6 +132,12 @@ final class MaintenanceController extends BaseController
 
     private function requirePermission(string $action): void
     {
+        $this->app->getLanguage()->load(
+            'com_xdecaroorganizations.maintenance',
+            JPATH_ADMINISTRATOR . '/components/com_xdecaroorganizations',
+            null,
+            true
+        );
         if (!$this->app->getIdentity()->authorise($action, 'com_xdecaroorganizations')) throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
     }
 
