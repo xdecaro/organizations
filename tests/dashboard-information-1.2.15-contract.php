@@ -12,6 +12,8 @@ $requiredFiles = [
     $root . '/component/media/css/admin.css',
     $root . '/component/admin/language/it-IT/com_xdecaroorganizations.ini',
     $root . '/component/admin/language/en-GB/com_xdecaroorganizations.ini',
+    $root . '/component/admin/language/it-IT/com_xdecaroorganizations.dashboard.ini',
+    $root . '/component/admin/language/en-GB/com_xdecaroorganizations.dashboard.ini',
 ];
 
 foreach ($requiredFiles as $path) {
@@ -26,8 +28,10 @@ $dashboardLayout = (string) file_get_contents($root . '/component/admin/tmpl/das
 $informationModel = (string) file_get_contents($root . '/component/admin/src/Model/InformationModel.php');
 $informationLayout = (string) file_get_contents($root . '/component/admin/tmpl/information/default.php');
 $css = (string) file_get_contents($root . '/component/media/css/admin.css');
-$it = (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.ini');
-$en = (string) file_get_contents($root . '/component/admin/language/en-GB/com_xdecaroorganizations.ini');
+$it = (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.ini')
+    . "\n" . (string) file_get_contents($root . '/component/admin/language/it-IT/com_xdecaroorganizations.dashboard.ini');
+$en = (string) file_get_contents($root . '/component/admin/language/en-GB/com_xdecaroorganizations.ini')
+    . "\n" . (string) file_get_contents($root . '/component/admin/language/en-GB/com_xdecaroorganizations.dashboard.ini');
 
 foreach ([
     '#__xdecaroorganizations_organizations',
@@ -67,15 +71,15 @@ foreach ([
 }
 
 foreach ([
-    "UPDATE_SITE_URL",
-    "pkg_organizations",
-    "getTableHealth",
-    "getExtension",
-    "getIntegrations",
-    "minimum_joomla",
-    "minimum_php",
-    "update_site_enabled",
-    "installation_consistent",
+    'UPDATE_SITE_URL',
+    'pkg_organizations',
+    'getTableHealth',
+    'getExtension',
+    'getIntegrations',
+    'minimum_joomla',
+    'minimum_php',
+    'update_site_enabled',
+    'installation_consistent',
 ] as $needle) {
     if (!str_contains($informationModel, $needle)) {
         fwrite(STDERR, "Information model is missing {$needle}.\n");
