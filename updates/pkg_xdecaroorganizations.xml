@@ -6,14 +6,14 @@
     <element>pkg_xdecaroorganizations</element>
     <type>package</type>
     <client>site</client>
-    <version>1.2.15</version>
+    <version>1.2.16</version>
     <downloads>
-      <downloadurl type="full" format="zip">https://github.com/xdecaro/organizations/releases/download/v1.2.15/pkg_organizations_1.2.15.zip</downloadurl>
+      <downloadurl type="full" format="zip">https://github.com/xdecaro/organizations/releases/download/v1.2.16/pkg_organizations_1.2.16.zip</downloadurl>
     </downloads>
     <tags>
       <tag>stable</tag>
     </tags>
-    <sha256>6eaaa74007b639c3c456c3efb1d62f734e457d25350e6c19b43b2e09b7e0dc3c</sha256>
+    <sha256>75e91909cee8d4af414202083bc7e823339dc1e738f5c027a520fd859bbe7ffb</sha256>
     <maintainer>Luca De Caro</maintainer>
     <maintainerurl>https://github.com/xdecaro/organizations</maintainerurl>
     <targetplatform name="joomla" version="6\.[0-9]+" />
