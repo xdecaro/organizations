@@ -24,6 +24,12 @@ final class HtmlView extends BaseHtmlView
     public function display($tpl = null): void
     {
         $app = Factory::getApplication();
+        $app->getLanguage()->load(
+            'com_xdecaroorganizations.maintenance',
+            JPATH_ADMINISTRATOR . '/components/com_xdecaroorganizations',
+            null,
+            true
+        );
         $identity = $app->getIdentity();
         if (!$identity->authorise('core.manage', 'com_xdecaroorganizations')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
@@ -40,7 +46,7 @@ final class HtmlView extends BaseHtmlView
         $this->canDestructive = $identity->authorise('organizations.database_destructive', 'com_xdecaroorganizations');
 
         try { $this->schema = $component->getDatabaseMaintenanceService()->inspect(); }
-        catch (\Throwable $e) { $this->schema = ['ok' => false, 'status' => 'Errore', 'error' => $e->getMessage()]; }
+        catch (\Throwable $e) { $this->schema = ['ok' => false, 'status' => Text::_('JERROR_ERROR'), 'error' => $e->getMessage()]; }
         try { $this->backups = $component->getBackupService()->list(); }
         catch (\Throwable) { $this->backups = []; }
         try { $this->activity = $component->getMaintenanceLogService()->recent(30); }
