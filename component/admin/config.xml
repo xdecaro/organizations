@@ -1,1 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?><config><fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL"><field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_xdecaroorganizations" section="component"/></fieldset></config>
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <fieldset name="maintenance" label="COM_XDECAROORGANIZATIONS_CONFIG_MAINTENANCE">
+    <field name="backup_storage_path" type="text" label="COM_XDECAROORGANIZATIONS_CONFIG_BACKUP_PATH" description="COM_XDECAROORGANIZATIONS_CONFIG_BACKUP_PATH_DESC" filter="raw"/>
+    <field name="backup_max_upload_mb" type="number" label="COM_XDECAROORGANIZATIONS_CONFIG_BACKUP_MAX_MB" description="COM_XDECAROORGANIZATIONS_CONFIG_BACKUP_MAX_MB_DESC" default="64" min="1" max="512" filter="uint"/>
+  </fieldset>
+  <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL">
+    <field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_xdecaroorganizations" section="component"/>
+  </fieldset>
+</config>
