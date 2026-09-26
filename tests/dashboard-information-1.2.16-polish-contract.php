@@ -8,7 +8,6 @@ $files = [
     'model' => $root . '/component/admin/src/Model/InformationModel.php',
     'dashboard' => $root . '/component/admin/tmpl/dashboard/default.php',
     'information' => $root . '/component/admin/tmpl/information/default.php',
-    'css' => $root . '/component/media/css/admin.css',
     'it' => $root . '/component/admin/language/it-IT/com_xdecaroorganizations.dashboard.ini',
     'en' => $root . '/component/admin/language/en-GB/com_xdecaroorganizations.dashboard.ini',
 ];
@@ -23,7 +22,6 @@ foreach ($files as $name => $path) {
 $model = (string) file_get_contents($files['model']);
 $dashboard = (string) file_get_contents($files['dashboard']);
 $information = (string) file_get_contents($files['information']);
-$css = (string) file_get_contents($files['css']);
 $it = (string) file_get_contents($files['it']);
 $en = (string) file_get_contents($files['en']);
 
@@ -49,6 +47,7 @@ if (!str_contains($dashboard, 'card xdecaro-dashboard-quality')) {
 
 foreach ([
     'xdecaro-diagnostic-table',
+    'text-break small',
     'COM_XDECAROORGANIZATIONS_INFO_TABLE_ORGANIZATIONS',
     'COM_XDECAROORGANIZATIONS_INFO_TABLE_BODIES',
     'COM_XDECAROORGANIZATIONS_INFO_TABLE_APPOINTMENTS',
@@ -63,11 +62,15 @@ foreach ([
 }
 
 foreach ([
-    '.xdecaro-diagnostic-table',
-    '.xdecaro-diagnostic-table code',
-] as $selector) {
-    if (!str_contains($css, $selector)) {
-        fwrite(STDERR, "Admin CSS missing {$selector}.\n");
+    'COM_XDECAROORGANIZATIONS_INFO_NO_UPDATE_AVAILABLE',
+    'COM_XDECAROORGANIZATIONS_INFO_TABLE_ORGANIZATIONS',
+    'COM_XDECAROORGANIZATIONS_INFO_TABLE_BODIES',
+    'COM_XDECAROORGANIZATIONS_INFO_TABLE_APPOINTMENTS',
+    'COM_XDECAROORGANIZATIONS_INFO_TABLE_DELEGATIONS',
+    'COM_XDECAROORGANIZATIONS_INFO_TABLE_AFFILIATIONS',
+] as $key) {
+    if (!str_contains($it, $key . '=') || !str_contains($en, $key . '=')) {
+        fwrite(STDERR, "Missing bilingual Organizations 1.2.16 key: {$key}.\n");
         exit(1);
     }
 }
