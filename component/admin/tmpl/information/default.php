@@ -217,7 +217,13 @@ $diagnosticText = implode("\n", $diagnosticLines);
                     <span class="xdecaro-eyebrow"><?php echo Text::_('COM_XDECAROORGANIZATIONS_DIAGNOSTICS'); ?></span>
                     <h2 id="organizations-diagnostics-title" class="h5 mb-0"><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_SYSTEM_STATUS'); ?></h2>
                 </div>
-                <button type="button" class="btn btn-outline-secondary" data-copy-diagnostics data-copy-target="organizations-diagnostic-text">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-copy-diagnostics
+                    data-copy-target="organizations-diagnostic-text"
+                    data-copy-success="<?php echo $this->escape(Text::_('COM_XDECAROORGANIZATIONS_INFO_COPIED')); ?>"
+                >
                     <span class="icon-copy" aria-hidden="true"></span>
                     <span data-copy-label><?php echo Text::_('COM_XDECAROORGANIZATIONS_INFO_COPY_DIAGNOSTICS'); ?></span>
                 </button>
@@ -251,25 +257,3 @@ $diagnosticText = implode("\n", $diagnosticLines);
         </div>
     </section>
 </div>
-
-<script>
-(() => {
-    const button = document.querySelector('[data-copy-diagnostics]');
-    if (!button) return;
-    const label = button.querySelector('[data-copy-label]');
-    const original = label ? label.textContent : '';
-    button.addEventListener('click', async () => {
-        const target = document.getElementById(button.dataset.copyTarget || '');
-        if (!target) return;
-        try {
-            await navigator.clipboard.writeText(target.value || target.textContent || '');
-            if (label) label.textContent = <?php echo json_encode(Text::_('COM_XDECAROORGANIZATIONS_INFO_COPIED'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
-            window.setTimeout(() => { if (label) label.textContent = original; }, 1800);
-        } catch (error) {
-            target.classList.remove('visually-hidden');
-            target.focus();
-            target.select();
-        }
-    });
-})();
-</script>
