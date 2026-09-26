@@ -25,6 +25,7 @@ jobs:
           php tests/form-validation-contract.php
           php tests/trashed-filter-contract.php
           php tests/information-version-contract.php
+          php tests/dashboard-information-1.2.15-contract.php
           php tests/state-actions-contract.php
           php tests/admin-ux-duplicates-contract.php
           php tests/no-delete-toolbar-contract.php
@@ -75,7 +76,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: exposes organization country_code through the normal public provider so connected components can map canonical organizations to their own country records without sensitive-data access. No schema changes. Joomla 6 only."
+            --notes "Organizations ${V}: dashboard amministrativa completa, qualità dati, statistiche operative, attività recenti e pagina Informazioni/Diagnostica estesa con controllo versioni, ambiente, database, Core, integrazioni e update server. Nessuna modifica allo schema dati. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
