@@ -1,0 +1,30 @@
+name: Dashboard and information contract
+
+on:
+  pull_request:
+    paths:
+      - 'component/admin/src/Model/DashboardModel.php'
+      - 'component/admin/src/Model/InformationModel.php'
+      - 'component/admin/src/View/Dashboard/**'
+      - 'component/admin/src/View/Information/**'
+      - 'component/admin/tmpl/dashboard/**'
+      - 'component/admin/tmpl/information/**'
+      - 'component/media/css/admin.css'
+      - 'component/admin/language/**'
+      - 'tests/dashboard-information-1.2.15-contract.php'
+      - '.github/workflows/dashboard-information-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - run: php tests/dashboard-information-1.2.15-contract.php
