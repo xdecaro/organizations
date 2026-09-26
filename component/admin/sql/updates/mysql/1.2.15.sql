@@ -1,0 +1,3 @@
+-- Organizations 1.2.15
+-- No schema changes.
+-- Dashboard and diagnostics now expose existing organization data more completely.
