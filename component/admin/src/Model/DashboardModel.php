@@ -6,7 +6,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\Database\ParameterType;
 use xdecaro\Component\Organizations\Administrator\Service\DuplicateService;
 
 final class DashboardModel extends BaseDatabaseModel
@@ -141,6 +140,7 @@ final class DashboardModel extends BaseDatabaseModel
     private function countActiveAffiliations(string $today): int
     {
         $db = $this->getDatabase();
+        $status = 'active';
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
             ->from($db->quoteName('#__xdecaroorganizations_affiliations', 'a'))
@@ -148,7 +148,7 @@ final class DashboardModel extends BaseDatabaseModel
             ->where($db->quoteName('a.status') . ' = :status')
             ->where('(' . $db->quoteName('a.starts_on') . ' IS NULL OR ' . $db->quoteName('a.starts_on') . ' <= :todayStart)')
             ->where('(' . $db->quoteName('a.ends_on') . ' IS NULL OR ' . $db->quoteName('a.ends_on') . ' >= :todayEnd)')
-            ->bind(':status', $status = 'active')
+            ->bind(':status', $status)
             ->bind(':todayStart', $today)
             ->bind(':todayEnd', $today);
 
