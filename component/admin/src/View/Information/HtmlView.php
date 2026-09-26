@@ -35,10 +35,12 @@ final class HtmlView extends BaseHtmlView
         $this->canManageInstaller = $identity->authorise('core.manage', 'com_installer');
 
         $component = $app->bootComponent('com_xdecaroorganizations');
+        $wa = $this->document->getWebAssetManager();
         if ($component instanceof OrganizationsComponent) {
-            $component->getCoreIntegrationService()->enableUi($this->document->getWebAssetManager());
+            $component->getCoreIntegrationService()->enableUi($wa);
         }
-        $this->document->getWebAssetManager()->useStyle('com_xdecaroorganizations.admin');
+        $wa->useStyle('com_xdecaroorganizations.admin');
+        $wa->useScript('com_xdecaroorganizations.information');
 
         ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_INFORMATION'), 'info-circle');
         parent::display($tpl);
