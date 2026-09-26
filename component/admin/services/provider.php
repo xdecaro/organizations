@@ -21,76 +21,44 @@ return new class implements ServiceProviderInterface
         $container->registerServiceProvider(new MVCFactory('xdecaro\\Component\\Organizations'));
         $container->registerServiceProvider(new ComponentDispatcherFactory('xdecaro\\Component\\Organizations'));
 
-        $container->share(
-            CoreIntegrationService::class,
-            static fn(): CoreIntegrationService => new CoreIntegrationService()
-        );
-        $container->share(
-            OrganizationProviderService::class,
-            static fn(Container $container): OrganizationProviderService => new OrganizationProviderService(
-                $container->get(DatabaseInterface::class),
-                $container->get(CoreIntegrationService::class)
-            )
-        );
-        $container->share(
-            DuplicateService::class,
-            static fn(Container $container): DuplicateService => new DuplicateService(
-                $container->get(DatabaseInterface::class)
-            )
-        );
-        $container->share(
-            PeopleIntegrationService::class,
-            static fn(): PeopleIntegrationService => new PeopleIntegrationService()
-        );
-        $container->share(
-            PersonAppointmentsService::class,
-            static fn(Container $container): PersonAppointmentsService => new PersonAppointmentsService(
-                $container->get(DatabaseInterface::class)
-            )
-        );
-        $container->share(
-            OrganizationBodiesService::class,
-            static fn(Container $container): OrganizationBodiesService => new OrganizationBodiesService(
-                $container->get(DatabaseInterface::class)
-            )
-        );
-        $container->share(
-            OrganizationDelegationsService::class,
-            static fn(Container $container): OrganizationDelegationsService => new OrganizationDelegationsService(
-                $container->get(DatabaseInterface::class)
-            )
-        );
-        $container->share(
-            MembershipIntegrationService::class,
-            static fn(): MembershipIntegrationService => new MembershipIntegrationService()
-        );
-        $container->share(
-            AppointmentMembershipPolicyService::class,
-            static fn(Container $container): AppointmentMembershipPolicyService => new AppointmentMembershipPolicyService(
-                $container->get(DatabaseInterface::class),
-                $container->get(MembershipIntegrationService::class)
-            )
-        );
+        $container->share(CoreIntegrationService::class, static fn(): CoreIntegrationService => new CoreIntegrationService());
+        $container->share(OrganizationProviderService::class, static fn(Container $container): OrganizationProviderService => new OrganizationProviderService($container->get(DatabaseInterface::class), $container->get(CoreIntegrationService::class)));
+        $container->share(DuplicateService::class, static fn(Container $container): DuplicateService => new DuplicateService($container->get(DatabaseInterface::class)));
+        $container->share(PeopleIntegrationService::class, static fn(): PeopleIntegrationService => new PeopleIntegrationService());
+        $container->share(PersonAppointmentsService::class, static fn(Container $container): PersonAppointmentsService => new PersonAppointmentsService($container->get(DatabaseInterface::class)));
+        $container->share(OrganizationBodiesService::class, static fn(Container $container): OrganizationBodiesService => new OrganizationBodiesService($container->get(DatabaseInterface::class)));
+        $container->share(OrganizationDelegationsService::class, static fn(Container $container): OrganizationDelegationsService => new OrganizationDelegationsService($container->get(DatabaseInterface::class)));
+        $container->share(MembershipIntegrationService::class, static fn(): MembershipIntegrationService => new MembershipIntegrationService());
+        $container->share(AppointmentMembershipPolicyService::class, static fn(Container $container): AppointmentMembershipPolicyService => new AppointmentMembershipPolicyService($container->get(DatabaseInterface::class), $container->get(MembershipIntegrationService::class)));
 
-        $container->set(
-            ComponentInterface::class,
-            static function (Container $container): ComponentInterface {
-                $component = new OrganizationsComponent(
-                    $container->get(ComponentDispatcherFactoryInterface::class)
-                );
-                $component->setMVCFactory($container->get(MVCFactoryInterface::class));
-                $component->setCoreIntegrationService($container->get(CoreIntegrationService::class));
-                $component->setOrganizationProviderService($container->get(OrganizationProviderService::class));
-                $component->setDuplicateService($container->get(DuplicateService::class));
-                $component->setPeopleIntegrationService($container->get(PeopleIntegrationService::class));
-                $component->setPersonAppointmentsService($container->get(PersonAppointmentsService::class));
-                $component->setOrganizationBodiesService($container->get(OrganizationBodiesService::class));
-                $component->setOrganizationDelegationsService($container->get(OrganizationDelegationsService::class));
-                $component->setMembershipIntegrationService($container->get(MembershipIntegrationService::class));
-                $component->setAppointmentMembershipPolicyService($container->get(AppointmentMembershipPolicyService::class));
+        $container->share(DatabaseSchemaDefinition::class, static fn(): DatabaseSchemaDefinition => new DatabaseSchemaDefinition());
+        $container->share(DatabaseSchemaInspector::class, static fn(Container $container): DatabaseSchemaInspector => new DatabaseSchemaInspector($container->get(DatabaseInterface::class), $container->get(DatabaseSchemaDefinition::class)));
+        $container->share(BackupStorageService::class, static fn(): BackupStorageService => new BackupStorageService());
+        $container->share(MaintenanceLogService::class, static fn(Container $container): MaintenanceLogService => new MaintenanceLogService($container->get(DatabaseInterface::class)));
+        $container->share(BackupService::class, static fn(Container $container): BackupService => new BackupService($container->get(DatabaseInterface::class), $container->get(BackupStorageService::class), $container->get(MaintenanceLogService::class)));
+        $container->share(RestoreService::class, static fn(Container $container): RestoreService => new RestoreService($container->get(DatabaseInterface::class), $container->get(BackupService::class), $container->get(MaintenanceLogService::class)));
+        $container->share(DatabaseMaintenanceService::class, static fn(Container $container): DatabaseMaintenanceService => new DatabaseMaintenanceService($container->get(DatabaseInterface::class), $container->get(DatabaseSchemaDefinition::class), $container->get(DatabaseSchemaInspector::class), $container->get(BackupService::class), $container->get(MaintenanceLogService::class)));
 
-                return $component;
-            }
-        );
+        $container->set(ComponentInterface::class, static function (Container $container): ComponentInterface {
+            $component = new OrganizationsComponent($container->get(ComponentDispatcherFactoryInterface::class));
+            $component->setMVCFactory($container->get(MVCFactoryInterface::class));
+            $component->setCoreIntegrationService($container->get(CoreIntegrationService::class));
+            $component->setOrganizationProviderService($container->get(OrganizationProviderService::class));
+            $component->setDuplicateService($container->get(DuplicateService::class));
+            $component->setPeopleIntegrationService($container->get(PeopleIntegrationService::class));
+            $component->setPersonAppointmentsService($container->get(PersonAppointmentsService::class));
+            $component->setOrganizationBodiesService($container->get(OrganizationBodiesService::class));
+            $component->setOrganizationDelegationsService($container->get(OrganizationDelegationsService::class));
+            $component->setMembershipIntegrationService($container->get(MembershipIntegrationService::class));
+            $component->setAppointmentMembershipPolicyService($container->get(AppointmentMembershipPolicyService::class));
+            $component->setDatabaseSchemaDefinition($container->get(DatabaseSchemaDefinition::class));
+            $component->setDatabaseSchemaInspector($container->get(DatabaseSchemaInspector::class));
+            $component->setBackupStorageService($container->get(BackupStorageService::class));
+            $component->setMaintenanceLogService($container->get(MaintenanceLogService::class));
+            $component->setBackupService($container->get(BackupService::class));
+            $component->setRestoreService($container->get(RestoreService::class));
+            $component->setDatabaseMaintenanceService($container->get(DatabaseMaintenanceService::class));
+            return $component;
+        });
     }
 };
