@@ -197,11 +197,22 @@
 }
 
 @media (min-width: 768px) {
+  .xdecaro-maintenance-page .xdecaro-activity-table td.xdecaro-activity-details-cell {
+    vertical-align: middle !important;
+    text-align: right !important;
+  }
+
   .xdecaro-maintenance-page .xdecaro-activity-details {
     padding: 0 !important;
     border: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
+    margin: 0 !important;
+    vertical-align: middle;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details > summary {
+    margin: 0 !important;
   }
 }
 
