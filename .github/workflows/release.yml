@@ -33,6 +33,7 @@ jobs:
           php tests/organizations-1.2.20-maintenance-mobile-details-contract.php
           php tests/organizations-1.2.21-maintenance-mobile-details-card-contract.php
           php tests/organizations-1.2.22-maintenance-desktop-details-contract.php
+          php tests/organizations-1.2.23-maintenance-desktop-details-alignment-contract.php
           php tests/state-actions-contract.php
           php tests/admin-ux-duplicates-contract.php
           php tests/no-delete-toolbar-contract.php
@@ -79,6 +80,9 @@ jobs:
           unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq '@media (min-width: 768px)'
           unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'border: 0 !important'
           unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'background: transparent !important'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'vertical-align: middle !important'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'text-align: right !important'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'margin: 0 !important'
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
@@ -93,7 +97,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: corregge il registro Attività manutenzione su desktop rimuovendo il riquadro esterno applicato da Atum al controllo Dettagli. Resta visibile solo il pulsante Dettagli; il layout mobile introdotto in 1.2.21 resta invariato. Nessuna modifica ai dati o allo schema funzionale. Joomla 6 only."
+            --notes "Organizations ${V}: allinea correttamente il pulsante Dettagli al centro verticale della riga del registro Attività manutenzione su desktop, mantenendolo a destra e senza reintrodurre il riquadro esterno di Atum. Il layout mobile resta invariato. Nessuna modifica ai dati o allo schema funzionale. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
