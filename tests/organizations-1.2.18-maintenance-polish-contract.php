@@ -25,8 +25,10 @@ $version = trim((string) file_get_contents($versionPath));
 $manifest = (string) file_get_contents($manifestPath);
 $package = (string) file_get_contents($packagePath);
 
-if ($version !== '1.2.18' || !str_contains($manifest, '<version>1.2.18</version>') || !str_contains($package, '<version>1.2.18</version>')) {
-    fwrite(STDERR, "Organizations maintenance polish must be version 1.2.18 everywhere.\n");
+if (version_compare($version, '1.2.18', '<')
+    || !str_contains($manifest, '<version>' . $version . '</version>')
+    || !str_contains($package, '<version>' . $version . '</version>')) {
+    fwrite(STDERR, "Organizations maintenance polish requires version 1.2.18 or later with aligned manifests.\n");
     exit(1);
 }
 
@@ -59,8 +61,8 @@ if (!str_contains($backup, "get('offset', 'UTC')")) {
 }
 
 if (!str_contains($backup, "SCHEMA_VERSION = '1.2.18'")) {
-    fwrite(STDERR, "Backup schema version must be aligned to 1.2.18.\n");
+    fwrite(STDERR, "Backup schema version must remain aligned to the unchanged 1.2.18 database schema.\n");
     exit(1);
 }
 
-echo "Organizations 1.2.18 maintenance polish contract OK\n";
+echo "Organizations maintenance polish contract OK ({$version})\n";
