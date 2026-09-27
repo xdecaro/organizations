@@ -1,0 +1,2 @@
+-- Organizations 1.2.21
+-- Mobile maintenance activity details layout fix only. No database schema changes are required.

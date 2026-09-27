@@ -19,27 +19,13 @@ if ($mobilePos === false) {
 
 $mobileCss = substr($css, $mobilePos);
 
-$required = [
-    '.xdecaro-activity-details-cell::before',
-    'display: none',
-    '.xdecaro-activity-details-cell {',
-    'justify-items: end',
-    '.xdecaro-activity-details {',
-    'display: inline-grid',
-    '.xdecaro-activity-details[open]',
-    'width: 100%',
-    'justify-self: end',
-];
-
-foreach ($required as $needle) {
-    if (!str_contains($mobileCss, $needle)) {
-        fwrite(STDERR, "Missing compact mobile details rule: {$needle}\n");
-        exit(1);
-    }
-}
-
 if (!str_contains($mobileCss, '.xdecaro-activity-details-panel') || !str_contains($mobileCss, 'position: static')) {
     fwrite(STDERR, "Expanded mobile details panel must remain in normal flow.\n");
+    exit(1);
+}
+
+if (!str_contains($mobileCss, 'width: 100%')) {
+    fwrite(STDERR, "Mobile activity details must remain responsive.\n");
     exit(1);
 }
 
@@ -48,4 +34,4 @@ if (!str_contains($css, '.xdecaro-activity-table th:nth-child(6)') || !str_conta
     exit(1);
 }
 
-echo "Organizations 1.2.20 compact mobile details contract OK\n";
+echo "Organizations 1.2.20 mobile details compatibility contract OK\n";

@@ -296,36 +296,40 @@
     width: 100%;
   }
 
-  .xdecaro-maintenance-page .xdecaro-activity-details-cell {
-    display: grid !important;
-    justify-items: end;
-    justify-self: end;
-    text-align: right !important;
-  }
-
-  .xdecaro-maintenance-page .xdecaro-activity-details-cell::before {
+  .xdecaro-maintenance-page .xdecaro-activity-table td.xdecaro-activity-details-cell::before {
     display: none;
   }
 
-  .xdecaro-maintenance-page .xdecaro-activity-details {
-    display: inline-grid;
-    justify-items: end;
-    justify-self: end;
-    max-width: 100%;
-  }
-
-  .xdecaro-maintenance-page .xdecaro-activity-details[open] {
+  .xdecaro-maintenance-page .xdecaro-activity-table td.xdecaro-activity-details-cell {
+    display: block !important;
     width: 100%;
+    margin-top: .5rem;
+    padding-top: .5rem;
+    border-top: 1px solid var(--border-color, rgba(127, 127, 127, .18));
+    text-align: left !important;
   }
 
-  .xdecaro-maintenance-page .xdecaro-activity-details[open] > summary {
-    justify-self: end;
+  .xdecaro-maintenance-page .xdecaro-activity-details {
+    display: block;
+    width: 100%;
+    margin: 0;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
+    padding: .45rem .75rem;
+    font-weight: 600;
   }
 
   .xdecaro-maintenance-page .xdecaro-activity-details-panel {
     position: static;
     width: 100%;
-    margin-top: .45rem;
+    margin-top: .5rem;
     box-shadow: none;
   }
 }
