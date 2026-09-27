@@ -1,0 +1,2 @@
+-- Organizations 1.2.19
+-- UI-only maintenance activity redesign. No database schema changes are required.
