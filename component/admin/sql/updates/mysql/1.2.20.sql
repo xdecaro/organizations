@@ -1,0 +1,2 @@
+-- Organizations 1.2.20
+-- Mobile maintenance activity UI fix only. No database schema changes are required.
