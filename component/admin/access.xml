@@ -11,5 +11,9 @@
     <action name="organizations.view_appointments" title="COM_XDECAROORGANIZATIONS_ACTION_VIEW_APPOINTMENTS"/>
     <action name="organizations.view_bodies" title="COM_XDECAROORGANIZATIONS_ACTION_VIEW_BODIES"/>
     <action name="organizations.view_delegations" title="COM_XDECAROORGANIZATIONS_ACTION_VIEW_DELEGATIONS"/>
+    <action name="organizations.backup" title="COM_XDECAROORGANIZATIONS_ACTION_BACKUP"/>
+    <action name="organizations.restore" title="COM_XDECAROORGANIZATIONS_ACTION_RESTORE"/>
+    <action name="organizations.database_repair" title="COM_XDECAROORGANIZATIONS_ACTION_DATABASE_REPAIR"/>
+    <action name="organizations.database_destructive" title="COM_XDECAROORGANIZATIONS_ACTION_DATABASE_DESTRUCTIVE"/>
   </section>
 </access>

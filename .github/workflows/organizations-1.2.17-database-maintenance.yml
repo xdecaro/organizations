@@ -1,0 +1,34 @@
+name: Organizations 1.2.17 database maintenance
+
+on:
+  pull_request:
+    paths:
+      - 'component/admin/access.xml'
+      - 'component/admin/config.xml'
+      - 'component/admin/services/**'
+      - 'component/admin/sql/**'
+      - 'component/admin/src/Controller/MaintenanceController.php'
+      - 'component/admin/src/Extension/OrganizationsComponent.php'
+      - 'component/admin/src/Service/**'
+      - 'component/admin/src/View/Maintenance/**'
+      - 'component/admin/tmpl/maintenance/**'
+      - 'component/admin/language/**'
+      - 'component/media/**'
+      - 'component/xdecaroorganizations.xml'
+      - 'tests/organizations-1.2.17-database-maintenance-contract.php'
+      - '.github/workflows/organizations-1.2.17-database-maintenance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - run: php tests/organizations-1.2.17-database-maintenance-contract.php

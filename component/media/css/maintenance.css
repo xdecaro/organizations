@@ -1,0 +1,63 @@
+.xdecaro-maintenance-page .xdecaro-maintenance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-maintenance-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-maintenance-actions > .card,
+.xdecaro-maintenance-page .xdecaro-maintenance-grid > .card {
+  min-width: 0;
+  background: var(--body-bg, #fff);
+  border-color: var(--border-color, rgba(127, 127, 127, .25));
+}
+
+.xdecaro-maintenance-page .xdecaro-maintenance-table th,
+.xdecaro-maintenance-page .xdecaro-maintenance-table td {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.xdecaro-maintenance-page .xdecaro-maintenance-table td:last-child {
+  min-width: 20rem;
+}
+
+.xdecaro-maintenance-page pre {
+  max-height: 20rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--template-bg-light, rgba(127, 127, 127, .08));
+  color: inherit;
+  border: 1px solid var(--border-color, rgba(127, 127, 127, .2));
+  border-radius: .5rem;
+  padding: .75rem;
+}
+
+.xdecaro-maintenance-page code {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 991.98px) {
+  .xdecaro-maintenance-page .xdecaro-maintenance-grid,
+  .xdecaro-maintenance-page .xdecaro-maintenance-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .xdecaro-maintenance-page .card-body {
+    padding: .9rem;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .5rem;
+  }
+}

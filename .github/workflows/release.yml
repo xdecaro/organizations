@@ -27,6 +27,7 @@ jobs:
           php tests/information-version-contract.php
           php tests/dashboard-information-1.2.15-contract.php
           php tests/dashboard-information-1.2.16-polish-contract.php
+          php tests/organizations-1.2.17-database-maintenance-contract.php
           php tests/state-actions-contract.php
           php tests/admin-ux-duplicates-contract.php
           php tests/no-delete-toolbar-contract.php
@@ -63,6 +64,8 @@ jobs:
           unzip -p "dist/pkg_organizations_${V}.zip" com_xdecaroorganizations.zip > /tmp/component.zip
           unzip -p /tmp/component.zip admin/src/Service/PeopleIntegrationService.php | grep -Fq 'searchPeopleForIdentity'
           unzip -p /tmp/component.zip admin/src/Service/PersonAppointmentsService.php | grep -Fq 'getAppointmentsByPersonUuid'
+          unzip -p /tmp/component.zip admin/src/Service/BackupService.php | grep -Fq 'xdecaro.organizations.backup'
+          unzip -p /tmp/component.zip admin/src/Service/DatabaseMaintenanceService.php | grep -Fq 'FUNCTIONAL_TABLES'
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
@@ -77,7 +80,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: rifinitura Dashboard e Informazioni. La card Qualità dati usa l'altezza naturale, la diagnostica mostra nomi leggibili delle tabelle con riferimento tecnico e lo stato aggiornamenti distingue correttamente una versione corrente dall'assenza di una riga in #__updates. Nessuna modifica allo schema dati. Joomla 6 only."
+            --notes "Organizations ${V}: nuova Gestione database con backup ZIP verificati, restore completo con backup di sicurezza, controllo/riparazione dello schema canonico, SVUOTA/RICREA protetti da ACL e conferma esplicita, registro manutenzione e storage privato. Le operazioni distruttive sono limitate alle cinque tabelle funzionali Organizations. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
