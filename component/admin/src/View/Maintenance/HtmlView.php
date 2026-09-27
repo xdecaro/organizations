@@ -1,7 +1,6 @@
 <?php
 
 namespace xdecaro\Component\Organizations\Administrator\View\Maintenance;
-
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
@@ -16,6 +15,7 @@ final class HtmlView extends BaseHtmlView
     public array $backups = [];
     public array $activity = [];
     public array $storage = [];
+    public bool $backupReady = false;
     public bool $canBackup = false;
     public bool $canRestore = false;
     public bool $canRepair = false;
@@ -51,7 +51,17 @@ final class HtmlView extends BaseHtmlView
         catch (\Throwable) { $this->backups = []; }
         try { $this->activity = $component->getMaintenanceLogService()->recent(30); }
         catch (\Throwable) { $this->activity = []; }
+
         $this->storage = $component->getBackupStorageService()->isHealthy();
+        $schemaTables = (array) ($this->schema['tables'] ?? []);
+        $maintenanceTablesReady = !empty($schemaTables['#__xdecaroorganizations_backups'])
+            && !empty($schemaTables['#__xdecaroorganizations_maintenance_log']);
+        $this->backupReady = !empty($this->storage['ok']) && $maintenanceTablesReady;
+
+        if (!empty($this->storage['ok']) && !$maintenanceTablesReady) {
+            $this->storage['ok'] = false;
+            $this->storage['message'] = Text::_('COM_XDECAROORGANIZATIONS_MAINT_BACKUP_DATABASE_NOT_READY');
+        }
 
         $wa = $this->document->getWebAssetManager();
         $component->getCoreIntegrationService()->enableUi($wa);
