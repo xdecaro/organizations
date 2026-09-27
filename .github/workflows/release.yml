@@ -30,6 +30,7 @@ jobs:
           php tests/organizations-1.2.17-database-maintenance-contract.php
           php tests/organizations-1.2.18-maintenance-polish-contract.php
           php tests/organizations-1.2.19-maintenance-activity-ui-contract.php
+          php tests/organizations-1.2.20-maintenance-mobile-details-contract.php
           php tests/state-actions-contract.php
           php tests/admin-ux-duplicates-contract.php
           php tests/no-delete-toolbar-contract.php
@@ -70,6 +71,8 @@ jobs:
           unzip -p /tmp/component.zip admin/src/Service/DatabaseMaintenanceService.php | grep -Fq 'FUNCTIONAL_TABLES'
           unzip -p /tmp/component.zip admin/src/Service/MaintenanceLogService.php | grep -Fq 'actor_name'
           unzip -p /tmp/component.zip admin/tmpl/maintenance/default.php | grep -Fq 'xdecaro-activity-table'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq '.xdecaro-activity-details-cell::before'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'display: inline-grid'
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
@@ -84,7 +87,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: registro Attività manutenzione ridisegnato con azioni leggibili, riepiloghi umani, utente Joomla, badge di stato, dettagli tecnici espandibili, filtri e paginazione. Su smartphone il registro passa a card compatte. Nessuna modifica allo schema database rispetto alla 1.2.18. Joomla 6 only."
+            --notes "Organizations ${V}: corregge il registro Attività manutenzione su smartphone. Il pulsante Dettagli resta compatto e allineato a destra, l'etichetta duplicata viene rimossa e il pannello tecnico si espande nella card solo quando aperto. Desktop invariato; nessuna modifica ai dati o allo schema funzionale. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
