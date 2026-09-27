@@ -16,7 +16,12 @@ final class RestoreService
     private const PAYLOAD_TABLES = DatabaseSchemaDefinition::FUNCTIONAL_TABLES;
     private const ZIP_ENTRIES = ['manifest.json', 'data.json', 'SHA256SUMS.txt'];
 
-    public function __construct(private DatabaseInterface $db, private BackupService $backup, private MaintenanceLogService $log) {}
+    public function __construct(
+        private DatabaseInterface $db,
+        private DatabaseSchemaDefinition $definition,
+        private BackupService $backup,
+        private MaintenanceLogService $log
+    ) {}
 
     public function preview(string $zipPath, int $actorUserId): array
     {
@@ -62,9 +67,7 @@ final class RestoreService
         foreach (self::PAYLOAD_TABLES as $table) {
             if (!is_array($tables[$table])) throw new RuntimeException('Organizations backup table rows are invalid.');
             $counts[$table] = count($tables[$table]);
-            foreach ($tables[$table] as $row) {
-                if (!is_array($row) || !$this->validUuid((string) ($row['uuid'] ?? ''))) throw new RuntimeException('Organizations backup contains an invalid entity UUID.');
-            }
+            $this->validateTableRows($table, $tables[$table]);
         }
         $this->validateReferences($tables);
         $this->logSafely('restore_preview', (string) ($manifest['backup_uuid'] ?? ''), $actorUserId, ['component_version' => (string) ($manifest['component_version'] ?? ''), 'counts' => $counts, 'compatible' => true]);
@@ -120,6 +123,26 @@ final class RestoreService
         }
         $this->logSafely('restore_full', (string) ($preview['manifest']['backup_uuid'] ?? ''), $actorUserId, ['safety_backup_uuid' => (string) ($safety['uuid'] ?? ''), 'safety_backup_filename' => (string) ($safety['filename'] ?? ''), 'restored_counts' => $counts]);
         return ['safety_backup_uuid' => (string) ($safety['uuid'] ?? ''), 'safety_backup_filename' => (string) ($safety['filename'] ?? ''), 'restored_counts' => $counts, 'integrity_ok' => true];
+    }
+
+    private function validateTableRows(string $table, array $rows): void
+    {
+        $spec = $this->definition->table($table);
+        $allowedColumns = array_fill_keys(array_keys((array) ($spec['columns'] ?? [])), true);
+        $seenIds = [];
+        $seenUuids = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) throw new RuntimeException('Organizations backup contains an invalid table row.');
+            foreach (array_keys($row) as $column) {
+                if (!isset($allowedColumns[(string) $column])) throw new RuntimeException('Organizations backup contains an unexpected column in ' . $table . ': ' . $column);
+            }
+            $id = (int) ($row['id'] ?? 0);
+            if ($id <= 0 || isset($seenIds[$id])) throw new RuntimeException('Organizations backup contains invalid or duplicate IDs.');
+            $seenIds[$id] = true;
+            $uuid = strtolower(trim((string) ($row['uuid'] ?? '')));
+            if (!$this->validUuid($uuid) || isset($seenUuids[$uuid])) throw new RuntimeException('Organizations backup contains invalid or duplicate entity UUIDs.');
+            $seenUuids[$uuid] = true;
+        }
     }
 
     private function validateReferences(array $tables): void
