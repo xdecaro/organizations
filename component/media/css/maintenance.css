@@ -1,3 +1,17 @@
+.xdecaro-maintenance-page {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.xdecaro-maintenance-page > *,
+.xdecaro-maintenance-page .card,
+.xdecaro-maintenance-page .card-body,
+.xdecaro-maintenance-page form {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .xdecaro-maintenance-page .xdecaro-maintenance-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -17,6 +31,25 @@
   border-color: var(--border-color, rgba(127, 127, 127, .25));
 }
 
+.xdecaro-maintenance-page .form-control,
+.xdecaro-maintenance-page input[type="file"] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.xdecaro-maintenance-page .table-responsive {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.xdecaro-maintenance-page .xdecaro-maintenance-table {
+  width: max-content;
+  min-width: 100%;
+}
+
 .xdecaro-maintenance-page .xdecaro-maintenance-table th,
 .xdecaro-maintenance-page .xdecaro-maintenance-table td {
   vertical-align: middle;
@@ -24,7 +57,7 @@
 }
 
 .xdecaro-maintenance-page .xdecaro-maintenance-table td:last-child {
-  min-width: 20rem;
+  min-width: 12rem;
 }
 
 .xdecaro-maintenance-page pre {
@@ -59,5 +92,9 @@
     align-items: flex-start;
     flex-direction: column;
     gap: .5rem;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-maintenance-table td:last-child {
+    min-width: 10rem;
   }
 }

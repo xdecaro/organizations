@@ -1,7 +1,6 @@
 <?php
 
 namespace xdecaro\Component\Organizations\Administrator\Service;
-
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Extension\ExtensionHelper;
@@ -16,7 +15,7 @@ final class BackupService
 {
     private const FORMAT = 'xdecaro.organizations.backup';
     private const FORMAT_VERSION = 1;
-    private const SCHEMA_VERSION = '1.2.17';
+    private const SCHEMA_VERSION = '1.2.18';
     private const PAYLOAD_TABLES = DatabaseSchemaDefinition::FUNCTIONAL_TABLES;
     private const ZIP_ENTRIES = ['manifest.json', 'data.json', 'SHA256SUMS.txt'];
 
@@ -199,9 +198,10 @@ final class BackupService
         $slug = match ($reason) { 'manual' => 'manuale', 'pre-restore' => 'pre-restore', 'before_empty_database' => 'pre-svuota', 'before_recreate_database' => 'pre-ricrea', default => trim((string) preg_replace('/[^a-z0-9]+/i', '-', strtolower($reason)), '-') };
         if ($slug === '') $slug = 'automatico';
         try {
-            $date = new \DateTimeImmutable($createdUtc); $app = Factory::getApplication(); $identity = $app->getIdentity();
-            $tz = trim((string) $identity->getParam('timezone', '')) ?: (string) $app->get('offset', 'UTC');
-            $stamp = $date->setTimezone(new \DateTimeZone($tz ?: 'UTC'))->format('Y-m-d_H-i-s');
+            $date = new \DateTimeImmutable($createdUtc);
+            $app = Factory::getApplication();
+            $tz = trim((string) $app->get('offset', 'UTC'));
+            $stamp = $date->setTimezone(new \DateTimeZone($tz !== '' ? $tz : 'UTC'))->format('Y-m-d_H-i-s');
         } catch (\Throwable) { $stamp = gmdate('Y-m-d_H-i-s'); }
         return sprintf('organizations-backup-%s-%s-v%s-%d-organizzazioni.zip', $slug, $stamp, preg_replace('/[^0-9A-Za-z._-]+/', '-', $version), max(0, $organizationCount));
     }

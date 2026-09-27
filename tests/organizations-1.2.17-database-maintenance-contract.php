@@ -44,13 +44,13 @@ $installSql = (string) file_get_contents($root . '/component/admin/sql/install.m
 $updateSql = (string) file_get_contents($root . '/' . $requiredFiles['update_sql']);
 $version = trim((string) file_get_contents($root . '/VERSION'));
 
-if ($version !== '1.2.17') {
-    fwrite(STDERR, "Organizations maintenance release must be 1.2.17.\n");
+if (version_compare($version, '1.2.17', '<')) {
+    fwrite(STDERR, "Organizations database maintenance requires version 1.2.17 or later.\n");
     exit(1);
 }
 foreach ([$manifest, $packageManifest, $assets] as $source) {
-    if (!str_contains($source, '1.2.17')) {
-        fwrite(STDERR, "Organizations 1.2.17 version alignment is incomplete.\n");
+    if (!str_contains($source, $version)) {
+        fwrite(STDERR, "Organizations version alignment is incomplete for {$version}.\n");
         exit(1);
     }
 }
@@ -155,4 +155,4 @@ foreach (['com_xdecaroorganizations.maintenance', 'com_xdecaroorganizations.data
     }
 }
 
-echo "Organizations 1.2.17 database maintenance contract OK\n";
+echo "Organizations database maintenance contract OK ({$version})\n";
