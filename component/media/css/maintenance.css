@@ -297,11 +297,29 @@
   }
 
   .xdecaro-maintenance-page .xdecaro-activity-details-cell {
-    text-align: left !important;
+    display: grid !important;
+    justify-items: end;
+    justify-self: end;
+    text-align: right !important;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details-cell::before {
+    display: none;
   }
 
   .xdecaro-maintenance-page .xdecaro-activity-details {
-    display: block;
+    display: inline-grid;
+    justify-items: end;
+    justify-self: end;
+    max-width: 100%;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details[open] {
+    width: 100%;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details[open] > summary {
+    justify-self: end;
   }
 
   .xdecaro-maintenance-page .xdecaro-activity-details-panel {
