@@ -90,13 +90,15 @@ final class BackupService
 
     public function verify(string $uuid): array
     {
-        $row = $this->loadBackup($uuid);
+        $normalized = strtolower(trim($uuid));
+        $row = $this->loadBackup($normalized);
         if (!$row || ($row['status'] ?? '') !== 'ready') throw new RuntimeException('Organizations backup is not available.', 404);
-        $path = (string) ($row['storage_path'] ?? '');
-        if ($path === '' || !is_file($path) || !is_readable($path)) throw new RuntimeException('Organizations backup file is missing.', 404);
+        $path = $this->storage->pathFor($normalized);
+        if ((string) ($row['storage_path'] ?? '') !== $path) throw new RuntimeException('Organizations backup storage metadata is inconsistent.', 409);
+        if (!is_file($path) || !is_readable($path)) throw new RuntimeException('Organizations backup file is missing.', 404);
         $sha = hash_file('sha256', $path);
         if ($sha === false || !hash_equals((string) $row['sha256'], $sha)) throw new RuntimeException('Organizations backup file integrity check failed.', 409);
-        $archive = $this->verifyArchiveContents($path, strtolower(trim($uuid)));
+        $archive = $this->verifyArchiveContents($path, $normalized);
         $row['path'] = $path;
         $row['payload_sha256'] = (string) ($archive['payload_sha256'] ?? '');
         $row['manifest'] = (array) ($archive['manifest'] ?? []);
@@ -113,10 +115,12 @@ final class BackupService
 
     public function delete(string $uuid, int $actorUserId): void
     {
-        $row = $this->loadBackup($uuid); if (!$row) throw new RuntimeException('Organizations backup not found.', 404);
-        $path = (string) ($row['storage_path'] ?? '');
-        if ($path !== '' && is_file($path) && !@unlink($path)) throw new RuntimeException('Organizations backup file cannot be deleted.');
         $normalized = strtolower(trim($uuid));
+        $row = $this->loadBackup($normalized);
+        if (!$row) throw new RuntimeException('Organizations backup not found.', 404);
+        $path = $this->storage->pathFor($normalized);
+        if ((string) ($row['storage_path'] ?? '') !== $path) throw new RuntimeException('Organizations backup storage metadata is inconsistent.', 409);
+        if (is_file($path) && !@unlink($path)) throw new RuntimeException('Organizations backup file cannot be deleted.');
         $query = $this->db->getQuery(true)->delete($this->db->quoteName('#__xdecaroorganizations_backups'))->where($this->db->quoteName('uuid') . ' = :uuid')->bind(':uuid', $normalized);
         $this->db->setQuery($query)->execute();
         $this->log->log('backup_delete', $normalized, $actorUserId, ['filename' => (string) ($row['filename'] ?? '')]);
