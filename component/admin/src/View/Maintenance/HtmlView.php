@@ -14,6 +14,11 @@ final class HtmlView extends BaseHtmlView
     public array $schema = [];
     public array $backups = [];
     public array $activity = [];
+    public array $activityFilters = ['activity_action' => '', 'activity_user' => 0];
+    public array $activityFilterOptions = ['actions' => [], 'users' => []];
+    public int $activityTotal = 0;
+    public int $activityLimit = 20;
+    public int $activityPage = 1;
     public array $storage = [];
     public bool $backupReady = false;
     public bool $canBackup = false;
@@ -49,8 +54,30 @@ final class HtmlView extends BaseHtmlView
         catch (\Throwable $e) { $this->schema = ['ok' => false, 'status' => Text::_('JERROR_ERROR'), 'error' => $e->getMessage()]; }
         try { $this->backups = $component->getBackupService()->list(); }
         catch (\Throwable) { $this->backups = []; }
-        try { $this->activity = $component->getMaintenanceLogService()->recent(30); }
-        catch (\Throwable) { $this->activity = []; }
+
+        $allowedLimits = [10, 20, 50];
+        $requestedLimit = $app->input->getInt('activity_limit', 20);
+        $this->activityLimit = in_array($requestedLimit, $allowedLimits, true) ? $requestedLimit : 20;
+        $this->activityFilters = [
+            'activity_action' => substr(trim($app->input->getCmd('activity_action', '')), 0, 64),
+            'activity_user' => max(0, $app->input->getInt('activity_user', 0)),
+        ];
+        $this->activityPage = max(1, $app->input->getInt('activity_page', 1));
+
+        try {
+            $activityService = $component->getMaintenanceLogService();
+            $this->activityTotal = $activityService->countFiltered($this->activityFilters);
+            $totalPages = max(1, (int) ceil($this->activityTotal / $this->activityLimit));
+            $this->activityPage = min($this->activityPage, $totalPages);
+            $offset = ($this->activityPage - 1) * $this->activityLimit;
+            $this->activity = $activityService->recent($this->activityLimit, $offset, $this->activityFilters);
+            $this->activityFilterOptions = $activityService->filterOptions();
+        } catch (\Throwable) {
+            $this->activity = [];
+            $this->activityTotal = 0;
+            $this->activityPage = 1;
+            $this->activityFilterOptions = ['actions' => [], 'users' => []];
+        }
 
         $this->storage = $component->getBackupStorageService()->isHealthy();
         $schemaTables = (array) ($this->schema['tables'] ?? []);
