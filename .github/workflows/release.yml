@@ -31,6 +31,7 @@ jobs:
           php tests/organizations-1.2.18-maintenance-polish-contract.php
           php tests/organizations-1.2.19-maintenance-activity-ui-contract.php
           php tests/organizations-1.2.20-maintenance-mobile-details-contract.php
+          php tests/organizations-1.2.21-maintenance-mobile-details-card-contract.php
           php tests/state-actions-contract.php
           php tests/admin-ux-duplicates-contract.php
           php tests/no-delete-toolbar-contract.php
@@ -71,8 +72,9 @@ jobs:
           unzip -p /tmp/component.zip admin/src/Service/DatabaseMaintenanceService.php | grep -Fq 'FUNCTIONAL_TABLES'
           unzip -p /tmp/component.zip admin/src/Service/MaintenanceLogService.php | grep -Fq 'actor_name'
           unzip -p /tmp/component.zip admin/tmpl/maintenance/default.php | grep -Fq 'xdecaro-activity-table'
-          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq '.xdecaro-activity-details-cell::before'
-          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'display: inline-grid'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'td.xdecaro-activity-details-cell::before'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq 'display: block !important'
+          unzip -p /tmp/component.zip media/css/maintenance.css | grep -Fq '.xdecaro-activity-details > summary'
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
@@ -87,7 +89,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: corregge il registro Attività manutenzione su smartphone. Il pulsante Dettagli resta compatto e allineato a destra, l'etichetta duplicata viene rimossa e il pannello tecnico si espande nella card solo quando aperto. Desktop invariato; nessuna modifica ai dati o allo schema funzionale. Joomla 6 only."
+            --notes "Organizations ${V}: migliora il registro Attività manutenzione su smartphone. L'etichetta Dettagli duplicata viene rimossa, l'azione Dettagli diventa una sezione ampia e facilmente toccabile in fondo alla card e il pannello tecnico resta nel flusso della card quando aperto. Desktop invariato; nessuna modifica ai dati o allo schema funzionale. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
