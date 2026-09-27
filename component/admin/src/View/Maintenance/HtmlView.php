@@ -60,7 +60,7 @@ final class HtmlView extends BaseHtmlView
 
         if (!empty($this->storage['ok']) && !$maintenanceTablesReady) {
             $this->storage['ok'] = false;
-            $this->storage['message'] = Text::_('COM_XDECAROORGANIZATIONS_MAINT_BACKUP_DATABASE_NOT_READY');
+            $this->storage['message'] = Text::_('COM_XDECAROORGANIZATIONS_MAINT_DIFFERENCES');
         }
 
         $wa = $this->document->getWebAssetManager();
