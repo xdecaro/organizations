@@ -1,0 +1,2 @@
+-- Organizations 1.2.22
+-- Desktop maintenance activity Details styling fix only. No database schema changes are required.
