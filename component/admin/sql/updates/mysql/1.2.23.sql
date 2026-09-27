@@ -1,0 +1,2 @@
+-- Organizations 1.2.23
+-- Desktop maintenance activity Details vertical alignment fix only. No database schema changes are required.
