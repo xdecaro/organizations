@@ -32,6 +32,7 @@
 }
 
 .xdecaro-maintenance-page .form-control,
+.xdecaro-maintenance-page .form-select,
 .xdecaro-maintenance-page input[type="file"] {
   min-width: 0;
   max-width: 100%;
@@ -76,10 +77,238 @@
   overflow-wrap: anywhere;
 }
 
+.xdecaro-maintenance-page .xdecaro-activity-filters {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1.25fr) minmax(10rem, 1.25fr) minmax(6rem, .55fr) auto;
+  gap: .75rem;
+  align-items: end;
+  padding: .85rem;
+  border: 1px solid var(--border-color, rgba(127, 127, 127, .22));
+  border-radius: .65rem;
+  background: var(--template-bg-light, rgba(127, 127, 127, .045));
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-filters .form-label {
+  margin-bottom: .35rem;
+  font-size: .875rem;
+  font-weight: 600;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-card {
+  overflow-x: auto;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-table {
+  width: 100%;
+  min-width: 64rem;
+  table-layout: fixed;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-table th,
+.xdecaro-maintenance-page .xdecaro-activity-table td {
+  vertical-align: middle;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-table th:nth-child(1),
+.xdecaro-maintenance-page .xdecaro-activity-date {
+  width: 9.5rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-table th:nth-child(2),
+.xdecaro-maintenance-page .xdecaro-activity-action {
+  width: 11rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-table th:nth-child(3),
+.xdecaro-maintenance-page .xdecaro-activity-user {
+  width: 11rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-table th:nth-child(5),
+.xdecaro-maintenance-page .xdecaro-activity-status {
+  width: 6.5rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-table th:nth-child(6),
+.xdecaro-maintenance-page .xdecaro-activity-details-cell {
+  width: 7.5rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-action,
+.xdecaro-maintenance-page .xdecaro-activity-user,
+.xdecaro-maintenance-page .xdecaro-activity-summary {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-summary {
+  line-height: 1.35;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-status {
+  white-space: nowrap;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-details {
+  position: relative;
+  display: inline-block;
+  text-align: left;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-details-panel {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  top: calc(100% + .35rem);
+  width: min(32rem, 75vw);
+  padding: .6rem;
+  border: 1px solid var(--border-color, rgba(127, 127, 127, .25));
+  border-radius: .6rem;
+  background: var(--body-bg, #fff);
+  box-shadow: var(--box-shadow, 0 .35rem 1rem rgba(0, 0, 0, .14));
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-details-panel pre {
+  max-height: 18rem;
+}
+
+.xdecaro-maintenance-page .xdecaro-activity-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
 @media (max-width: 991.98px) {
   .xdecaro-maintenance-page .xdecaro-maintenance-grid,
   .xdecaro-maintenance-page .xdecaro-maintenance-actions {
     grid-template-columns: 1fr;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-filter-actions {
+    align-self: end;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .xdecaro-maintenance-page .xdecaro-activity-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-filter-actions .btn {
+    flex: 1 1 auto;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-card {
+    overflow: visible;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-table,
+  .xdecaro-maintenance-page .xdecaro-activity-table tbody,
+  .xdecaro-maintenance-page .xdecaro-activity-table tr,
+  .xdecaro-maintenance-page .xdecaro-activity-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-table {
+    min-width: 0;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .45rem .75rem;
+    margin-bottom: .75rem;
+    padding: .8rem;
+    border: 1px solid var(--border-color, rgba(127, 127, 127, .22));
+    border-radius: .65rem;
+    background: var(--body-bg, #fff);
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-table td {
+    padding: 0;
+    border: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: .12rem;
+    color: var(--secondary-color, #667085);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-action {
+    grid-column: 1;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-status {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-date,
+  .xdecaro-maintenance-page .xdecaro-activity-user,
+  .xdecaro-maintenance-page .xdecaro-activity-summary,
+  .xdecaro-maintenance-page .xdecaro-activity-details-cell {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details-cell {
+    text-align: left !important;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details {
+    display: block;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-details-panel {
+    position: static;
+    width: 100%;
+    margin-top: .45rem;
+    box-shadow: none;
   }
 }
 
@@ -96,5 +325,15 @@
 
   .xdecaro-maintenance-page .xdecaro-maintenance-table td:last-child {
     min-width: 10rem;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-pagination {
+    justify-content: space-between;
+  }
+
+  .xdecaro-maintenance-page .xdecaro-activity-pagination span {
+    flex: 1 0 100%;
+    order: -1;
+    text-align: center;
   }
 }
