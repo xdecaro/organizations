@@ -28,6 +28,8 @@ jobs:
           php tests/dashboard-information-1.2.15-contract.php
           php tests/dashboard-information-1.2.16-polish-contract.php
           php tests/organizations-1.2.17-database-maintenance-contract.php
+          php tests/organizations-1.2.18-maintenance-polish-contract.php
+          php tests/organizations-1.2.19-maintenance-activity-ui-contract.php
           php tests/state-actions-contract.php
           php tests/admin-ux-duplicates-contract.php
           php tests/no-delete-toolbar-contract.php
@@ -66,6 +68,8 @@ jobs:
           unzip -p /tmp/component.zip admin/src/Service/PersonAppointmentsService.php | grep -Fq 'getAppointmentsByPersonUuid'
           unzip -p /tmp/component.zip admin/src/Service/BackupService.php | grep -Fq 'xdecaro.organizations.backup'
           unzip -p /tmp/component.zip admin/src/Service/DatabaseMaintenanceService.php | grep -Fq 'FUNCTIONAL_TABLES'
+          unzip -p /tmp/component.zip admin/src/Service/MaintenanceLogService.php | grep -Fq 'actor_name'
+          unzip -p /tmp/component.zip admin/tmpl/maintenance/default.php | grep -Fq 'xdecaro-activity-table'
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
@@ -80,7 +84,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: nuova Gestione database con backup ZIP verificati, restore completo con backup di sicurezza, controllo/riparazione dello schema canonico, SVUOTA/RICREA protetti da ACL e conferma esplicita, registro manutenzione e storage privato. Le operazioni distruttive sono limitate alle cinque tabelle funzionali Organizations. Joomla 6 only."
+            --notes "Organizations ${V}: registro Attività manutenzione ridisegnato con azioni leggibili, riepiloghi umani, utente Joomla, badge di stato, dettagli tecnici espandibili, filtri e paginazione. Su smartphone il registro passa a card compatte. Nessuna modifica allo schema database rispetto alla 1.2.18. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
