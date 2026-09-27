@@ -196,6 +196,15 @@
   gap: .75rem;
 }
 
+@media (min-width: 768px) {
+  .xdecaro-maintenance-page .xdecaro-activity-details {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
 @media (max-width: 991.98px) {
   .xdecaro-maintenance-page .xdecaro-maintenance-grid,
   .xdecaro-maintenance-page .xdecaro-maintenance-actions {
