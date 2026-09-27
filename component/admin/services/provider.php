@@ -36,7 +36,7 @@ return new class implements ServiceProviderInterface
         $container->share(BackupStorageService::class, static fn(): BackupStorageService => new BackupStorageService());
         $container->share(MaintenanceLogService::class, static fn(Container $container): MaintenanceLogService => new MaintenanceLogService($container->get(DatabaseInterface::class)));
         $container->share(BackupService::class, static fn(Container $container): BackupService => new BackupService($container->get(DatabaseInterface::class), $container->get(BackupStorageService::class), $container->get(MaintenanceLogService::class)));
-        $container->share(RestoreService::class, static fn(Container $container): RestoreService => new RestoreService($container->get(DatabaseInterface::class), $container->get(BackupService::class), $container->get(MaintenanceLogService::class)));
+        $container->share(RestoreService::class, static fn(Container $container): RestoreService => new RestoreService($container->get(DatabaseInterface::class), $container->get(DatabaseSchemaDefinition::class), $container->get(BackupService::class), $container->get(MaintenanceLogService::class)));
         $container->share(DatabaseMaintenanceService::class, static fn(Container $container): DatabaseMaintenanceService => new DatabaseMaintenanceService($container->get(DatabaseInterface::class), $container->get(DatabaseSchemaDefinition::class), $container->get(DatabaseSchemaInspector::class), $container->get(BackupService::class), $container->get(MaintenanceLogService::class)));
 
         $container->set(ComponentInterface::class, static function (Container $container): ComponentInterface {
