@@ -15,7 +15,7 @@ $limit = (int) $this->state->get('list.limit', 20);
 $diag = $this->diagnostics;
 $warningIds = [];
 foreach (['self_parent','cycles','missing_parent','unreachable'] as $key) { foreach ($diag[$key] ?? [] as $id) { $warningIds[(int) $id][$key] = true; } }
-$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&tab=hierarchy');
+$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&activeTab=hierarchy');
 ?>
 <div class="xdecaro-global-list-page">
   <p class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_HIERARCHY_DESC'); ?></p>
