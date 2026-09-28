@@ -53,11 +53,6 @@
         timer = window.setTimeout(() => submitControlForm(control), 400);
       });
 
-      control.addEventListener('search', () => {
-        window.clearTimeout(timer);
-        submitControlForm(control);
-      });
-
       control.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           window.clearTimeout(timer);
