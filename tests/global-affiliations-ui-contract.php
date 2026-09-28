@@ -18,7 +18,7 @@ $templateSource = (string) file_get_contents($template);
 foreach ([
     "core.manage",
     "com_xdecaroorganizations.global-lists",
-    "getOrganizationOptions",
+    "OrganizationOptions",
 ] as $needle) {
     if (!str_contains($viewSource, $needle)) {
         fwrite(STDERR, "Affiliations HtmlView missing: $needle\n");
