@@ -90,6 +90,18 @@ foreach ($templates as $view => $selectIds) {
         fwrite(STDERR, "{$view} must preserve the explicit Filter button as fallback\n");
         exit(1);
     }
+
+    $viewPath = $root . '/component/admin/src/View/' . ucfirst($view) . '/HtmlView.php';
+    if (!is_file($viewPath)) {
+        fwrite(STDERR, "Missing HtmlView for {$view}\n");
+        exit(1);
+    }
+
+    $viewSource = (string) file_get_contents($viewPath);
+    if (!str_contains($viewSource, "useScript('com_xdecaroorganizations.global-lists-behavior')")) {
+        fwrite(STDERR, "{$view} must load the shared global filter behavior\n");
+        exit(1);
+    }
 }
 
 $scriptPath = $root . '/component/media/js/global-lists.js';
