@@ -95,6 +95,7 @@ final class HtmlView extends BaseHtmlView
         $wa = $this->document->getWebAssetManager();
         $wa->useStyle('com_xdecaroorganizations.admin');
         $wa->useScript('com_xdecaroorganizations.organization-edit');
+        $wa->useScript('bootstrap.collapse');
         $wa->useScript('bootstrap.modal');
 
         ToolbarHelper::title(
