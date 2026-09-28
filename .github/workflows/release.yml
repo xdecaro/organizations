@@ -67,6 +67,7 @@ jobs:
           php tests/global-bodies-model-contract.php
           php tests/global-bodies-ui-contract.php
           php tests/organizations-1.3.0-global-admin-views-contract.php
+          php tests/organizations-1.3.1-global-admin-polish-contract.php
       - name: Build deterministic release
         shell: bash
         run: |
@@ -113,7 +114,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: aggiunge cinque viste amministrative globali di sola lettura — Affiliazioni, Incarichi, Deleghe, Gerarchia e Organi — con ricerca, filtri, paginazione, tabelle desktop, card mobile, diagnostica gerarchica e navigazione verso le schede organizzazione esistenti. Nessuna nuova tabella dati e nessuna dipendenza obbligatoria da People. Joomla 6 only."
+            --notes "Organizations ${V}: rifinitura delle cinque viste amministrative globali. Corregge le chiavi lingua visibili, traduce tipi/livelli/stati, uniforma i badge di stato e mostra le date nel formato dd/mm/yyyy, senza modifiche al database o alla logica delle relazioni. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
