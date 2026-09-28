@@ -1,0 +1,2 @@
+-- Organizations 1.3.1
+-- UI/localization-only maintenance release. No database changes required.
