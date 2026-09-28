@@ -1,0 +1,98 @@
+name: Organizations 1.3.0 Global Admin Views
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1','8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '${{ matrix.php }}'
+          coverage: none
+      - name: PHP syntax
+        run: find component package tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Run 1.3.0 global admin view contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          tests=(
+            tests/global-admin-menu-contract.php
+            tests/global-admin-readonly-responsive-contract.php
+            tests/global-affiliations-model-contract.php
+            tests/global-affiliations-ui-contract.php
+            tests/global-appointments-model-contract.php
+            tests/global-appointments-ui-contract.php
+            tests/global-delegations-model-contract.php
+            tests/global-delegations-ui-contract.php
+            tests/global-hierarchy-model-contract.php
+            tests/global-hierarchy-ui-contract.php
+            tests/global-bodies-model-contract.php
+            tests/global-bodies-ui-contract.php
+            tests/organizations-1.3.0-global-admin-views-contract.php
+            tests/affiliations-contract.php
+            tests/affiliation-direction-contract.php
+            tests/appointments-backend-contract.php
+            tests/appointments-domain.php
+            tests/appointments-people-contract.php
+            tests/delegations-contract.php
+            tests/organization-delegation-domain.php
+            tests/bodies-contract.php
+            tests/organization-body-domain.php
+            tests/hierarchy-list-contract.php
+            tests/organization-hierarchy-context.php
+            tests/hierarchy-context-contract.php
+          )
+          for test_file in "${tests[@]}"; do
+            echo "==> $test_file"
+            php "$test_file"
+          done
+      - name: Deterministic package build
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x build/build.sh
+          build/build.sh
+          cp dist/SHA256SUMS.txt /tmp/sums
+          build/build.sh
+          diff -u /tmp/sums dist/SHA256SUMS.txt
+          V="$(cat VERSION)"
+          unzip -t "dist/com_xdecaroorganizations_${V}.zip" >/dev/null
+          unzip -t "dist/pkg_organizations_${V}.zip" >/dev/null
+          unzip -p "dist/pkg_organizations_${V}.zip" com_xdecaroorganizations.zip > /tmp/component.zip
+          for path in \
+            admin/src/Model/AffiliationsModel.php \
+            admin/src/Model/AppointmentsModel.php \
+            admin/src/Model/DelegationsModel.php \
+            admin/src/Model/HierarchyModel.php \
+            admin/src/Model/BodiesModel.php \
+            admin/tmpl/affiliations/default.php \
+            admin/tmpl/appointments/default.php \
+            admin/tmpl/delegations/default.php \
+            admin/tmpl/hierarchy/default.php \
+            admin/tmpl/bodies/default.php \
+            media/css/global-lists.css; do
+              unzip -Z1 /tmp/component.zip | grep -Fxq "$path"
+          done
+      - name: Upload verified 1.3.0 packages
+        if: matrix.php == '8.3'
+        uses: actions/upload-artifact@v4
+        with:
+          name: organizations-1.3.0-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            dist/pkg_organizations_*.zip
+            dist/com_xdecaroorganizations_*.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error

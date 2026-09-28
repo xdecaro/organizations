@@ -228,4 +228,112 @@ final class OrganizationHierarchy
 
         return $ordered;
     }
+
+    /**
+     * Reports safely derivable hierarchy anomalies without modifying data.
+     * Traversal is bounded so corrupt legacy data cannot recurse forever.
+     *
+     * @param array<int, object> $items
+     * @return array{self_parent: array<int, int>, cycles: array<int, int>, missing_parent: array<int, int>, unreachable: array<int, int>}
+     */
+    public static function analyze(array $items): array
+    {
+        $byId = [];
+        foreach ($items as $item) {
+            $id = (int) ($item->id ?? 0);
+            if ($id > 0) {
+                $byId[$id] = $item;
+            }
+        }
+
+        $selfParent = [];
+        $missingParent = [];
+        $cycleIds = [];
+
+        foreach ($byId as $id => $item) {
+            $parentId = (int) ($item->parent_id ?? 0);
+            if ($parentId === $id) {
+                $selfParent[$id] = true;
+            }
+            if ($parentId > 0 && !isset($byId[$parentId])) {
+                $missingParent[$id] = true;
+            }
+
+            $path = [];
+            $positions = [];
+            $cursor = $id;
+
+            for ($depth = 0; $depth < 100 && $cursor > 0; $depth++) {
+                if (!isset($byId[$cursor])) {
+                    break;
+                }
+
+                if (isset($positions[$cursor])) {
+                    foreach (array_slice($path, $positions[$cursor]) as $cycleId) {
+                        $cycleIds[$cycleId] = true;
+                    }
+                    break;
+                }
+
+                $positions[$cursor] = count($path);
+                $path[] = $cursor;
+                $cursor = (int) ($byId[$cursor]->parent_id ?? 0);
+            }
+        }
+
+        $childrenByParent = [];
+        foreach ($byId as $id => $item) {
+            $childrenByParent[(int) ($item->parent_id ?? 0)][] = $id;
+        }
+
+        $reachable = [];
+        $frontier = $childrenByParent[0] ?? [];
+        for ($depth = 0; $depth < 100 && $frontier !== []; $depth++) {
+            $next = [];
+            foreach ($frontier as $id) {
+                if (isset($reachable[$id])) {
+                    continue;
+                }
+
+                $reachable[$id] = true;
+                foreach ($childrenByParent[$id] ?? [] as $childId) {
+                    $next[] = $childId;
+                }
+            }
+            $frontier = $next;
+        }
+
+        $unreachable = [];
+        foreach (array_keys($byId) as $id) {
+            if (!isset($reachable[$id])) {
+                $unreachable[] = $id;
+            }
+        }
+
+        $selfParent = array_keys($selfParent);
+        $missingParent = array_keys($missingParent);
+        $cycleIds = array_keys($cycleIds);
+        sort($selfParent);
+        sort($missingParent);
+        sort($cycleIds);
+        sort($unreachable);
+
+        return [
+            'self_parent' => $selfParent,
+            'cycles' => $cycleIds,
+            'missing_parent' => $missingParent,
+            'unreachable' => $unreachable,
+        ];
+    }
+
+    /**
+     * Alias for the global hierarchy view, preserving the established tree ordering.
+     *
+     * @param array<int, object> $items
+     * @return array<int, object>
+     */
+    public static function flattenWithDepth(array $items): array
+    {
+        return self::order($items);
+    }
 }
