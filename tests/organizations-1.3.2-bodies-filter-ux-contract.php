@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__);
 $version = trim((string) file_get_contents($root . '/VERSION'));
-if ($version !== '1.3.2') { fwrite(STDERR, "VERSION must be 1.3.2\n"); exit(1); }
+if ($version === '' || version_compare($version, '1.3.2', '<')) { fwrite(STDERR, "VERSION must be 1.3.2 or later\n"); exit(1); }
 foreach ([$root . '/component/xdecaroorganizations.xml', $root . '/package/pkg_organizations.xml'] as $manifest) {
     $xml = simplexml_load_file($manifest);
-    if (!$xml || (string) $xml->version !== '1.3.2') { fwrite(STDERR, basename($manifest) . " version mismatch\n"); exit(1); }
+    if (!$xml || (string) $xml->version !== $version) { fwrite(STDERR, basename($manifest) . " version mismatch\n"); exit(1); }
 }
 if (!is_file($root . '/component/admin/sql/updates/mysql/1.3.2.sql')) { fwrite(STDERR, "Missing 1.3.2 SQL marker\n"); exit(1); }
 
@@ -54,7 +54,7 @@ $view = (string) file_get_contents($viewPath);
 foreach ([
     "usePreset('choicesjs')",
     "useScript('webcomponent.field-fancy-select')",
-    "useScript('com_xdecaroorganizations.global-lists')",
+    "useScript('com_xdecaroorganizations.global-lists-behavior')",
 ] as $required) {
     if (!str_contains($view, $required)) {
         fwrite(STDERR, "Bodies view must load searchable/auto-submit assets: {$required}\n");
@@ -63,9 +63,9 @@ foreach ([
 }
 
 $assets = json_decode((string) file_get_contents($assetPath), true, 512, JSON_THROW_ON_ERROR);
-if (($assets['version'] ?? '') !== '1.3.2') { fwrite(STDERR, "Asset version mismatch\n"); exit(1); }
+if (($assets['version'] ?? '') !== $version) { fwrite(STDERR, "Asset version mismatch\n"); exit(1); }
 $assetSource = (string) file_get_contents($assetPath);
-if (!str_contains($assetSource, 'com_xdecaroorganizations.global-lists') || !str_contains($assetSource, 'global-lists.js')) {
+if (!str_contains($assetSource, 'com_xdecaroorganizations.global-lists-behavior') || !str_contains($assetSource, 'global-lists.js')) {
     fwrite(STDERR, "Global list script asset is not registered\n");
     exit(1);
 }
