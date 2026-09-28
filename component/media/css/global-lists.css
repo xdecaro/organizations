@@ -18,7 +18,7 @@
 
 .xdecaro-global-list-card {
   padding: 1rem;
-  border: 1px solid var(--border-color, var(--template-bg-dark-20, #d7dce1));
+  border: 1px solid var(--border-color, var(--template-bg-dark-20, currentColor));
   border-radius: .5rem;
   background: var(--body-bg, transparent);
 }
@@ -70,6 +70,14 @@
   text-align: center;
 }
 
+.xdecaro-hierarchy-depth {
+  padding-inline-start: calc(min(var(--xdecaro-depth, 0), 8) * 1.1rem);
+}
+
+.xdecaro-hierarchy-warning {
+  white-space: nowrap;
+}
+
 @media (max-width: 767.98px) {
   .xdecaro-global-list-page .xdecaro-global-list-table-wrap {
     display: none;
@@ -86,5 +94,10 @@
   .xdecaro-global-list-filterbar > * {
     flex: 1 1 100%;
     min-width: 0;
+  }
+
+  .xdecaro-global-list-card.xdecaro-hierarchy-depth {
+    margin-inline-start: calc(min(var(--xdecaro-depth, 0), 4) * .4rem);
+    padding-inline-start: 1rem;
   }
 }
