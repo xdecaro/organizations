@@ -36,7 +36,7 @@ final class HtmlView extends BaseHtmlView
             ->useStyle('com_xdecaroorganizations.global-lists')
             ->usePreset('choicesjs')
             ->useScript('webcomponent.field-fancy-select')
-            ->useScript('com_xdecaroorganizations.global-lists');
+            ->useScript('com_xdecaroorganizations.global-lists-behavior');
 
         ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_BODIES_TITLE'), 'sitemap');
         parent::display($tpl);
