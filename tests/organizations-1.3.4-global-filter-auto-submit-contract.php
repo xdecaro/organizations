@@ -42,24 +42,6 @@ $templates = [
     ],
 ];
 
-$selectTag = static function (string $template, string $id): string {
-    if (!preg_match('/<select\\b[^>]*\\bid="' . preg_quote($id, '/') . '"[^>]*>/i', $template, $match)) {
-        fwrite(STDERR, "Missing select #{$id}\n");
-        exit(1);
-    }
-
-    return $match[0];
-};
-
-$searchTag = static function (string $template): string {
-    if (!preg_match('/<input\\b[^>]*\\bid="filter_search"[^>]*>/i', $template, $match)) {
-        fwrite(STDERR, "Missing search input #filter_search\n");
-        exit(1);
-    }
-
-    return $match[0];
-};
-
 foreach ($templates as $view => $selectIds) {
     $path = $root . '/component/admin/tmpl/' . $view . '/default.php';
 
@@ -70,19 +52,20 @@ foreach ($templates as $view => $selectIds) {
 
     $template = (string) file_get_contents($path);
 
-    foreach ($selectIds as $id) {
-        $tag = $selectTag($template, $id);
+    if (!str_contains($template, 'xdecaro-global-list-filterbar')) {
+        fwrite(STDERR, "{$view} must keep the shared global filterbar container\n");
+        exit(1);
+    }
 
-        if (!str_contains($tag, 'data-xdecaro-auto-submit="true"')) {
-            fwrite(STDERR, "{$view} #{$id} must auto-submit on change\n");
+    foreach ($selectIds as $id) {
+        if (!preg_match('/<select\\b[^>]*\\bid="' . preg_quote($id, '/') . '"[^>]*>/i', $template)) {
+            fwrite(STDERR, "{$view} is missing filter select #{$id}\n");
             exit(1);
         }
     }
 
-    $search = $searchTag($template);
-
-    if (!str_contains($search, 'data-xdecaro-live-search="true"')) {
-        fwrite(STDERR, "{$view} #filter_search must use debounced live filtering\n");
+    if (!preg_match('/<input\\b[^>]*\\bid="filter_search"[^>]*>/i', $template)) {
+        fwrite(STDERR, "{$view} is missing search input #filter_search\n");
         exit(1);
     }
 
@@ -112,8 +95,8 @@ if (!is_file($scriptPath)) {
 
 $script = (string) file_get_contents($scriptPath);
 foreach ([
-    '[data-xdecaro-auto-submit="true"]',
-    '[data-xdecaro-live-search="true"]',
+    '.xdecaro-global-list-filterbar select',
+    '.xdecaro-global-list-filterbar input[type="search"]',
     'addEventListener(\'change\'',
     'addEventListener(\'input\'',
     'setTimeout',
