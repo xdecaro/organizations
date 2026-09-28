@@ -20,7 +20,7 @@ $limit = (int) $this->state->get('list.limit', 20);
 $types = ['sports_affiliation', 'institutional_affiliation', 'membership', 'recognition', 'other'];
 $statuses = ['active', 'pending', 'suspended', 'expired', 'inactive'];
 $period = static fn($item): string => trim((string) ($item->starts_on ?? '') . (((string) ($item->starts_on ?? '') !== '' || (string) ($item->ends_on ?? '') !== '') ? ' → ' : '') . (string) ($item->ends_on ?? ''));
-$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&tab=affiliations');
+$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&activeTab=affiliations');
 ?>
 <div class="xdecaro-global-list-page">
   <p class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_AFFILIATIONS_DESC'); ?></p>
