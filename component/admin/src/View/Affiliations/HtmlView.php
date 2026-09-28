@@ -14,7 +14,8 @@ final class HtmlView extends BaseHtmlView
     public array $items = [];
     public $pagination;
     public $state;
-    public array $organizationOptions = [];
+    public array $sourceOptions = [];
+    public array $targetOptions = [];
 
     public function display($tpl = null): void
     {
@@ -28,7 +29,8 @@ final class HtmlView extends BaseHtmlView
         $this->items = $this->get('Items') ?: [];
         $this->pagination = $this->get('Pagination');
         $this->state = $this->get('State');
-        $this->organizationOptions = $this->get('OrganizationOptions') ?: [];
+        $this->sourceOptions = $this->get('SourceOrganizationOptions') ?: [];
+        $this->targetOptions = $this->get('TargetOrganizationOptions') ?: [];
 
         if ($errors = $this->get('Errors')) {
             throw new \RuntimeException(implode("\n", $errors));
@@ -36,7 +38,10 @@ final class HtmlView extends BaseHtmlView
 
         $app->getDocument()->getWebAssetManager()
             ->useStyle('com_xdecaroorganizations.admin')
-            ->useStyle('com_xdecaroorganizations.global-lists');
+            ->useStyle('com_xdecaroorganizations.global-lists')
+            ->usePreset('choicesjs')
+            ->useScript('webcomponent.field-fancy-select')
+            ->useScript('com_xdecaroorganizations.global-lists-behavior');
 
         ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_AFFILIATIONS_TITLE'), 'link');
 
