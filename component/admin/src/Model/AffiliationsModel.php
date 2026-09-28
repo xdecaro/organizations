@@ -144,18 +144,44 @@ final class AffiliationsModel extends ListModel
         return $items;
     }
 
-    public function getOrganizationOptions(): array
+    public function getSourceOrganizationOptions(): array
     {
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select([
-                $db->quoteName('id'),
-                $db->quoteName('name'),
-                $db->quoteName('code'),
+                'DISTINCT ' . $db->quoteName('o.id'),
+                $db->quoteName('o.name'),
+                $db->quoteName('o.code'),
             ])
-            ->from($db->quoteName('#__xdecaroorganizations_organizations'))
-            ->where($db->quoteName('state') . ' >= 0')
-            ->order($db->quoteName('name') . ' ASC');
+            ->from($db->quoteName('#__xdecaroorganizations_organizations', 'o'))
+            ->innerJoin(
+                $db->quoteName('#__xdecaroorganizations_affiliations', 'a')
+                . ' ON ' . $db->quoteName('a.organization_id') . ' = ' . $db->quoteName('o.id')
+            )
+            ->where($db->quoteName('o.state') . ' >= 0')
+            ->where($db->quoteName('a.state') . ' >= 0')
+            ->order($db->quoteName('o.name') . ' ASC');
+
+        return $db->setQuery($query)->loadObjectList() ?: [];
+    }
+
+    public function getTargetOrganizationOptions(): array
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select([
+                'DISTINCT ' . $db->quoteName('o.id'),
+                $db->quoteName('o.name'),
+                $db->quoteName('o.code'),
+            ])
+            ->from($db->quoteName('#__xdecaroorganizations_organizations', 'o'))
+            ->innerJoin(
+                $db->quoteName('#__xdecaroorganizations_affiliations', 'a')
+                . ' ON ' . $db->quoteName('a.target_organization_id') . ' = ' . $db->quoteName('o.id')
+            )
+            ->where($db->quoteName('o.state') . ' >= 0')
+            ->where($db->quoteName('a.state') . ' >= 0')
+            ->order($db->quoteName('o.name') . ' ASC');
 
         return $db->setQuery($query)->loadObjectList() ?: [];
     }
