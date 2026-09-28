@@ -21,6 +21,11 @@
     <submenu>
       <menu view="dashboard">COM_XDECAROORGANIZATIONS_DASHBOARD</menu>
       <menu view="organizations">COM_XDECAROORGANIZATIONS_ORGANIZATIONS</menu>
+      <menu view="affiliations">COM_XDECAROORGANIZATIONS_AFFILIATIONS</menu>
+      <menu view="appointments">COM_XDECAROORGANIZATIONS_APPOINTMENTS</menu>
+      <menu view="delegations">COM_XDECAROORGANIZATIONS_DELEGATIONS</menu>
+      <menu view="hierarchy">COM_XDECAROORGANIZATIONS_HIERARCHY</menu>
+      <menu view="bodies">COM_XDECAROORGANIZATIONS_BODIES</menu>
       <menu view="duplicates">COM_XDECAROORGANIZATIONS_DUPLICATES</menu>
       <menu view="maintenance">COM_XDECAROORGANIZATIONS_MAINTENANCE</menu>
       <menu view="information">COM_XDECAROORGANIZATIONS_INFORMATION</menu>
