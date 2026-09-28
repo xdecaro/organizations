@@ -70,6 +70,7 @@ jobs:
           php tests/organizations-1.3.1-global-admin-polish-contract.php
           php tests/organizations-1.3.2-bodies-filter-ux-contract.php
           php tests/organizations-1.3.3-affiliations-filter-ux-contract.php
+          php tests/organizations-1.3.4-global-filter-auto-submit-contract.php
       - name: Build deterministic release
         shell: bash
         run: |
@@ -102,6 +103,8 @@ jobs:
           for path in admin/src/Model/AffiliationsModel.php admin/src/Model/AppointmentsModel.php admin/src/Model/DelegationsModel.php admin/src/Model/HierarchyModel.php admin/src/Model/BodiesModel.php admin/tmpl/affiliations/default.php admin/tmpl/appointments/default.php admin/tmpl/delegations/default.php admin/tmpl/hierarchy/default.php admin/tmpl/bodies/default.php media/css/global-lists.css media/js/global-lists.js; do
             unzip -Z1 /tmp/component.zip | grep -Fxq "$path"
           done
+          unzip -p /tmp/component.zip media/js/global-lists.js | grep -Fq '.xdecaro-global-list-filterbar select'
+          unzip -p /tmp/component.zip media/js/global-lists.js | grep -Fq '.xdecaro-global-list-filterbar input[type="search"]'
       - name: Refuse existing release
         env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
         run: if gh release view "v$(cat VERSION)" >/dev/null 2>&1; then exit 1; fi
@@ -116,7 +119,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: rifinisce i filtri della vista globale Affiliazioni. Organizzazione ed Ente/Federazione mostrano solo le organizzazioni realmente presenti sul rispettivo lato delle relazioni, sono ricercabili e applicano subito il filtro alla selezione. Corregge inoltre l'etichetta della vista Affiliazioni. Nessuna modifica al database. Joomla 6 only."
+            --notes "Organizations ${V}: rende automatici tutti i filtri delle viste globali Affiliazioni, Incarichi, Deleghe, Gerarchia e Organi. Ogni select applica subito il filtro, la ricerca testuale si aggiorna con debounce e il pulsante Filtra resta disponibile come fallback. Nessuna modifica al database. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |

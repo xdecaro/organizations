@@ -34,7 +34,10 @@ final class HtmlView extends BaseHtmlView
         $this->structureOptions = $this->get('StructureOptions') ?: [];
         $this->operationalOptions = $this->get('OperationalOptions') ?: [];
         if ($errors = $this->get('Errors')) { throw new \RuntimeException(implode("\n", $errors)); }
-        $app->getDocument()->getWebAssetManager()->useStyle('com_xdecaroorganizations.admin')->useStyle('com_xdecaroorganizations.global-lists');
+        $app->getDocument()->getWebAssetManager()
+            ->useStyle('com_xdecaroorganizations.admin')
+            ->useStyle('com_xdecaroorganizations.global-lists')
+            ->useScript('com_xdecaroorganizations.global-lists-behavior');
         ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_HIERARCHY_TITLE'), 'sitemap');
         parent::display($tpl);
     }

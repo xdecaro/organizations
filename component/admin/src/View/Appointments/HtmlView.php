@@ -39,7 +39,8 @@ final class HtmlView extends BaseHtmlView
 
         $app->getDocument()->getWebAssetManager()
             ->useStyle('com_xdecaroorganizations.admin')
-            ->useStyle('com_xdecaroorganizations.global-lists');
+            ->useStyle('com_xdecaroorganizations.global-lists')
+            ->useScript('com_xdecaroorganizations.global-lists-behavior');
         ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_APPOINTMENTS_TITLE'), 'users');
         parent::display($tpl);
     }
