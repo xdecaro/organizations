@@ -35,7 +35,7 @@ foreach ([
     'filter_relation_type',
     'filter_status',
     'filter_temporal',
-    'tab=affiliations',
+    'activeTab=affiliations',
     'xdecaro-global-list-open',
 ] as $needle) {
     if (!str_contains($templateSource, $needle)) {
