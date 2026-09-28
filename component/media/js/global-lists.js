@@ -23,7 +23,7 @@
   const bindAutoSubmit = (root = document) => {
     const scope = getScope(root);
 
-    scope.querySelectorAll('.xdecaro-global-list-filterbar select').forEach((control) => {
+    scope.querySelectorAll('.xdecaro-global-list-filterbar select, [data-xdecaro-auto-submit="true"]').forEach((control) => {
       if (control.dataset.xdecaroAutoSubmitBound === '1') {
         return;
       }
