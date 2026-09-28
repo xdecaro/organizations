@@ -33,6 +33,47 @@
   line-height: 1.3;
 }
 
+.xdecaro-organizations-organization-edit .xdecaro-organization-accordion {
+  display: grid;
+  gap: .75rem;
+  padding: 1rem;
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-item {
+  overflow: hidden;
+  background: var(--body-bg, #fff);
+  color: var(--body-color, inherit);
+  border: 1px solid var(--border-color, rgba(127, 127, 127, .25));
+  border-radius: .65rem;
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-item + .accordion-item {
+  border-top: 1px solid var(--border-color, rgba(127, 127, 127, .25));
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-button {
+  min-height: 3.25rem;
+  padding: .85rem 1rem;
+  background: var(--body-bg, #fff);
+  color: inherit;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-button:not(.collapsed) {
+  background: var(--template-bg-light, rgba(127, 127, 127, .08));
+  color: inherit;
+  box-shadow: inset 0 -1px 0 var(--border-color, rgba(127, 127, 127, .25));
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-button:focus {
+  box-shadow: none;
+}
+
+.xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-body {
+  padding: 1rem;
+}
+
 .xdecaro-organizations-organization-edit .xdecaro-members {
   padding-block: .75rem;
 }
@@ -149,6 +190,20 @@
 
   .xdecaro-organizations-organization-edit .xdecaro-organization-heading h2 {
     font-size: 1.15rem;
+  }
+
+  .xdecaro-organizations-organization-edit .xdecaro-organization-accordion {
+    gap: .6rem;
+    padding: .75rem;
+  }
+
+  .xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-button {
+    min-height: 3rem;
+    padding: .75rem .85rem;
+  }
+
+  .xdecaro-organizations-organization-edit .xdecaro-organization-accordion .accordion-body {
+    padding: .85rem;
   }
 
   .xdecaro-organizations-organization-edit .xdecaro-members .btn-group {
