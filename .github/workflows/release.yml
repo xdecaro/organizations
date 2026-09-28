@@ -69,6 +69,7 @@ jobs:
           php tests/organizations-1.3.0-global-admin-views-contract.php
           php tests/organizations-1.3.1-global-admin-polish-contract.php
           php tests/organizations-1.3.2-bodies-filter-ux-contract.php
+          php tests/organizations-1.3.3-affiliations-filter-ux-contract.php
       - name: Build deterministic release
         shell: bash
         run: |
@@ -115,7 +116,7 @@ jobs:
             "dist/pkg_organizations_${V}.zip" \
             dist/SHA256SUMS.txt \
             --title "Organizations ${V}" \
-            --notes "Organizations ${V}: migliora il filtro Organizzazione nella vista globale Organi. Il selettore è ricercabile e applica subito il filtro al cambio, mantenendo il filtro server-side esatto e il pulsante Filtra come fallback. Nessuna modifica al database. Joomla 6 only."
+            --notes "Organizations ${V}: rifinisce i filtri della vista globale Affiliazioni. Organizzazione ed Ente/Federazione mostrano solo le organizzazioni realmente presenti sul rispettivo lato delle relazioni, sono ricercabili e applicano subito il filtro alla selezione. Corregge inoltre l'etichetta della vista Affiliazioni. Nessuna modifica al database. Joomla 6 only."
       - name: Publish canonical and legacy-bridge Joomla update metadata
         shell: bash
         run: |
