@@ -1,0 +1,2 @@
+-- Organizations 1.3.0
+-- No schema changes: global administrator views reuse existing tables.
