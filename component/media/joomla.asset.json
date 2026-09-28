@@ -8,6 +8,7 @@
     {"name":"com_xdecaroorganizations.maintenance","type":"style","uri":"com_xdecaroorganizations/maintenance.css"},
     {"name":"com_xdecaroorganizations.organization-edit","type":"script","uri":"com_xdecaroorganizations/organization-edit.js","attributes":{"defer":true}},
     {"name":"com_xdecaroorganizations.organizations-list","type":"script","uri":"com_xdecaroorganizations/organizations-list.js","attributes":{"defer":true}},
+    {"name":"com_xdecaroorganizations.global-lists","type":"script","uri":"com_xdecaroorganizations/global-lists.js","attributes":{"defer":true}},
     {"name":"com_xdecaroorganizations.information","type":"script","uri":"com_xdecaroorganizations/information.js","attributes":{"defer":true}},
     {"name":"com_xdecaroorganizations.database-maintenance","type":"script","uri":"com_xdecaroorganizations/database-maintenance.js","attributes":{"defer":true}},
     {"name":"com_xdecaroorganizations.site","type":"style","uri":"com_xdecaroorganizations/site.css"}
