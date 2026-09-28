@@ -11,7 +11,7 @@ $organization = (int) $this->state->get('filter.organization', 0);
 $visual = (string) $this->state->get('filter.visual_status', '');
 $temporal = (string) $this->state->get('filter.temporal', '');
 $limit = (int) $this->state->get('list.limit', 20);
-$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&tab=delegations');
+$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&activeTab=delegations');
 ?>
 <div class="xdecaro-global-list-page">
   <p class="text-body-secondary"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_DELEGATIONS_DESC'); ?></p>
