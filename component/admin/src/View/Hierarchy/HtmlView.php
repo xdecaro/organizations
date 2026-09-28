@@ -27,8 +27,7 @@ final class HtmlView extends BaseHtmlView
         }
         $app->getLanguage()->load('com_xdecaroorganizations.global', JPATH_ADMINISTRATOR . '/components/com_xdecaroorganizations', null, true);
         $this->items = $this->get('Items') ?: [];
-        $this->Diagnostics = $this->get('Diagnostics') ?: [];
-        $this->diagnostics = $this->Diagnostics;
+        $this->diagnostics = $this->get('Diagnostics') ?: [];
         $this->pagination = $this->get('Pagination');
         $this->state = $this->get('State');
         $this->typeOptions = $this->get('TypeOptions') ?: [];
