@@ -15,7 +15,7 @@ $body = (int) $this->state->get('filter.body', 0);
 $role = (string) $this->state->get('filter.role', '');
 $visual = (string) $this->state->get('filter.visual_status', '');
 $limit = (int) $this->state->get('list.limit', 20);
-$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&tab=members');
+$openUrl = static fn($id): string => Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $id . '&activeTab=members');
 $endValue = static fn($item): string => (string) (($item->ended_on ?? '') ?: ($item->planned_ends_on ?? ''));
 $statusLabel = static function (string $value): string {
     return match ($value) {
