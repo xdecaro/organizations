@@ -30,7 +30,14 @@ final class HtmlView extends BaseHtmlView
         $this->organizationOptions = $this->get('OrganizationOptions') ?: [];
         $this->bodyTypeOptions = $this->get('BodyTypeOptions') ?: [];
         if ($errors = $this->get('Errors')) { throw new \RuntimeException(implode("\n", $errors)); }
-        $app->getDocument()->getWebAssetManager()->useStyle('com_xdecaroorganizations.admin')->useStyle('com_xdecaroorganizations.global-lists');
+
+        $app->getDocument()->getWebAssetManager()
+            ->useStyle('com_xdecaroorganizations.admin')
+            ->useStyle('com_xdecaroorganizations.global-lists')
+            ->usePreset('choicesjs')
+            ->useScript('webcomponent.field-fancy-select')
+            ->useScript('com_xdecaroorganizations.global-lists-behavior');
+
         ToolbarHelper::title(Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_BODIES_TITLE'), 'sitemap');
         parent::display($tpl);
     }

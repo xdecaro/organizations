@@ -1,0 +1,2 @@
+-- Organizations 1.3.2
+-- Organi global filter UX maintenance release. No database changes required.
