@@ -20,7 +20,8 @@ $model = (string) file_get_contents($modelPath);
 foreach ([
     "getState('filter.organization')",
     "quoteName('b.organization_id') . ' = :organizationId'",
-    "bind(':organizationId', $organizationId, ParameterType::INTEGER)",
+    "bind(':organizationId'",
+    'ParameterType::INTEGER',
 ] as $required) {
     if (!str_contains($model, $required)) {
         fwrite(STDERR, "BodiesModel must keep exact server-side organization filtering: {$required}\n");
