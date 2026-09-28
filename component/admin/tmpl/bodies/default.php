@@ -33,7 +33,17 @@ $statusBadgeClass = static fn(string $value): string => match ($value) {
     <input type="hidden" name="option" value="com_xdecaroorganizations"><input type="hidden" name="view" value="bodies">
     <div class="xdecaro-global-list-filterbar" role="search">
       <div><label class="form-label" for="filter_search"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_SEARCH'); ?></label><input class="form-control" type="search" id="filter_search" name="filter_search" value="<?php echo $e($search); ?>"></div>
-      <div><label class="form-label" for="filter_organization"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_ORGANIZATION'); ?></label><select class="form-select" id="filter_organization" name="filter_organization"><option value="0"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_SELECT_ALL'); ?></option><?php foreach ($this->organizationOptions as $o) : ?><option value="<?php echo (int) $o->id; ?>"<?php echo $organization === (int) $o->id ? ' selected' : ''; ?>><?php echo $e($o->name); ?></option><?php endforeach; ?></select></div>
+      <div>
+        <label class="form-label" for="filter_organization"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_ORGANIZATION'); ?></label>
+        <joomla-field-fancy-select search-placeholder="<?php echo $e(Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_SEARCH_ORGANIZATION')); ?>">
+          <select class="form-select" id="filter_organization" name="filter_organization" data-xdecaro-auto-submit="true">
+            <option value="0"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_SELECT_ALL'); ?></option>
+            <?php foreach ($this->organizationOptions as $o) : ?>
+              <option value="<?php echo (int) $o->id; ?>"<?php echo $organization === (int) $o->id ? ' selected' : ''; ?>><?php echo $e($o->name); ?></option>
+            <?php endforeach; ?>
+          </select>
+        </joomla-field-fancy-select>
+      </div>
       <div><label class="form-label" for="filter_body_type"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_TYPE'); ?></label><select class="form-select" id="filter_body_type" name="filter_body_type"><option value=""><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_SELECT_ALL'); ?></option><?php foreach ($this->bodyTypeOptions as $v) : ?><option value="<?php echo $e($v); ?>"<?php echo $bodyType === $v ? ' selected' : ''; ?>><?php echo $e($bodyTypeLabel($v)); ?></option><?php endforeach; ?></select></div>
       <div><label class="form-label" for="filter_visual_status"><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_STATUS'); ?></label><select class="form-select" id="filter_visual_status" name="filter_visual_status"><option value=""><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_SELECT_ALL'); ?></option><option value="active"<?php echo $visual === 'active' ? ' selected' : ''; ?>><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_ACTIVE'); ?></option><option value="inactive"<?php echo $visual === 'inactive' ? ' selected' : ''; ?>><?php echo Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_INACTIVE'); ?></option></select></div>
       <div><label class="form-label" for="limit"><?php echo Text::_('JGLOBAL_DISPLAY_NUM'); ?></label><select class="form-select" id="limit" name="limit"><?php foreach ([10,20,50,100,0] as $n) : ?><option value="<?php echo $n; ?>"<?php echo $limit === $n ? ' selected' : ''; ?>><?php echo $n === 0 ? Text::_('COM_XDECAROORGANIZATIONS_GLOBAL_ALL') : $n; ?></option><?php endforeach; ?></select></div>
